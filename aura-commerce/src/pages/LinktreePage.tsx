@@ -1,10 +1,11 @@
 import { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { ShoppingBag, ExternalLink, Share } from "lucide-react";
+import { ShoppingBag, ExternalLink, Share, Copy, Check, Link as LinkIcon } from "lucide-react";
 import { usePublicStore } from "../hooks/usePublicStore";
 import { useTrackEvent } from "../hooks/useAnalytics";
 import { supabase } from "../lib/supabase";
+import { toast } from "sonner";
 
 export default function LinktreePage() {
     const { username: slug } = useParams();
@@ -12,6 +13,7 @@ export default function LinktreePage() {
     const { store, theme, links, isStoreLoading, products } = usePublicStore(slug);
     const { track } = useTrackEvent(store?.id);
     const ipRef = useRef<string | null>(null);
+    const [copied, setCopied] = useState(false);
 
     useEffect(() => {
         fetch("https://api.ipify.org?format=json")
@@ -35,6 +37,28 @@ export default function LinktreePage() {
             p_ip_address: ipRef.current || ""
         });
         window.open(url, "_blank", "noopener,noreferrer");
+    };
+
+    const handleShare = async () => {
+        const pageUrl = window.location.href;
+        try {
+            if (navigator.share) {
+                await navigator.share({
+                    title: `${store?.display_name || slug}'s Linktree`,
+                    text: 'Check out my links!',
+                    url: pageUrl,
+                });
+            } else {
+                await navigator.clipboard.writeText(pageUrl);
+                setCopied(true);
+                setTimeout(() => setCopied(false), 3000);
+                toast.success('Link copied!', { description: 'Paste it in your Instagram bio 🔗' });
+            }
+        } catch (_) {
+            await navigator.clipboard.writeText(pageUrl).catch(() => { });
+            setCopied(true);
+            setTimeout(() => setCopied(false), 3000);
+        }
     };
 
     if (isStoreLoading) {
@@ -92,12 +116,32 @@ export default function LinktreePage() {
             {/* Main Container - Mobile Constrained */}
             <div className="w-full max-w-[600px] min-h-screen flex flex-col px-4 pt-12 pb-24 relative z-10">
 
-                {/* Share icon top right */}
+                {/* Share button top right — copies link for Instagram bio */}
                 <div className="absolute top-6 right-6">
-                    <button className="w-10 h-10 rounded-full bg-black/5 hover:bg-black/10 backdrop-blur-md flex items-center justify-center transition-colors" style={{ color: textColor }}>
-                        <Share size={18} />
+                    <button
+                        onClick={handleShare}
+                        className="w-10 h-10 rounded-full bg-black/10 hover:bg-black/20 backdrop-blur-md flex items-center justify-center transition-all active:scale-95 shadow-sm"
+                        style={{ color: textColor }}
+                        title="Share this page"
+                    >
+                        {copied ? <Check size={18} className="text-emerald-400" /> : <Share size={18} />}
                     </button>
                 </div>
+
+                {/* Floating copy-link pill — appears after copy */}
+                <AnimatePresence>
+                    {copied && (
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: 20 }}
+                            className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2 bg-[#111] text-white text-[13px] font-semibold px-4 py-2.5 rounded-full shadow-xl"
+                        >
+                            <Check size={14} className="text-emerald-400" />
+                            Link copied — paste in Instagram bio!
+                        </motion.div>
+                    )}
+                </AnimatePresence>
 
                 {/* Profile */}
                 <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="flex flex-col items-center text-center mt-4">

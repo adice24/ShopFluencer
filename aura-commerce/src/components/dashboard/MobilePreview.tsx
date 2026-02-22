@@ -1,6 +1,8 @@
 import { motion } from "framer-motion";
 import type { Link, Theme } from "../../lib/types";
-import { ExternalLink, Star } from "lucide-react";
+import { ExternalLink, Copy, Check } from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
 
 interface MobilePreviewProps {
     store: any;
@@ -10,8 +12,35 @@ interface MobilePreviewProps {
 }
 
 export default function MobilePreview({ store, theme, links }: MobilePreviewProps) {
-
     const username = store?.slug || "username";
+    const [copied, setCopied] = useState(false);
+
+    const storeUrl = typeof window !== 'undefined'
+        ? `${window.location.origin}/${username}`
+        : `https://shopfluence.vercel.app/${username}`;
+
+    const handleShareButton = async () => {
+        try {
+            if (navigator.share) {
+                await navigator.share({
+                    title: `${store?.display_name || username}'s Linktree`,
+                    text: 'Check out my links!',
+                    url: storeUrl,
+                });
+            } else {
+                await navigator.clipboard.writeText(storeUrl);
+                setCopied(true);
+                setTimeout(() => setCopied(false), 2000);
+                toast.success('Link copied! Paste it in your Instagram bio.', {
+                    description: storeUrl,
+                    duration: 4000,
+                });
+            }
+        } catch (_) {
+            await navigator.clipboard.writeText(storeUrl).catch(() => { });
+            toast.success('Link copied to clipboard!');
+        }
+    };
 
     // Helper to get background style
     const getBackgroundStyle = () => {
@@ -69,10 +98,15 @@ export default function MobilePreview({ store, theme, links }: MobilePreviewProp
                     {/* Scrollable Content Inside Screen */}
                     <div className="w-full h-full overflow-y-auto no-scrollbar scroll-smooth flex flex-col pt-12 items-center">
 
-                        {/* Share icon top right */}
+                        {/* Share/External icon top right — opens public store URL */}
                         <div className="w-full flex justify-end px-5 pt-1 relative z-10">
-                            <button className="w-9 h-9 rounded-full bg-black/5 flex items-center justify-center transition-colors shadow-sm backdrop-blur-md" style={{ color: textColor }}>
-                                <ExternalLink size={16} />
+                            <button
+                                onClick={handleShareButton}
+                                title={`Open: ${storeUrl}`}
+                                className="w-9 h-9 rounded-full bg-black/10 hover:bg-black/20 flex items-center justify-center transition-all shadow-sm backdrop-blur-md active:scale-95"
+                                style={{ color: textColor }}
+                            >
+                                {copied ? <Check size={15} className="text-emerald-500" /> : <ExternalLink size={15} />}
                             </button>
                         </div>
 
