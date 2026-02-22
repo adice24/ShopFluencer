@@ -1,73 +1,73 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
 import { supabase } from "../lib/supabase";
 import LinktreePage from "./LinktreePage";
 
 export default function DynamicRouteRenderer() {
-    const { username: slug } = useParams();
+    const { slug } = useParams(); // ✅ Correct param
+    const [loading, setLoading] = useState(true);
+    const [isShortLink, setIsShortLink] = useState(false);
 
-    // Attempt to resolve as a storefront/linktree slug via Supabase
-    const { data: redirectUrl, isLoading } = useQuery({
-        queryKey: ["short-link", slug],
-        queryFn: async () => {
-            if (!slug) return null;
+    useEffect(() => {
+        async function resolveSlug() {
+            if (!slug) {
+                setLoading(false);
+                return;
+            }
+
             try {
-                // Check if it's a short-link code stored in our DB via Supabase
-                const { data: linkData, error: linkErr } = await supabase
+                // 🔎 1️⃣ Check if slug is a short link
+                const { data: linkData, error } = await supabase
                     .from("short_links")
-                    .select("original_url, id")
+                    .select("id, original_url, clicks")
                     .eq("short_code", slug)
                     .eq("is_active", true)
                     .maybeSingle();
 
-                if (!linkErr && linkData?.original_url) {
-                    // Async increment clicks (fire-and-forget, no await)
-                    supabase
+                if (!error && linkData?.original_url) {
+                    setIsShortLink(true);
+
+                    // 🚀 Increment clicks safely
+                    await supabase
                         .from("short_links")
-                        .update({ clicks: undefined }) // handled by backend route if needed
+                        .update({ clicks: (linkData.clicks || 0) + 1 })
                         .eq("id", linkData.id);
 
-                    // Record the click
-                    supabase.from("link_clicks").insert({
+                    // 📊 Insert analytics
+                    await supabase.from("link_clicks").insert({
                         short_link_id: linkData.id,
                         user_agent: navigator.userAgent,
+                        created_at: new Date().toISOString(),
                     });
 
-                    return linkData.original_url;
+                    // 🔁 Redirect
+                    window.location.replace(linkData.original_url);
+                    return;
                 }
+
             } catch (err) {
-                console.error("Short link resolve error:", err);
+                console.error("Slug resolve error:", err);
             }
-            return null;
-        },
-        retry: false,
-        staleTime: 1000 * 60 * 5,
-    });
 
-    useEffect(() => {
-        if (redirectUrl) {
-            window.location.replace(redirectUrl);
+            // If not short link → allow LinktreePage to render
+            setLoading(false);
         }
-    }, [redirectUrl]);
 
-    if (isLoading) {
+        resolveSlug();
+    }, [slug]);
+
+    // 🔄 Loading spinner while checking short link
+    if (loading && !isShortLink) {
         return (
             <div className="min-h-screen bg-[#FDFBF9] flex flex-col items-center justify-center gap-4">
                 <div className="w-8 h-8 border-2 border-[#E5976D] border-t-transparent rounded-full animate-spin" />
+                <p className="text-[14px] text-muted-foreground font-medium animate-pulse">
+                    Checking link...
+                </p>
             </div>
         );
     }
 
-    if (redirectUrl) {
-        return (
-            <div className="min-h-screen bg-[#FDFBF9] flex flex-col items-center justify-center gap-4">
-                <div className="w-8 h-8 border-2 border-[#E5976D] border-t-transparent rounded-full animate-spin" />
-                <p className="text-[14px] text-muted-foreground font-medium animate-pulse">Taking you there...</p>
-            </div>
-        );
-    }
-
-    // Otherwise treat slug as influencer username and render their Linktree
+    // 🏪 Not a short link → render influencer page
     return <LinktreePage />;
 }
