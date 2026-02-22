@@ -1,10 +1,10 @@
 import { Injectable, NotFoundException, InternalServerErrorException } from '@nestjs/common';
-import { DatabaseService } from '../../database/database.service';
 import { Prisma } from '@prisma/client';
 
+import { PrismaService } from '../../database/prisma.service';
 @Injectable()
 export class LinksService {
-    constructor(private readonly db: DatabaseService) { }
+    constructor(private readonly prisma: PrismaService) { }
 
     // Create a short link using a simple random string (pseudo nanoid)
     async createShortLink(userId: string, data: { originalUrl: string; title?: string }) {
@@ -20,13 +20,13 @@ export class LinksService {
                     shortCode += characters.charAt(Math.floor(Math.random() * characters.length));
                 }
 
-                const existing = await this.db.shortLink.findUnique({ where: { shortCode } });
+                const existing = await this.prisma.shortLink.findUnique({ where: { shortCode } });
                 if (!existing) {
                     isUnique = true;
                 }
             }
 
-            const shortLink = await this.db.shortLink.create({
+            const shortLink = await this.prisma.shortLink.create({
                 data: {
                     userId,
                     originalUrl: data.originalUrl,
@@ -42,7 +42,7 @@ export class LinksService {
     }
 
     async getUserLinks(userId: string) {
-        return this.db.shortLink.findMany({
+        return this.prisma.shortLink.findMany({
             where: { userId, isActive: true },
             orderBy: { createdAt: 'desc' },
             include: {
@@ -54,20 +54,20 @@ export class LinksService {
     }
 
     async deleteLink(userId: string, id: string) {
-        const link = await this.db.shortLink.findFirst({
+        const link = await this.prisma.shortLink.findFirst({
             where: { id, userId }
         });
         if (!link) {
             throw new NotFoundException('Link not found');
         }
 
-        return this.db.shortLink.delete({
+        return this.prisma.shortLink.delete({
             where: { id }
         });
     }
 
     async recordClick(shortCode: string, trackingData: { ipAddress?: string; userAgent?: string; referrer?: string }) {
-        const link = await this.db.shortLink.findUnique({
+        const link = await this.prisma.shortLink.findUnique({
             where: { shortCode, isActive: true }
         });
 
@@ -76,8 +76,8 @@ export class LinksService {
         }
 
         // Record the click inside a transaction to ensure atomic increment
-        await this.db.$transaction([
-            this.db.linkClick.create({
+        await this.prisma.$transaction([
+            this.prisma.linkClick.create({
                 data: {
                     shortLinkId: link.id,
                     ipAddress: trackingData.ipAddress,
@@ -85,7 +85,7 @@ export class LinksService {
                     referrer: trackingData.referrer,
                 }
             }),
-            this.db.shortLink.update({
+            this.prisma.shortLink.update({
                 where: { id: link.id },
                 data: { clicks: { increment: 1 } }
             })
