@@ -76,7 +76,7 @@ export const Navbar = () => {
           {/* Logo */}
           <Link to="/" className="flex items-center gap-1.5">
             <span className="text-foreground font-bold text-2xl tracking-tight">ShopFluence</span>
-            <span className="text-foreground text-2xl">✱</span>
+            <span className="text-foreground text-2xl">◆</span>
           </Link>
 
           {/* Desktop Nav — NavigationMenu with dropdowns */}
