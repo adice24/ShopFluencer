@@ -54,7 +54,7 @@ export default function DashboardSidebar() {
   const displayAvatar = store?.avatar_url || user?.user_metadata?.avatar_url;
 
   const [isChecklistOpen, setIsChecklistOpen] = useState(false);
-  const { percentage, completedCount, totalSteps } = useSetupChecklist();
+  const { percentage, completedCount, totalSteps, isAllDone } = useSetupChecklist();
 
   const isCurrent = (path: string) => {
     return location.pathname === path || (location.pathname.startsWith(path) && path !== "/dashboard");
@@ -254,44 +254,56 @@ export default function DashboardSidebar() {
       </SidebarContent>
 
       <SidebarFooter className="p-5 pb-10">
-        <div className="bg-white/70 backdrop-blur-md rounded-[24px] p-6 shadow-[0_8px_30px_rgba(0,0,0,0.04)] border border-white/80 relative overflow-hidden group">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="relative">
-              {/* Dynamic SVG ring based on percentage */}
-              <svg className="w-12 h-12 transform -rotate-90">
-                <circle cx="24" cy="24" r="20" stroke="currentColor" strokeWidth="3" fill="transparent" className="text-black/5" />
-                <circle
-                  cx="24" cy="24" r="20"
-                  stroke="url(#gradient)"
-                  strokeWidth="3"
-                  fill="transparent"
-                  strokeDasharray="125.6"
-                  strokeDashoffset={125.6 - (125.6 * percentage) / 100}
-                  className="text-[#F1A28A] drop-shadow-sm transition-all duration-1000 ease-out"
-                  strokeLinecap="round"
-                />
-                <defs>
-                  <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stopColor="#7CD0D3" />
-                    <stop offset="50%" stopColor="#FBBC86" />
-                    <stop offset="100%" stopColor="#F1A28A" />
-                  </linearGradient>
-                </defs>
-              </svg>
-              <div className="absolute inset-0 flex items-center justify-center">
-                <span className="text-[11px] font-extrabold text-[#2F3E46]">{percentage}%</span>
+        {/* Setup checklist card — hidden once all steps are done */}
+        {!isAllDone ? (
+          <div className="bg-white/70 backdrop-blur-md rounded-[24px] p-6 shadow-[0_8px_30px_rgba(0,0,0,0.04)] border border-white/80 relative overflow-hidden group">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="relative">
+                <svg className="w-12 h-12 transform -rotate-90">
+                  <circle cx="24" cy="24" r="20" stroke="currentColor" strokeWidth="3" fill="transparent" className="text-black/5" />
+                  <circle
+                    cx="24" cy="24" r="20"
+                    stroke="url(#gradient)"
+                    strokeWidth="3"
+                    fill="transparent"
+                    strokeDasharray="125.6"
+                    strokeDashoffset={125.6 - (125.6 * percentage) / 100}
+                    className="text-[#F1A28A] drop-shadow-sm transition-all duration-1000 ease-out"
+                    strokeLinecap="round"
+                  />
+                  <defs>
+                    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                      <stop offset="0%" stopColor="#7CD0D3" />
+                      <stop offset="50%" stopColor="#FBBC86" />
+                      <stop offset="100%" stopColor="#F1A28A" />
+                    </linearGradient>
+                  </defs>
+                </svg>
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <span className="text-[11px] font-extrabold text-[#2F3E46]">{percentage}%</span>
+                </div>
+              </div>
+            </div>
+            <h4 className="font-extrabold text-[#2F3E46] text-[15px] mb-[4px]">Your setup checklist</h4>
+            <p className="text-[13px] text-muted-foreground mb-6 font-medium">{completedCount} of {totalSteps} complete</p>
+            <button
+              onClick={() => setIsChecklistOpen(true)}
+              className="w-full bg-[#E5976D] hover:bg-[#D4855C] text-white font-bold text-[14px] py-[12px] rounded-full transition-colors shadow-md shadow-[#E5976D]/20 cursor-pointer border border-white/20"
+            >
+              Finish setup
+            </button>
+          </div>
+        ) : (
+          <div className="bg-gradient-to-br from-[#E8F8F5] to-[#F0FFF4] rounded-[24px] p-5 border border-[#10B981]/20 shadow-[0_4px_16px_rgba(16,185,129,0.08)]">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-[#10B981]/10 flex items-center justify-center text-xl shrink-0">🎉</div>
+              <div>
+                <p className="font-extrabold text-[#065F46] text-[14px]">Setup complete!</p>
+                <p className="text-[12px] text-[#10B981] font-semibold">All {totalSteps} steps done ✓</p>
               </div>
             </div>
           </div>
-          <h4 className="font-extrabold text-[#2F3E46] text-[15px] mb-[4px]">Your setup checklist</h4>
-          <p className="text-[13px] text-muted-foreground mb-6 font-medium">{completedCount} of {totalSteps} complete</p>
-          <button
-            onClick={() => setIsChecklistOpen(true)}
-            className="w-full bg-[#E5976D] hover:bg-[#D4855C] text-white font-bold text-[14px] py-[12px] rounded-full transition-colors shadow-md shadow-[#E5976D]/20 cursor-pointer border border-white/20"
-          >
-            Finish setup
-          </button>
-        </div>
+        )}
 
         <SetupChecklistModal open={isChecklistOpen} onOpenChange={setIsChecklistOpen} />
 

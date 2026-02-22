@@ -12,7 +12,7 @@ interface SetupChecklistModalProps {
 }
 
 export default function SetupChecklistModal({ open, onOpenChange }: SetupChecklistModalProps) {
-    const { steps, totalSteps } = useSetupChecklist();
+    const { steps, totalSteps, storeSlug, userId } = useSetupChecklist();
     const [expandedStep, setExpandedStep] = useState<number | null>(null);
     const [optimisticComplete, setOptimisticComplete] = useState<Set<number>>(new Set());
     const navigate = useNavigate();
@@ -66,15 +66,25 @@ export default function SetupChecklistModal({ open, onOpenChange }: SetupCheckli
             cta: "ShareLink",
             link: "#",
             serverComplete: steps.hasShared,
-            onClick: () => {
-                const userId = localStorage.getItem("shopfluence_role");
-                toast.success("Link copied!");
-                if (typeof window !== 'undefined' && userId) {
-                    localStorage.setItem(`shared_dummy`, 'true');
+            onClick: async () => {
+                const url = `${window.location.origin}/${storeSlug || ''}`;
+                try {
+                    if (navigator.share) {
+                        await navigator.share({ title: 'My ShopFluence Store', url });
+                    } else {
+                        await navigator.clipboard.writeText(url);
+                    }
+                } catch (_) {
+                    await navigator.clipboard.writeText(url);
                 }
+                // Persist per-user in localStorage
+                if (userId) {
+                    localStorage.setItem(`sf_shared_${userId}`, 'true');
+                }
+                toast.success('🎉 Link shared! Your store is live.');
             }
         }
-    ], [steps]);
+    ], [steps, storeSlug, userId]);
 
     const checklistItems = useMemo(() => {
         return baseItems.map(item => ({
