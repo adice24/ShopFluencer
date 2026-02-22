@@ -1,0 +1,1 @@
+﻿analytics_events cols: id, store_id, event_type, product_id, visitor_id, referrer, user_agent, metadata, created_at

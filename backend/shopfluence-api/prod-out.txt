@@ -1,0 +1,15 @@
+﻿products cols: id, store_id, name, description, price, compare_at_price, image_url, image_emoji, category_id, is_visible, is_featured, stock_count, sort_order, external_url, metadata, created_at, updated_at, sku, category, tags, weight, is_digital, status, slug
+sample products: [
+  {
+    id: '1f3314d1-e620-48ff-9d2a-d381d0abc20b',
+    name: 'Vintage Jacket',
+    slug: 'vintage-jacket-2cdba0',
+    store_id: '151eff9f-c6ab-41c1-8efd-da39d94d4b90'
+  },
+  {
+    id: 'ee356ac9-7e47-45e0-9530-ebf72d7ca7b5',
+    name: 'Noise Airwave Max 6 XD ',
+    slug: 'noise-airwave-max-6-xd--059f21',
+    store_id: '151eff9f-c6ab-41c1-8efd-da39d94d4b90'
+  }
+]

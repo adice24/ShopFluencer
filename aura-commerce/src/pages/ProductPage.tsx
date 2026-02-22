@@ -5,7 +5,7 @@ import { useAuth } from "../contexts/AuthContext";
 import type { Product } from "../lib/types";
 import { ShoppingCart, Star, Check, ShieldCheck, ArrowLeft, Truck, RefreshCcw, Share } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
 
@@ -33,6 +33,27 @@ export default function ProductPage() {
         enabled: !!slug,
         staleTime: 60 * 1000,
     });
+
+    // Track product page view for real-time analytics
+    useEffect(() => {
+        if (!product) return;
+        const visitorId = sessionStorage.getItem('sf_visitor') || crypto.randomUUID();
+        sessionStorage.setItem('sf_visitor', visitorId);
+
+        supabase.from("analytics_events").insert({
+            store_id: product.store_id,
+            event_type: "PRODUCT_VIEW",
+            product_id: product.id,
+            visitor_id: visitorId,
+            referrer: document.referrer || "",
+            user_agent: navigator.userAgent,
+            metadata: {
+                product_name: product.name,
+                price: product.price,
+                slug: product.slug,
+            }
+        }).then(() => { });
+    }, [product?.id]);
 
     const handleAddToCart = async () => {
         if (!product) return;

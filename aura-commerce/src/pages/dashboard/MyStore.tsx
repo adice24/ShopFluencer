@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, Plus, Eye, EyeOff, Copy, Trash2, Edit, X, Upload, Package, Globe, DollarSign, Tag as TagIcon, Hash, Share } from "lucide-react";
+import { Search, Plus, Eye, EyeOff, Copy, Trash2, Edit, X, Upload, Package, Globe, DollarSign, Tag as TagIcon, Hash, Share, Check, ExternalLink } from "lucide-react";
 import { useMyStore, useProducts } from "../../hooks/useInfluencerStore";
 import type { Product } from "../../lib/types";
 import { toast } from "sonner";
@@ -17,6 +17,7 @@ export default function MyStore() {
   const { products = [], toggleVisibility, reorderProducts, addProduct, deleteProduct, updateProduct, isLoading } = useProducts(store?.id);
   const [search, setSearch] = useState("");
   const [isUploading, setIsUploading] = useState(false);
+  const [copiedProductId, setCopiedProductId] = useState<string | null>(null);
 
   const [isAddingMode, setIsAddingMode] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
@@ -424,46 +425,104 @@ export default function MyStore() {
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-between pt-4 border-t border-black/5 mt-auto">
-                    <div className="text-xs font-semibold text-muted-foreground flex items-center gap-1.5">
-                      {product.is_digital ? <Hash size={12} /> : <Package size={12} />}
-                      {product.stock_count === -1 ? 'Unlimited' : `${product.stock_count} left`}
-                    </div>
-                    <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <button onClick={() => {
-                        window.open(`${window.location.origin}/p/${product.slug}`, '_blank');
-                      }} className="p-2 text-muted-foreground hover:bg-black/5 hover:text-[#2F3E46] rounded-full transition-colors" title="View Public Page">
-                        <Globe size={16} />
-                      </button>
-                      <button onClick={() => {
-                        navigator.clipboard.writeText(`${window.location.origin}/p/${product.slug}`);
-                        toast.success("Link copied to clipboard!");
-                      }} className="p-2 text-muted-foreground hover:bg-black/5 hover:text-[#2F3E46] rounded-full transition-colors" title="Copy Link">
-                        <Copy size={16} />
-                      </button>
-                      <button onClick={() => {
-                        if (navigator.share) {
-                          navigator.share({
-                            title: product.name,
-                            url: `${window.location.origin}/p/${product.slug}`
-                          }).catch(console.error);
-                        } else {
-                          navigator.clipboard.writeText(`${window.location.origin}/p/${product.slug}`);
-                          toast.success("Link copied to clipboard!");
-                        }
-                      }} className="p-2 text-muted-foreground hover:bg-black/5 hover:text-[#2F3E46] rounded-full transition-colors" title="Share Link">
-                        <Share size={16} />
-                      </button>
-                      <button onClick={() => openEdit(product)} className="p-2 text-muted-foreground hover:bg-black/5 hover:text-[#2F3E46] rounded-full transition-colors" title="Edit">
-                        <Edit size={16} />
-                      </button>
-                      <button onClick={() => {
-                        if (window.confirm('Are you sure you want to delete this product?')) {
-                          deleteProduct.mutate(product.id);
-                        }
-                      }} className="p-2 text-muted-foreground hover:bg-red-50 hover:text-red-500 rounded-full transition-colors">
-                        <Trash2 size={16} />
-                      </button>
+                  <div className="flex flex-col gap-3 pt-4 border-t border-black/5 mt-auto">
+                    {/* Product Link Row */}
+                    {product.slug && (
+                      <div className="flex items-center gap-2 bg-[#E28362]/8 rounded-[10px] px-3 py-2">
+                        <ExternalLink size={11} className="text-[#E28362] shrink-0" />
+                        <span className="text-[11px] font-bold text-[#E28362] truncate flex-1">
+                          {window.location.host}/p/{product.slug}
+                        </span>
+                      </div>
+                    )}
+                    {/* Action Buttons */}
+                    <div className="flex items-center justify-between">
+                      <div className="text-xs font-semibold text-muted-foreground flex items-center gap-1.5">
+                        {product.is_digital ? <Hash size={12} /> : <Package size={12} />}
+                        {product.stock_count === -1 ? 'Unlimited' : `${product.stock_count} left`}
+                      </div>
+                      <div className="flex items-center gap-1">
+                        {/* Copy Link */}
+                        <button
+                          onClick={async () => {
+                            const url = `${window.location.origin}/p/${product.slug}`;
+                            await navigator.clipboard.writeText(url);
+                            setCopiedProductId(product.id);
+                            setTimeout(() => setCopiedProductId(null), 2000);
+                            toast.success("Product link copied!");
+                            // Track in analytics
+                            if (store?.id) {
+                              supabase.from("analytics_events").insert({
+                                store_id: store.id,
+                                event_type: "product_link_copied",
+                                product_id: product.id,
+                                visitor_id: user?.id || null,
+                                user_agent: navigator.userAgent,
+                                referrer: "",
+                                metadata: { product_name: product.name, action: 'copy' }
+                              }).then(() => { });
+                            }
+                          }}
+                          className="p-1.5 text-muted-foreground hover:bg-black/5 hover:text-[#E28362] rounded-lg transition-colors"
+                          title="Copy Product Link"
+                        >
+                          {copiedProductId === product.id ? <Check size={14} className="text-green-500" /> : <Copy size={14} />}
+                        </button>
+                        {/* Share */}
+                        <button
+                          onClick={async () => {
+                            const url = `${window.location.origin}/p/${product.slug}`;
+                            if (navigator.share) {
+                              try { await navigator.share({ title: product.name, url }); } catch (_) { }
+                            } else {
+                              await navigator.clipboard.writeText(url);
+                              toast.success("Link copied!");
+                            }
+                            // Track
+                            if (store?.id) {
+                              supabase.from("analytics_events").insert({
+                                store_id: store.id,
+                                event_type: "product_link_shared",
+                                product_id: product.id,
+                                visitor_id: user?.id || null,
+                                user_agent: navigator.userAgent,
+                                referrer: "",
+                                metadata: { product_name: product.name, action: 'share' }
+                              }).then(() => { });
+                            }
+                          }}
+                          className="p-1.5 text-muted-foreground hover:bg-black/5 hover:text-[#2F3E46] rounded-lg transition-colors"
+                          title="Share Product Link"
+                        >
+                          <Share size={14} />
+                        </button>
+                        {/* View Public */}
+                        <button
+                          onClick={() => window.open(`${window.location.origin}/p/${product.slug}`, '_blank')}
+                          className="p-1.5 text-muted-foreground hover:bg-black/5 hover:text-[#2F3E46] rounded-lg transition-colors"
+                          title="View Public Page"
+                        >
+                          <Globe size={14} />
+                        </button>
+                        {/* Edit */}
+                        <button
+                          onClick={() => openEdit(product)}
+                          className="p-1.5 text-muted-foreground hover:bg-black/5 hover:text-[#2F3E46] rounded-lg transition-colors"
+                          title="Edit"
+                        >
+                          <Edit size={14} />
+                        </button>
+                        {/* Delete */}
+                        <button
+                          onClick={() => {
+                            if (window.confirm('Delete this product?')) deleteProduct.mutate(product.id);
+                          }}
+                          className="p-1.5 text-muted-foreground hover:bg-red-50 hover:text-red-500 rounded-lg transition-colors"
+                          title="Delete"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </motion.div>
