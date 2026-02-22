@@ -1,0 +1,728 @@
+// ──────────────────────────────────────────────────────────────
+// ShopFluence — Production Database Schema
+// PostgreSQL via Prisma ORM
+// ──────────────────────────────────────────────────────────────
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ═══════════════════════════════════════════════════════════════
+// IDENTITY CONTEXT
+// ═══════════════════════════════════════════════════════════════
+
+enum UserRole {
+  ADMIN
+  INFLUENCER
+  CUSTOMER
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+  PENDING_APPROVAL
+}
+
+model User {
+  id             String     @id @default(uuid()) @db.Uuid
+  email          String     @unique
+  passwordHash   String     @map("password_hash")
+  role           UserRole   @default(CUSTOMER)
+  status         UserStatus @default(ACTIVE)
+  firstName      String     @map("first_name") @db.VarChar(100)
+  lastName       String     @map("last_name") @db.VarChar(100)
+  avatarUrl      String?    @map("avatar_url")
+  emailVerified  Boolean    @default(false) @map("email_verified")
+  lastLoginAt    DateTime?  @map("last_login_at")
+  createdAt      DateTime   @default(now()) @map("created_at")
+  updatedAt      DateTime   @updatedAt @map("updated_at")
+  deletedAt      DateTime?  @map("deleted_at") // Soft delete
+
+  // Relations
+  influencerProfile InfluencerProfile?
+  orders            Order[]
+  refreshTokens     RefreshToken[]
+  auditLogs         AuditLog[]
+  contentIdeas      ContentIdea[]
+  shortLinks        ShortLink[]
+
+  @@index([email])
+  @@index([role, status])
+  @@index([createdAt])
+  @@map("users")
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid()) @db.Uuid
+  token     String   @unique @db.VarChar(500)
+  userId    String   @map("user_id") @db.Uuid
+  expiresAt DateTime @map("expires_at")
+  revokedAt DateTime? @map("revoked_at")
+  userAgent String?  @map("user_agent") @db.VarChar(500)
+  ipAddress String?  @map("ip_address") @db.VarChar(50)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+  @@map("refresh_tokens")
+}
+
+// ═══════════════════════════════════════════════════════════════
+// INFLUENCER PROFILE CONTEXT
+// ═══════════════════════════════════════════════════════════════
+
+enum InfluencerTier {
+  NANO       // < 10K followers
+  MICRO      // 10K - 100K
+  MID        // 100K - 500K
+  MACRO      // 500K - 1M
+  MEGA       // 1M+
+}
+
+model InfluencerProfile {
+  id              String          @id @default(uuid()) @db.Uuid
+  userId          String          @unique @map("user_id") @db.Uuid
+  displayName     String          @map("display_name") @db.VarChar(150)
+  bio             String?         @db.Text
+  tier            InfluencerTier  @default(NANO)
+  instagramHandle String?         @map("instagram_handle") @db.VarChar(100)
+  youtubeHandle   String?         @map("youtube_handle") @db.VarChar(100)
+  tiktokHandle    String?         @map("tiktok_handle") @db.VarChar(100)
+  twitterHandle   String?         @map("twitter_handle") @db.VarChar(100)
+  websiteUrl      String?         @map("website_url")
+  followerCount   Int             @default(0) @map("follower_count")
+  isVerified      Boolean         @default(false) @map("is_verified")
+  commissionRate  Decimal         @default(0) @map("commission_rate") @db.Decimal(5, 2) // e.g., 12.50%
+  approvedAt      DateTime?       @map("approved_at")
+  createdAt       DateTime        @default(now()) @map("created_at")
+  updatedAt       DateTime        @updatedAt @map("updated_at")
+
+  // Relations
+  user              User                    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  storefront        Storefront?
+  brandAssignments  InfluencerBrand[]
+  affiliateClicks   AffiliateClick[]
+  affiliateOrders   AffiliateConversion[]
+  analyticsEvents   AnalyticsEvent[]
+
+  @@index([tier])
+  @@index([isVerified])
+  @@map("influencer_profiles")
+}
+
+// ═══════════════════════════════════════════════════════════════
+// CATALOG CONTEXT
+// ═══════════════════════════════════════════════════════════════
+
+model Category {
+  id          String     @id @default(uuid()) @db.Uuid
+  name        String     @db.VarChar(100)
+  slug        String     @unique @db.VarChar(120)
+  description String?    @db.Text
+  imageUrl    String?    @map("image_url")
+  parentId    String?    @map("parent_id") @db.Uuid
+  sortOrder   Int        @default(0) @map("sort_order")
+  isActive    Boolean    @default(true) @map("is_active")
+  createdAt   DateTime   @default(now()) @map("created_at")
+  updatedAt   DateTime   @updatedAt @map("updated_at")
+
+  // Self-referential for subcategories
+  parent      Category?  @relation("CategoryHierarchy", fields: [parentId], references: [id])
+  children    Category[] @relation("CategoryHierarchy")
+  products    Product[]
+
+  @@index([slug])
+  @@index([parentId])
+  @@index([isActive, sortOrder])
+  @@map("categories")
+}
+
+model Brand {
+  id              String   @id @default(uuid()) @db.Uuid
+  name            String   @db.VarChar(150)
+  slug            String   @unique @db.VarChar(170)
+  description     String?  @db.Text
+  logoUrl         String?  @map("logo_url")
+  websiteUrl      String?  @map("website_url")
+  contactEmail    String?  @map("contact_email") @db.VarChar(255)
+  isActive        Boolean  @default(true) @map("is_active")
+  commissionRate  Decimal  @default(0) @map("commission_rate") @db.Decimal(5, 2) // Brand-level commission
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+  deletedAt       DateTime? @map("deleted_at")
+
+  // Relations
+  products           Product[]
+  influencerBrands   InfluencerBrand[]
+
+  @@index([slug])
+  @@index([isActive])
+  @@map("brands")
+}
+
+model InfluencerBrand {
+  id             String   @id @default(uuid()) @db.Uuid
+  influencerId   String   @map("influencer_id") @db.Uuid
+  brandId        String   @map("brand_id") @db.Uuid
+  assignedAt     DateTime @default(now()) @map("assigned_at")
+  isActive       Boolean  @default(true) @map("is_active")
+
+  influencer InfluencerProfile @relation(fields: [influencerId], references: [id], onDelete: Cascade)
+  brand      Brand              @relation(fields: [brandId], references: [id], onDelete: Cascade)
+
+  @@unique([influencerId, brandId])
+  @@index([influencerId])
+  @@index([brandId])
+  @@map("influencer_brands")
+}
+
+enum ProductType {
+  PHYSICAL
+  DIGITAL
+}
+
+enum ProductStatus {
+  DRAFT
+  ACTIVE
+  OUT_OF_STOCK
+  DISCONTINUED
+}
+
+model Product {
+  id              String        @id @default(uuid()) @db.Uuid
+  name            String        @db.VarChar(255)
+  slug            String        @unique @db.VarChar(280)
+  description     String?       @db.Text
+  shortDescription String?      @map("short_description") @db.VarChar(500)
+  type            ProductType   @default(PHYSICAL)
+  status          ProductStatus @default(DRAFT)
+  basePrice       Decimal       @map("base_price") @db.Decimal(12, 2)
+  compareAtPrice  Decimal?      @map("compare_at_price") @db.Decimal(12, 2)
+  costPrice       Decimal?      @map("cost_price") @db.Decimal(12, 2) // For margin calculation
+  currency        String        @default("INR") @db.VarChar(3)
+  categoryId      String        @map("category_id") @db.Uuid
+  brandId         String        @map("brand_id") @db.Uuid
+  taxRate         Decimal       @default(0) @map("tax_rate") @db.Decimal(5, 2)
+  weight          Decimal?      @db.Decimal(8, 2) // in grams
+  metaTitle       String?       @map("meta_title") @db.VarChar(255)
+  metaDescription String?       @map("meta_description") @db.VarChar(500)
+  tags            String[]      @default([])
+  isFeatured      Boolean       @default(false) @map("is_featured")
+  sortOrder       Int           @default(0) @map("sort_order")
+  totalSold       Int           @default(0) @map("total_sold")
+  avgRating       Decimal       @default(0) @map("avg_rating") @db.Decimal(3, 2)
+  createdAt       DateTime      @default(now()) @map("created_at")
+  updatedAt       DateTime      @updatedAt @map("updated_at")
+  deletedAt       DateTime?     @map("deleted_at")
+
+  // Relations
+  category        Category          @relation(fields: [categoryId], references: [id])
+  brand           Brand             @relation(fields: [brandId], references: [id])
+  variants        ProductVariant[]
+  images          ProductImage[]
+  orderItems      OrderItem[]
+  storefrontProducts StorefrontProduct[]
+
+  @@index([slug])
+  @@index([categoryId])
+  @@index([brandId])
+  @@index([status, isFeatured])
+  @@index([createdAt])
+  @@index([basePrice])
+  @@index([tags])
+  @@map("products")
+}
+
+model ProductVariant {
+  id          String  @id @default(uuid()) @db.Uuid
+  productId   String  @map("product_id") @db.Uuid
+  sku         String  @unique @db.VarChar(100)
+  name        String  @db.VarChar(255) // e.g., "Red / Large"
+  price       Decimal @db.Decimal(12, 2)
+  compareAtPrice Decimal? @map("compare_at_price") @db.Decimal(12, 2)
+  costPrice   Decimal? @map("cost_price") @db.Decimal(12, 2)
+  stock       Int     @default(0)
+  lowStockThreshold Int @default(5) @map("low_stock_threshold")
+  weight      Decimal? @db.Decimal(8, 2)
+  barcode     String? @db.VarChar(100)
+  isActive    Boolean @default(true) @map("is_active")
+  attributes  Json    @default("{}") // { "color": "Red", "size": "L" }
+  sortOrder   Int     @default(0) @map("sort_order")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  product    Product    @relation(fields: [productId], references: [id], onDelete: Cascade)
+  orderItems OrderItem[]
+
+  @@index([productId])
+  @@index([sku])
+  @@index([isActive, stock])
+  @@map("product_variants")
+}
+
+model ProductImage {
+  id        String  @id @default(uuid()) @db.Uuid
+  productId String  @map("product_id") @db.Uuid
+  url       String
+  altText   String? @map("alt_text") @db.VarChar(255)
+  sortOrder Int     @default(0) @map("sort_order")
+  isPrimary Boolean @default(false) @map("is_primary")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@index([productId, sortOrder])
+  @@map("product_images")
+}
+
+// ═══════════════════════════════════════════════════════════════
+// STOREFRONT CONTEXT
+// ═══════════════════════════════════════════════════════════════
+
+enum StorefrontStatus {
+  DRAFT
+  PUBLISHED
+  DISABLED
+}
+
+model Storefront {
+  id             String           @id @default(uuid()) @db.Uuid
+  influencerId   String           @unique @map("influencer_id") @db.Uuid
+  slug           String           @unique @db.VarChar(100) // e.g., "alex-chen"
+  title          String           @db.VarChar(200)
+  tagline        String?          @db.VarChar(300)
+  description    String?          @db.Text
+  status         StorefrontStatus @default(DRAFT)
+  themeColor     String?          @map("theme_color") @db.VarChar(7) // hex
+  bannerUrl      String?          @map("banner_url")
+  logoUrl        String?          @map("logo_url")
+  metaTitle      String?          @map("meta_title") @db.VarChar(255)
+  metaDescription String?         @map("meta_description") @db.VarChar(500)
+  customCss      String?          @map("custom_css") @db.Text
+  totalViews     Int              @default(0) @map("total_views")
+  totalOrders    Int              @default(0) @map("total_orders")
+  totalRevenue   Decimal          @default(0) @map("total_revenue") @db.Decimal(14, 2)
+  publishedAt    DateTime?        @map("published_at")
+  createdAt      DateTime         @default(now()) @map("created_at")
+  updatedAt      DateTime         @updatedAt @map("updated_at")
+
+  // Relations
+  influencer         InfluencerProfile  @relation(fields: [influencerId], references: [id], onDelete: Cascade)
+  products           StorefrontProduct[]
+  affiliateClicks    AffiliateClick[]
+
+  @@index([slug])
+  @@index([status])
+  @@map("storefronts")
+}
+
+model StorefrontProduct {
+  id           String   @id @default(uuid()) @db.Uuid
+  storefrontId String   @map("storefront_id") @db.Uuid
+  productId    String   @map("product_id") @db.Uuid
+  sortOrder    Int      @default(0) @map("sort_order")
+  isHighlighted Boolean @default(false) @map("is_highlighted")
+  customNote   String?  @map("custom_note") @db.VarChar(500) // Influencer's note about product
+  addedAt      DateTime @default(now()) @map("added_at")
+
+  storefront Storefront @relation(fields: [storefrontId], references: [id], onDelete: Cascade)
+  product    Product    @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([storefrontId, productId])
+  @@index([storefrontId, sortOrder])
+  @@map("storefront_products")
+}
+
+// ═══════════════════════════════════════════════════════════════
+// COMMERCE CONTEXT  
+// ═══════════════════════════════════════════════════════════════
+
+enum OrderStatus {
+  PENDING         // Created, awaiting payment
+  PAYMENT_PENDING // Payment initiated
+  CONFIRMED       // Payment successful
+  PROCESSING      // Being prepared
+  SHIPPED         // In transit
+  DELIVERED       // Received by customer
+  CANCELLED       // Cancelled
+  REFUNDED        // Money returned
+  FAILED          // Payment failed
+}
+
+model Order {
+  id              String      @id @default(uuid()) @db.Uuid
+  orderNumber     String      @unique @map("order_number") @db.VarChar(30) // e.g., SF-20260220-ABC123
+  userId          String?     @map("user_id") @db.Uuid // Nullable for guest checkout
+  status          OrderStatus @default(PENDING)
+  subtotal        Decimal     @map("subtotal") @db.Decimal(14, 2)
+  taxAmount       Decimal     @default(0) @map("tax_amount") @db.Decimal(14, 2)
+  shippingAmount  Decimal     @default(0) @map("shipping_amount") @db.Decimal(14, 2)
+  discountAmount  Decimal     @default(0) @map("discount_amount") @db.Decimal(14, 2)
+  totalAmount     Decimal     @map("total_amount") @db.Decimal(14, 2)
+  currency        String      @default("INR") @db.VarChar(3)
+
+  // Shipping info (denormalized for order snapshot)
+  shippingName    String?     @map("shipping_name") @db.VarChar(200)
+  shippingEmail   String?     @map("shipping_email") @db.VarChar(255)
+  shippingPhone   String?     @map("shipping_phone") @db.VarChar(20)
+  shippingAddress String?     @map("shipping_address") @db.Text
+  shippingCity    String?     @map("shipping_city") @db.VarChar(100)
+  shippingState   String?     @map("shipping_state") @db.VarChar(100)
+  shippingZip     String?     @map("shipping_zip") @db.VarChar(20)
+  shippingCountry String?     @map("shipping_country") @db.VarChar(2)
+
+  // Tracking
+  trackingNumber  String?     @map("tracking_number") @db.VarChar(100)
+  trackingUrl     String?     @map("tracking_url")
+  notes           String?     @db.Text
+  cancelReason    String?     @map("cancel_reason") @db.Text
+
+  // Metadata
+  ipAddress       String?     @map("ip_address") @db.VarChar(50)
+  userAgent       String?     @map("user_agent") @db.VarChar(500)
+  
+  createdAt       DateTime    @default(now()) @map("created_at")
+  updatedAt       DateTime    @updatedAt @map("updated_at")
+
+  // Relations
+  user               User?                @relation(fields: [userId], references: [id])
+  items              OrderItem[]
+  payments           Payment[]
+  affiliateConversion AffiliateConversion?
+
+  @@index([orderNumber])
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt])
+  @@index([userId, status])
+  @@map("orders")
+}
+
+model OrderItem {
+  id              String  @id @default(uuid()) @db.Uuid
+  orderId         String  @map("order_id") @db.Uuid
+  productId       String  @map("product_id") @db.Uuid
+  variantId       String? @map("variant_id") @db.Uuid
+  
+  // Snapshot at time of purchase (prices can change later)
+  productName     String  @map("product_name") @db.VarChar(255)
+  variantName     String? @map("variant_name") @db.VarChar(255)
+  sku             String? @db.VarChar(100)
+  unitPrice       Decimal @map("unit_price") @db.Decimal(12, 2)
+  quantity        Int
+  totalPrice      Decimal @map("total_price") @db.Decimal(14, 2)
+  taxAmount       Decimal @default(0) @map("tax_amount") @db.Decimal(12, 2)
+
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  // Relations
+  order   Order           @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product Product         @relation(fields: [productId], references: [id])
+  variant ProductVariant? @relation(fields: [variantId], references: [id])
+
+  @@index([orderId])
+  @@index([productId])
+  @@map("order_items")
+}
+
+// ═══════════════════════════════════════════════════════════════
+// PAYMENT CONTEXT
+// ═══════════════════════════════════════════════════════════════
+
+enum PaymentStatus {
+  INITIATED
+  PENDING
+  AUTHORIZED
+  CAPTURED
+  FAILED
+  REFUNDED
+  PARTIALLY_REFUNDED
+}
+
+enum PaymentMethod {
+  UPI
+  CREDIT_CARD
+  DEBIT_CARD
+  NET_BANKING
+  WALLET
+  COD
+}
+
+enum PaymentGateway {
+  RAZORPAY
+  STRIPE
+  CASHFREE
+  MANUAL
+}
+
+model Payment {
+  id                String         @id @default(uuid()) @db.Uuid
+  orderId           String         @map("order_id") @db.Uuid
+  idempotencyKey    String         @unique @map("idempotency_key") @db.VarChar(100) // Prevent duplicate processing
+  amount            Decimal        @db.Decimal(14, 2)
+  currency          String         @default("INR") @db.VarChar(3)
+  status            PaymentStatus  @default(INITIATED)
+  method            PaymentMethod?
+  gateway           PaymentGateway @default(RAZORPAY)
+  
+  // Gateway-specific
+  gatewayPaymentId  String?        @map("gateway_payment_id") @db.VarChar(255)
+  gatewayOrderId    String?        @map("gateway_order_id") @db.VarChar(255)
+  gatewaySignature  String?        @map("gateway_signature") @db.VarChar(500)
+  gatewayResponse   Json?          @map("gateway_response") // Full response for debugging
+  
+  // Refund tracking
+  refundAmount      Decimal?       @map("refund_amount") @db.Decimal(14, 2)
+  refundReason      String?        @map("refund_reason") @db.Text
+  refundedAt        DateTime?      @map("refunded_at")
+  
+  // Metadata
+  failureReason     String?        @map("failure_reason") @db.Text
+  attempts          Int            @default(1)
+  paidAt            DateTime?      @map("paid_at")
+  createdAt         DateTime       @default(now()) @map("created_at")
+  updatedAt         DateTime       @updatedAt @map("updated_at")
+
+  order Order @relation(fields: [orderId], references: [id])
+
+  @@index([orderId])
+  @@index([idempotencyKey])
+  @@index([gatewayPaymentId])
+  @@index([status])
+  @@index([createdAt])
+  @@map("payments")
+}
+
+// ═══════════════════════════════════════════════════════════════
+// AFFILIATE TRACKING CONTEXT
+// ═══════════════════════════════════════════════════════════════
+
+model AffiliateClick {
+  id             String   @id @default(uuid()) @db.Uuid
+  influencerId   String   @map("influencer_id") @db.Uuid
+  storefrontId   String   @map("storefront_id") @db.Uuid
+  visitorId      String   @map("visitor_id") @db.VarChar(100) // Cookie/fingerprint
+  ipAddress      String?  @map("ip_address") @db.VarChar(50)
+  userAgent      String?  @map("user_agent") @db.VarChar(500)
+  referrerUrl    String?  @map("referrer_url")
+  utmSource      String?  @map("utm_source") @db.VarChar(100)
+  utmMedium      String?  @map("utm_medium") @db.VarChar(100)
+  utmCampaign    String?  @map("utm_campaign") @db.VarChar(100)
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  influencer InfluencerProfile @relation(fields: [influencerId], references: [id])
+  storefront Storefront        @relation(fields: [storefrontId], references: [id])
+
+  @@index([influencerId])
+  @@index([storefrontId])
+  @@index([visitorId])
+  @@index([createdAt])
+  @@map("affiliate_clicks")
+}
+
+enum ConversionStatus {
+  PENDING
+  CONFIRMED
+  PAID_OUT
+  CANCELLED
+}
+
+model AffiliateConversion {
+  id                String            @id @default(uuid()) @db.Uuid
+  influencerId      String            @map("influencer_id") @db.Uuid
+  orderId           String            @unique @map("order_id") @db.Uuid
+  clickId           String?           @map("click_id") @db.Uuid // Originating click
+  status            ConversionStatus  @default(PENDING)
+  orderAmount       Decimal           @map("order_amount") @db.Decimal(14, 2)
+  commissionRate    Decimal           @map("commission_rate") @db.Decimal(5, 2) // Snapshot at conversion time
+  commissionAmount  Decimal           @map("commission_amount") @db.Decimal(14, 2)
+  paidOutAt         DateTime?         @map("paid_out_at")
+  createdAt         DateTime          @default(now()) @map("created_at")
+  updatedAt         DateTime          @updatedAt @map("updated_at")
+
+  influencer InfluencerProfile @relation(fields: [influencerId], references: [id])
+  order      Order              @relation(fields: [orderId], references: [id])
+
+  @@index([influencerId])
+  @@index([status])
+  @@index([createdAt])
+  @@map("affiliate_conversions")
+}
+
+// ═══════════════════════════════════════════════════════════════
+// ANALYTICS CONTEXT
+// ═══════════════════════════════════════════════════════════════
+
+enum EventType {
+  STOREFRONT_VIEW
+  PRODUCT_VIEW
+  PRODUCT_CLICK
+  ADD_TO_CART
+  CHECKOUT_START
+  PURCHASE
+  SHARE
+}
+
+model AnalyticsEvent {
+  id             String    @id @default(uuid()) @db.Uuid
+  eventType      EventType @map("event_type")
+  influencerId   String?   @map("influencer_id") @db.Uuid
+  storefrontSlug String?   @map("storefront_slug") @db.VarChar(100)
+  productId      String?   @map("product_id") @db.Uuid
+  visitorId      String    @map("visitor_id") @db.VarChar(100)
+  sessionId      String?   @map("session_id") @db.VarChar(100)
+  ipAddress      String?   @map("ip_address") @db.VarChar(50)
+  userAgent      String?   @map("user_agent") @db.VarChar(500)
+  referrer       String?   @db.VarChar(500)
+  metadata       Json      @default("{}")
+  createdAt      DateTime  @default(now()) @map("created_at")
+
+  influencer InfluencerProfile? @relation(fields: [influencerId], references: [id])
+
+  @@index([eventType])
+  @@index([influencerId])
+  @@index([storefrontSlug])
+  @@index([createdAt])
+  @@index([visitorId])
+  @@index([eventType, createdAt])
+  @@map("analytics_events")
+}
+
+// Daily aggregate for fast dashboard reads
+model AnalyticsDailyAggregate {
+  id              String   @id @default(uuid()) @db.Uuid
+  date            DateTime @db.Date
+  influencerId    String?  @map("influencer_id") @db.Uuid
+  storefrontSlug  String?  @map("storefront_slug") @db.VarChar(100)
+  totalViews      Int      @default(0) @map("total_views")
+  uniqueVisitors  Int      @default(0) @map("unique_visitors")
+  productClicks   Int      @default(0) @map("product_clicks")
+  addToCarts      Int      @default(0) @map("add_to_carts")
+  orders          Int      @default(0)
+  revenue         Decimal  @default(0) @db.Decimal(14, 2)
+  conversionRate  Decimal  @default(0) @map("conversion_rate") @db.Decimal(5, 4) // e.g., 0.0234
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  @@unique([date, influencerId, storefrontSlug])
+  @@index([date])
+  @@index([influencerId, date])
+  @@map("analytics_daily_aggregates")
+}
+
+// ═══════════════════════════════════════════════════════════════
+// ADMIN / AUDIT CONTEXT
+// ═══════════════════════════════════════════════════════════════
+
+model AuditLog {
+  id          String   @id @default(uuid()) @db.Uuid
+  userId      String   @map("user_id") @db.Uuid
+  action      String   @db.VarChar(100) // e.g., "user.approve", "product.create"
+  entityType  String   @map("entity_type") @db.VarChar(50)
+  entityId    String   @map("entity_id") @db.VarChar(50)
+  oldValues   Json?    @map("old_values")
+  newValues   Json?    @map("new_values")
+  ipAddress   String?  @map("ip_address") @db.VarChar(50)
+  userAgent   String?  @map("user_agent") @db.VarChar(500)
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([entityType, entityId])
+  @@index([action])
+  @@index([createdAt])
+  @@map("audit_logs")
+}
+
+// ═══════════════════════════════════════════════════════════════
+// NOTIFICATION CONTEXT
+// ═══════════════════════════════════════════════════════════════
+
+model Notification {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  type      String   @db.VarChar(50) // e.g., "ORDER", "PAYMENT", "SYSTEM"
+  title     String   @db.VarChar(200)
+  message   String   @db.Text
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([userId])
+  @@index([createdAt])
+  @@index([read])
+  @@map("notifications")
+}
+
+// ═══════════════════════════════════════════════════════════════
+// POST IDEAS CONTEXT
+// ═══════════════════════════════════════════════════════════════
+
+model ContentIdea {
+  id           String   @id @default(uuid()) @db.Uuid
+  userId       String   @map("user_id") @db.Uuid
+  interestArea String   @map("interest_area") @db.VarChar(100)
+  platform     String   @db.VarChar(50)
+  title        String   @db.VarChar(255)
+  hook         String   @db.Text
+  cta          String   @db.Text
+  hashtags     String[]
+  isSaved      Boolean  @default(false) @map("is_saved")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([isSaved])
+  @@index([createdAt])
+  @@map("content_ideas")
+}
+
+// ═══════════════════════════════════════════════════════════════
+// LINK SHORTENER CONTEXT
+// ═══════════════════════════════════════════════════════════════
+
+model ShortLink {
+  id          String   @id @default(uuid()) @db.Uuid
+  userId      String   @map("user_id") @db.Uuid
+  title       String   @db.VarChar(255)
+  originalUrl String   @map("original_url") @db.Text
+  shortCode   String   @unique @map("short_code") @db.VarChar(50)
+  clicks      Int      @default(0)
+  isActive    Boolean  @default(true) @map("is_active")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  linkClicks  LinkClick[]
+
+  @@index([userId])
+  @@index([shortCode])
+  @@index([createdAt])
+  @@map("short_links")
+}
+
+model LinkClick {
+  id          String   @id @default(uuid()) @db.Uuid
+  shortLinkId String   @map("short_link_id") @db.Uuid
+  ipAddress   String?  @map("ip_address") @db.VarChar(50)
+  userAgent   String?  @map("user_agent") @db.VarChar(500)
+  referrer    String?  @db.VarChar(500)
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  shortLink   ShortLink @relation(fields: [shortLinkId], references: [id], onDelete: Cascade)
+
+  @@index([shortLinkId])
+  @@index([createdAt])
+  @@map("link_clicks")
+}
+
