@@ -4,7 +4,7 @@ import { supabase } from "../lib/supabase";
 import LinktreePage from "./LinktreePage";
 
 export default function DynamicRouteRenderer() {
-    const { slug } = useParams();
+    const { username: slug } = useParams();
     const [status, setStatus] = useState<"checking" | "redirect" | "store">("checking");
 
     useEffect(() => {

@@ -25,11 +25,35 @@ async function bootstrap() {
   app.use(cookieParser());
 
   // ── CORS ─────────────────────────────────────
+  const allowedOrigins = [
+    'http://localhost:5173',
+    'https://shop-fluence.vercel.app',
+    'https://shopflu.to'
+  ];
+  if (frontendUrl) {
+    frontendUrl.split(',').forEach(url => allowedOrigins.push(url.trim()));
+  }
+
   app.enableCors({
-    origin: frontendUrl.split(','),
+    origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
+      if (!origin) {
+        callback(null, true);
+        return;
+      }
+      if (
+        allowedOrigins.some((allowed) => origin === allowed || origin.startsWith(allowed)) ||
+        origin.endsWith('.vercel.app')
+      ) {
+        callback(null, true);
+      } else {
+        callback(new Error(`Origin ${origin} not allowed by CORS`));
+      }
+    },
     credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-Idempotency-Key'],
+    methods: ['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Accept', 'Authorization', 'X-Requested-With', 'X-Idempotency-Key'],
+    preflightContinue: false,
+    optionsSuccessStatus: 204,
   });
 
   // ── Validation ───────────────────────────────

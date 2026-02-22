@@ -74,8 +74,9 @@ export default function LinkShortenerPage() {
             queryClient.setQueryData<ShortLink[]>(["shortlinks"], (old) => [newLink, ...(old ?? [])]);
             setNewTitle("");
             setNewUrl("");
+            const shortDomain = window.location.host;
             toast.success("Short link generated!", {
-                description: `shopflu.to/${newLink.short_code} is ready!`,
+                description: `${shortDomain}/${newLink.short_code} is ready!`,
             });
         },
         onError: (e: Error) => toast.error(e.message),
@@ -104,9 +105,12 @@ export default function LinkShortenerPage() {
         createMutation.mutate({ originalUrl: newUrl, title: newTitle || "Untitled Link" });
     };
 
+    const shortDomain = window.location.host;
+
     const handleCopy = (code: string) => {
-        navigator.clipboard.writeText(`https://shopflu.to/${code}`);
-        toast.success("Copied!", { description: `shopflu.to/${code}` });
+        const urlToCopy = `${window.location.origin}/${code}`;
+        navigator.clipboard.writeText(urlToCopy);
+        toast.success("Copied!", { description: `${shortDomain}/${code}` });
     };
 
     const redirectBase = `${window.location.origin.replace(/:\d+$/, '')}/r`;
@@ -164,7 +168,7 @@ export default function LinkShortenerPage() {
 
                     <div className="pt-2 flex items-center justify-between">
                         <p className="text-[12px] text-muted-foreground font-medium">
-                            Generated: <span className="text-violet-500 font-bold">shopflu.to/xxxxxxx</span>
+                            Generated: <span className="text-violet-500 font-bold">{shortDomain}/xxxxxxx</span>
                         </p>
                         <button
                             onClick={handleCreate}
@@ -219,8 +223,8 @@ export default function LinkShortenerPage() {
                         ) : (
                             links.map((link, i) => {
                                 const clickCount = link._count?.linkClicks ?? link.clicks ?? 0;
-                                const shortUrl = `shopflu.to/${link.short_code}`;
-                                const redirectUrl = `${redirectBase}/${link.short_code}`;
+                                const shortUrl = `${shortDomain}/${link.short_code}`;
+                                const redirectUrl = `${window.location.origin}/${link.short_code}`;
 
                                 return (
                                     <motion.div
