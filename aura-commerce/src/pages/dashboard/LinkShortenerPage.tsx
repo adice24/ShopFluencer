@@ -7,62 +7,107 @@ import { Label } from "@/components/ui/label";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "../../lib/supabase";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000/api/v1";
-
-interface ShortLink {
+// ── Types ───────────────────────────────────────────────────────────────────
+interface LinkRow {
     id: string;
     title: string;
-    original_url: string;
-    short_code: string;
-    clicks: number;
+    url: string;               // the original destination URL
+    short_slug: string;        // the short code (e.g. "zeCzxudf")
+    click_count: number;
     created_at: string;
-    _count?: { linkClicks: number };
 }
 
-async function getAuthHeaders(): Promise<HeadersInit> {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session?.access_token) throw new Error("Not authenticated");
-    return {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${session.access_token}`,
-    };
+// ── Helpers ─────────────────────────────────────────────────────────────────
+function generateSlug(len = 8): string {
+    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    return Array.from({ length: len }, () => chars[Math.floor(Math.random() * chars.length)]).join("");
 }
 
-async function fetchLinks(): Promise<ShortLink[]> {
-    const headers = await getAuthHeaders();
-    const res = await fetch(`${API_URL}/links`, { headers });
-    if (!res.ok) throw new Error("Failed to load links");
-    const body = await res.json();
-    return body.data ?? body;
+// ── Supabase CRUD ────────────────────────────────────────────────────────────
+async function fetchLinks(): Promise<LinkRow[]> {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error("Not logged in");
+
+    const { data, error } = await supabase
+        .from("links")
+        .select("id, title, url, short_slug, click_count, created_at")
+        .eq("user_id", user.id)
+        .eq("is_visible", true)
+        .order("created_at", { ascending: false });
+
+    if (error) throw error;
+    return data ?? [];
 }
 
-async function createLink(payload: { originalUrl: string; title: string }): Promise<ShortLink> {
-    const headers = await getAuthHeaders();
-    const res = await fetch(`${API_URL}/links`, {
-        method: "POST",
-        headers,
-        body: JSON.stringify(payload),
-    });
-    if (!res.ok) {
-        const err = await res.json();
-        throw new Error(err.message || "Failed to create link");
+async function createLink(payload: { originalUrl: string; title: string }): Promise<LinkRow> {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error("Not logged in");
+
+    // Get store id
+    const { data: store } = await supabase
+        .from("influencer_stores")
+        .select("id")
+        .eq("user_id", user.id)
+        .single();
+
+    if (!store) throw new Error("No store found — please set up your store first");
+
+    // Get next position
+    const { data: existing } = await supabase
+        .from("links")
+        .select("position")
+        .eq("user_id", user.id)
+        .order("position", { ascending: false })
+        .limit(1);
+
+    const nextPos = (existing?.[0]?.position ?? -1) + 1;
+
+    // Generate unique slug
+    let short_slug = "";
+    for (let attempts = 0; attempts < 10; attempts++) {
+        const candidate = generateSlug(8);
+        const { data: clash } = await supabase
+            .from("links")
+            .select("id")
+            .eq("short_slug", candidate)
+            .maybeSingle();
+        if (!clash) { short_slug = candidate; break; }
     }
-    const body = await res.json();
-    return body.data ?? body;
+
+    if (!short_slug) throw new Error("Failed to generate unique slug");
+
+    const { data, error } = await supabase
+        .from("links")
+        .insert({
+            user_id: user.id,
+            store_id: store.id,
+            title: payload.title,
+            url: payload.originalUrl,
+            short_slug,
+            position: nextPos,
+            is_visible: true,
+            is_featured: false,
+            click_count: 0,
+        })
+        .select("id, title, url, short_slug, click_count, created_at")
+        .single();
+
+    if (error) throw new Error(error.message);
+    return data!;
 }
 
 async function deleteLink(id: string): Promise<void> {
-    const headers = await getAuthHeaders();
-    const res = await fetch(`${API_URL}/links/${id}`, { method: "DELETE", headers });
-    if (!res.ok && res.status !== 204) throw new Error("Failed to delete link");
+    const { error } = await supabase.from("links").delete().eq("id", id);
+    if (error) throw new Error(error.message);
 }
 
+// ── Component ────────────────────────────────────────────────────────────────
 export default function LinkShortenerPage() {
     const queryClient = useQueryClient();
     const [newTitle, setNewTitle] = useState("");
     const [newUrl, setNewUrl] = useState("");
 
-    const { data: links = [], isLoading, isError, refetch, isFetching } = useQuery<ShortLink[]>({
+    const { data: links = [], isLoading, isError, refetch, isFetching } = useQuery<LinkRow[]>({
         queryKey: ["shortlinks"],
         queryFn: fetchLinks,
         retry: 1,
@@ -71,12 +116,11 @@ export default function LinkShortenerPage() {
     const createMutation = useMutation({
         mutationFn: createLink,
         onSuccess: (newLink) => {
-            queryClient.setQueryData<ShortLink[]>(["shortlinks"], (old) => [newLink, ...(old ?? [])]);
+            queryClient.setQueryData<LinkRow[]>(["shortlinks"], (old) => [newLink, ...(old ?? [])]);
             setNewTitle("");
             setNewUrl("");
-            const shortDomain = window.location.host;
-            toast.success("Short link generated!", {
-                description: `${shortDomain}/${newLink.short_code} is ready!`,
+            toast.success("Short link created!", {
+                description: `${window.location.host}/${newLink.short_slug}`,
             });
         },
         onError: (e: Error) => toast.error(e.message),
@@ -86,8 +130,8 @@ export default function LinkShortenerPage() {
         mutationFn: deleteLink,
         onMutate: async (id) => {
             await queryClient.cancelQueries({ queryKey: ["shortlinks"] });
-            const prev = queryClient.getQueryData<ShortLink[]>(["shortlinks"]);
-            queryClient.setQueryData<ShortLink[]>(["shortlinks"], (old) => old?.filter(l => l.id !== id) ?? []);
+            const prev = queryClient.getQueryData<LinkRow[]>(["shortlinks"]);
+            queryClient.setQueryData<LinkRow[]>(["shortlinks"], (old) => old?.filter(l => l.id !== id) ?? []);
             return { prev };
         },
         onError: (_e, _id, ctx) => {
@@ -107,13 +151,10 @@ export default function LinkShortenerPage() {
 
     const shortDomain = window.location.host;
 
-    const handleCopy = (code: string) => {
-        const urlToCopy = `${window.location.origin}/${code}`;
-        navigator.clipboard.writeText(urlToCopy);
-        toast.success("Copied!", { description: `${shortDomain}/${code}` });
+    const handleCopy = (slug: string) => {
+        navigator.clipboard.writeText(`${window.location.origin}/${slug}`);
+        toast.success("Copied!", { description: `${shortDomain}/${slug}` });
     };
-
-    const redirectBase = `${window.location.origin.replace(/:\d+$/, '')}/r`;
 
     return (
         <div className="max-w-[720px] mx-auto pb-40">
@@ -168,7 +209,7 @@ export default function LinkShortenerPage() {
 
                     <div className="pt-2 flex items-center justify-between">
                         <p className="text-[12px] text-muted-foreground font-medium">
-                            Generated: <span className="text-violet-500 font-bold">{shortDomain}/xxxxxxx</span>
+                            Generated: <span className="text-violet-500 font-bold">{shortDomain}/xxxxxxxx</span>
                         </p>
                         <button
                             onClick={handleCreate}
@@ -200,9 +241,7 @@ export default function LinkShortenerPage() {
                 </div>
             ) : isError ? (
                 <div className="bg-red-50 border border-red-100 rounded-[20px] p-6 text-center">
-                    <p className="text-[14px] font-bold text-red-600 mb-3">
-                        Could not load links — is the backend running?
-                    </p>
+                    <p className="text-[14px] font-bold text-red-600 mb-3">Could not load links</p>
                     <button onClick={() => refetch()} className="text-[13px] font-bold underline text-red-500">
                         Try again
                     </button>
@@ -222,9 +261,8 @@ export default function LinkShortenerPage() {
                             </motion.div>
                         ) : (
                             links.map((link, i) => {
-                                const clickCount = link._count?.linkClicks ?? link.clicks ?? 0;
-                                const shortUrl = `${shortDomain}/${link.short_code}`;
-                                const redirectUrl = `${window.location.origin}/${link.short_code}`;
+                                const shortUrl = `${shortDomain}/${link.short_slug}`;
+                                const redirectUrl = `${window.location.origin}/${link.short_slug}`;
 
                                 return (
                                     <motion.div
@@ -243,7 +281,7 @@ export default function LinkShortenerPage() {
                                                     {shortUrl}
                                                 </span>
                                                 <button
-                                                    onClick={() => handleCopy(link.short_code)}
+                                                    onClick={() => handleCopy(link.short_slug)}
                                                     className="text-muted-foreground hover:text-violet-600 transition-colors p-1"
                                                     title="Copy short link"
                                                 >
@@ -263,12 +301,12 @@ export default function LinkShortenerPage() {
                                             <div className="flex items-center gap-1 mt-1.5 text-muted-foreground text-[12px] truncate">
                                                 <ArrowRight size={11} className="shrink-0" />
                                                 <a
-                                                    href={link.original_url}
+                                                    href={link.url}
                                                     target="_blank"
                                                     rel="noreferrer"
                                                     className="truncate hover:underline"
                                                 >
-                                                    {link.original_url}
+                                                    {link.url}
                                                 </a>
                                             </div>
                                         </div>
@@ -277,7 +315,7 @@ export default function LinkShortenerPage() {
                                             <div className="bg-black/5 px-3 py-2 rounded-xl flex items-center gap-1.5">
                                                 <BarChart2 size={14} className="text-muted-foreground" />
                                                 <span className="font-extrabold text-[14px] text-[#2F3E46]">
-                                                    {clickCount.toLocaleString()}
+                                                    {(link.click_count ?? 0).toLocaleString()}
                                                 </span>
                                                 <span className="text-[10px] font-bold text-muted-foreground uppercase">
                                                     Clicks
