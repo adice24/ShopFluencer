@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { supabase } from "../lib/supabase";
 import LinktreePage from "./LinktreePage";
 
 export default function DynamicRouteRenderer() {
@@ -16,24 +15,24 @@ export default function DynamicRouteRenderer() {
 
             console.log("Slug received:", slug); // DEBUG
 
-            const { data, error } = await supabase
-                .from("short_links")
-                .select("id, original_url, clicks")
-                .eq("short_code", slug)
-                .eq("is_active", true)
-                .maybeSingle();
+            try {
+                const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000/api/v1";
+                const response = await fetch(`${API_URL}/r/resolve/${slug}`, {
+                    method: "GET",
+                    headers: { "Content-Type": "application/json" }
+                });
 
-            if (!error && data?.original_url) {
-                console.log("Short link found:", data.original_url);
-
-                await supabase
-                    .from("short_links")
-                    .update({ clicks: (data.clicks || 0) + 1 })
-                    .eq("id", data.id);
-
-                setStatus("redirect");
-                window.location.replace(data.original_url);
-                return;
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data?.originalUrl) {
+                        console.log("Short link found via API:", data.originalUrl);
+                        setStatus("redirect");
+                        window.location.replace(data.originalUrl);
+                        return;
+                    }
+                }
+            } catch (err) {
+                console.error("Error resolving shortlink:", err);
             }
 
             console.log("Not a short link, loading store...");
