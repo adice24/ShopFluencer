@@ -1,78 +1,54 @@
 /**
  * ┌──────────────────────────────────────────────────────────────┐
  * │  ANALYTICS HOOK — Real-time Event Tracking & Stats          │
- * │  Tracks: page views, clicks, cart events, purchases         │
+ * │  Direct Supabase tracking — no backend dependency           │
  * └──────────────────────────────────────────────────────────────┘
  */
 
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useCallback, useEffect, useRef } from "react";
-import { useVisitorId } from "./useRealtimeSubscription";
-import { fetchApi } from "../lib/api";
-import type { AnalyticsEventType } from "../lib/types";
+import { useCallback, useRef, useEffect } from "react";
+import { supabase } from "../lib/supabase";
 
-/* ── Device Parsing Helper ────────────────────── */
-function getDeviceType() {
-    if (typeof navigator === "undefined") return "Unknown";
-    const ua = navigator.userAgent;
-    if (/(tablet|ipad|playbook|silk)|(android(?!.*mobi))/i.test(ua)) {
-        return "Tablet";
+/* ── Visitor ID (persisted per session) ─────────── */
+function getVisitorId(): string {
+    const key = "sf_visitor_id";
+    let id = sessionStorage.getItem(key);
+    if (!id) {
+        id = crypto.randomUUID();
+        sessionStorage.setItem(key, id);
     }
-    if (/Mobile|Android|iP(hone|od)|IEMobile|BlackBerry|Kindle|Silk-Accelerated|(hpw|web)OS|Opera M(obi|ini)/.test(ua)) {
-        return "Mobile";
-    }
-    return "Desktop";
+    return id;
 }
 
-/* ── Track Events (fire and forget) ──────────────── */
-
+/* ── Track Events — direct Supabase insert ────── */
 export function useTrackEvent(storeId: string | undefined) {
-    const visitorId = useVisitorId();
-    const ipRef = useRef<string | null>(null);
-
-    useEffect(() => {
-        if (!ipRef.current) {
-            fetch("https://api.ipify.org?format=json")
-                .then(res => res.json())
-                .then(data => {
-                    ipRef.current = data.ip;
-                })
-                .catch(() => { /* silent fail */ });
-        }
-    }, []);
+    const visitorId = getVisitorId();
+    const trackedRef = useRef<Set<string>>(new Set());
 
     const track = useCallback(
-        async (eventType: AnalyticsEventType, productId?: string, metadata?: Record<string, unknown>) => {
+        async (
+            eventType: string,
+            productId?: string,
+            metadata?: Record<string, unknown>
+        ) => {
             if (!storeId) return;
 
+            // Deduplicate: don't track the same event+product twice per session
+            const key = `${eventType}:${productId || ""}`;
+            if (trackedRef.current.has(key)) return;
+            trackedRef.current.add(key);
+
             try {
-                const device = getDeviceType();
-                const ip = ipRef.current || 'unknown';
-
-                // Map analytics event to Backend enum format
-                let mappedEventType = "STOREFRONT_VIEW";
-                if (eventType === "page_view") mappedEventType = "STOREFRONT_VIEW";
-                if (eventType === "product_click") mappedEventType = "PRODUCT_CLICK";
-                if (eventType === "add_to_cart") mappedEventType = "ADD_TO_CART";
-                if (eventType === "checkout_start") mappedEventType = "CHECKOUT_START";
-                if (eventType === "purchase") mappedEventType = "PURCHASE";
-
-                await fetchApi("/analytics/track", {
-                    method: "POST",
-                    body: JSON.stringify({
-                        eventType: mappedEventType,
-                        influencerId: storeId, // using storeId as influencerId dynamically
-                        productId: productId || undefined,
-                        visitorId: visitorId,
-                        metadata: {
-                            ...metadata,
-                            device,
-                            ip,
-                        }
-                    })
+                await supabase.from("analytics_events").insert({
+                    store_id: storeId,
+                    event_type: eventType, // "page_view", "product_click", "add_to_cart", "purchase", "PRODUCT_VIEW"
+                    product_id: productId || null,
+                    visitor_id: visitorId,
+                    referrer: document.referrer || "",
+                    user_agent: navigator.userAgent,
+                    metadata: metadata || {},
                 });
             } catch {
-                // Silent fail — analytics should never block UX
+                // Silent fail — analytics must never block UX
             }
         },
         [storeId, visitorId]
@@ -81,24 +57,8 @@ export function useTrackEvent(storeId: string | undefined) {
     return { track };
 }
 
-/* ── Analytics Dashboard Data ────────────────────── */
-
+/* ── useAnalyticsDashboard — real-time store stats ─ */
 export function useAnalyticsDashboard() {
-    const queryClient = useQueryClient();
-
-    const analyticsQuery = useQuery({
-        queryKey: ["analytics", "influencer"],
-        queryFn: async () => {
-            const response = await fetchApi("/analytics/influencer");
-            return response.data;
-        },
-        refetchInterval: 60000, // Refresh every 60s
-    });
-
-    return {
-        analytics: analyticsQuery.data,
-        isLoading: analyticsQuery.isLoading,
-        error: analyticsQuery.error,
-        refetch: analyticsQuery.refetch,
-    };
+    // (kept for backward compat — use useStoreStats in Overview instead)
+    return { analytics: null, isLoading: false, error: null, refetch: () => { } };
 }

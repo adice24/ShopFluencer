@@ -1,0 +1,63 @@
+﻿get_store_stats definition:
+ 
+DECLARE
+    result JSON;
+BEGIN
+    SELECT json_build_object(
+        'total_orders', (SELECT COUNT(*) FROM orders WHERE store_id = p_store_id),
+        'total_revenue', (SELECT COALESCE(SUM(total), 0) FROM orders WHERE store_id = p_store_id AND status NOT IN ('cancelled', 'refunded')),
+        'total_views', (SELECT COUNT(*) FROM analytics_events WHERE store_id = p_store_id AND event_type = 'page_view'),
+        'total_clicks', (SELECT COUNT(*) FROM analytics_events WHERE store_id = p_store_id AND event_type = 'product_click'),
+        'conversion_rate', (
+            CASE
+                WHEN (SELECT COUNT(*) FROM analytics_events WHERE store_id = p_store_id AND event_type = 'page_view') > 0
+                THEN ROUND(
+                    (SELECT COUNT(*)::DECIMAL FROM orders WHERE store_id = p_store_id AND status NOT IN ('cancelled', 'refunded'))
+                    / (SELECT COUNT(*)::DECIMAL FROM analytics_events WHERE store_id = p_store_id AND event_type = 'page_view')
+                    * 100, 2
+                )
+                ELSE 0
+            END
+        ),
+        'recent_orders', (
+            SELECT COALESCE(json_agg(row_to_json(o)), '[]'::json)
+            FROM (
+                SELECT id, customer_name, total, status, created_at
+                FROM orders WHERE store_id = p_store_id
+                ORDER BY created_at DESC LIMIT 5
+            ) o
+        )
+    ) INTO result;
+    RETURN result;
+END;
+
+
+orders: []
+
+link_clicks: [
+  {
+    link_id: 'd5c910dd-168f-4b51-8339-b1348d7dd1fa',
+    store_id: '151eff9f-c6ab-41c1-8efd-da39d94d4b90',
+    created_at: 2026-02-20T20:41:11.243Z
+  },
+  {
+    link_id: '7314b08d-359f-449f-9722-c184376d4adc',
+    store_id: 'c2416cb1-79bd-4b59-af58-1e30550aa5c5',
+    created_at: 2026-02-22T18:56:50.692Z
+  },
+  {
+    link_id: 'd5c910dd-168f-4b51-8339-b1348d7dd1fa',
+    store_id: '151eff9f-c6ab-41c1-8efd-da39d94d4b90',
+    created_at: 2026-02-22T19:01:31.598Z
+  },
+  {
+    link_id: '7314b08d-359f-449f-9722-c184376d4adc',
+    store_id: 'c2416cb1-79bd-4b59-af58-1e30550aa5c5',
+    created_at: 2026-02-22T19:04:40.909Z
+  },
+  {
+    link_id: '7314b08d-359f-449f-9722-c184376d4adc',
+    store_id: 'c2416cb1-79bd-4b59-af58-1e30550aa5c5',
+    created_at: 2026-02-22T19:05:17.924Z
+  }
+]

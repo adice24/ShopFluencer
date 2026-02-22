@@ -1,0 +1,5 @@
+﻿Functions: audit_role_change, generate_unique_short_slug, get_platform_stats, get_store_stats, handle_new_user, handle_updated_at, increment_short_link, resolve_short_link, set_user_role, track_link_click, track_login, trigger_set_short_slug
+
+orders cols: id, store_id, customer_email, customer_name, customer_phone, status, subtotal, tax, shipping, total, currency, shipping_address, notes, metadata, created_at, updated_at
+
+analytics events: []
