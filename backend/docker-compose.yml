@@ -1,0 +1,81 @@
+# ──────────────────────────────────────────────────
+# ShopFluence — Local Development Stack
+# ──────────────────────────────────────────────────
+
+version: "3.9"
+
+services:
+  # ── PostgreSQL ────────────────────────────────
+  postgres:
+    image: postgres:16-alpine
+    container_name: sf_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: shopfluence_db
+      POSTGRES_USER: shopfluence
+      POSTGRES_PASSWORD: shopfluence_dev_2026
+    ports:
+      - "5432:5432"
+    volumes:
+      - sf_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U shopfluence -d shopfluence_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── Redis ─────────────────────────────────────
+  redis:
+    image: redis:7-alpine
+    container_name: sf_redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - sf_redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── API (Development) ────────────────────────
+  api:
+    build:
+      context: ./shopfluence-api
+      dockerfile: Dockerfile
+    container_name: sf_api
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: development
+      DATABASE_URL: postgresql://shopfluence:shopfluence_dev_2026@postgres:5432/shopfluence_db?schema=public
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./shopfluence-api:/app
+      - /app/node_modules
+
+  # ── Redis Commander (Dev UI) ──────────────────
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: sf_redis_ui
+    restart: unless-stopped
+    environment:
+      REDIS_HOSTS: local:redis:6379
+    ports:
+      - "8081:8081"
+    depends_on:
+      - redis
+    profiles:
+      - tools
+
+volumes:
+  sf_postgres_data:
+  sf_redis_data:
