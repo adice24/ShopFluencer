@@ -1,0 +1,28 @@
+﻿Creating short_links and link_clicks tables...
+Γ£à short_links table OK
+Γ£à link_clicks table OK
+node.exe : Γ¥î Error: 
+At line:1 char:1
++ & "C:\Program 
+Files\nodejs/node.exe" 
+"C:\Program 
+Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~
+    + CategoryInfo          
+    : NotSpecified: (Γ¥î E  
+  rror: :String) [], Remo   
+ teException
+    + FullyQualifiedErrorId 
+    : NativeCommandError
+ 
+Invalid `prisma.$executeRawU
+nsafe()` invocation:
+
+
+Raw query failed. Code: 
+`42601`. Message: `ERROR: 
+cannot insert multiple 
+commands into a prepared 
+statement`

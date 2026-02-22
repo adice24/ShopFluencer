@@ -1,0 +1,13 @@
+﻿analytics_events
+auth_audit_log
+categories
+influencer_stores
+link_clicks
+links
+order_items
+orders
+payments
+products
+profiles
+short_links
+themes

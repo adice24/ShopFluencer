@@ -1,0 +1,1735 @@
+﻿Environment variables loaded from .env
+Prisma schema loaded from prisma\schema.prisma
+Datasource "db": PostgreSQL database "postgres", schemas "public" at "aws-1-ap-southeast-2.pooler.supabase.com:5432"
+node.exe : Error: P1012
+At line:1 char:1
++ & "C:\Program 
+Files\nodejs/node.exe" 
+"C:\Program 
+Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~
+    + CategoryInfo          
+    : NotSpecified: (Error  
+  : P1012:String) [], Rem   
+ oteException
+    + FullyQualifiedErrorId 
+    : NativeCommandError
+ 
+
+error: Error validating 
+model "User": This model is 
+missing an `@@schema` 
+attribute.
+  -->  
+prisma\schema.prisma:35
+   | 
+34 | 
+35 | model User {
+36 |   id             
+String     @id 
+@default(uuid()) @db.Uuid
+37 |   email          
+String     @unique
+38 |   passwordHash   
+String     
+@map("password_hash")
+39 |   role           
+UserRole   
+@default(CUSTOMER)
+40 |   status         
+UserStatus @default(ACTIVE)
+41 |   firstName      
+String     
+@map("first_name") 
+@db.VarChar(100)
+42 |   lastName       
+String     
+@map("last_name") 
+@db.VarChar(100)
+43 |   avatarUrl      
+String?    
+@map("avatar_url")
+44 |   emailVerified  
+Boolean    @default(false) 
+@map("email_verified")
+45 |   lastLoginAt    
+DateTime?  
+@map("last_login_at")
+46 |   createdAt      
+DateTime   @default(now()) 
+@map("created_at")
+47 |   updatedAt      
+DateTime   @updatedAt 
+@map("updated_at")
+48 |   deletedAt      
+DateTime?  
+@map("deleted_at") // Soft 
+delete
+49 | 
+50 |   // Relations
+51 |   influencerProfile 
+InfluencerProfile?
+52 |   orders            
+Order[]
+53 |   refreshTokens     
+RefreshToken[]
+54 |   auditLogs         
+AuditLog[]
+55 |   contentIdeas      
+ContentIdea[]
+56 | 
+57 |   @@index([email])
+58 |   @@index([role, 
+status])
+59 |   @@index([createdAt])
+60 |   @@map("users")
+61 | }
+   | 
+error: Error validating 
+model "RefreshToken": This 
+model is missing an 
+`@@schema` attribute.
+  -->  
+prisma\schema.prisma:63
+   | 
+62 | 
+63 | model RefreshToken {
+64 |   id        String   
+@id @default(uuid()) 
+@db.Uuid
+65 |   token     String   
+@unique @db.VarChar(500)
+66 |   userId    String   
+@map("user_id") @db.Uuid
+67 |   expiresAt DateTime 
+@map("expires_at")
+68 |   revokedAt DateTime? 
+@map("revoked_at")
+69 |   userAgent String?  
+@map("user_agent") 
+@db.VarChar(500)
+70 |   ipAddress String?  
+@map("ip_address") 
+@db.VarChar(50)
+71 |   createdAt DateTime 
+@default(now()) 
+@map("created_at")
+72 | 
+73 |   user User 
+@relation(fields: [userId], 
+references: [id], onDelete: 
+Cascade)
+74 | 
+75 |   @@index([userId])
+76 |   @@index([expiresAt])
+77 |   
+@@map("refresh_tokens")
+78 | }
+   | 
+error: Error validating 
+model "InfluencerProfile": 
+This model is missing an 
+`@@schema` attribute.
+  -->  
+prisma\schema.prisma:92
+   | 
+91 | 
+92 | model 
+InfluencerProfile {
+93 |   id              
+String          @id 
+@default(uuid()) @db.Uuid
+94 |   userId          
+String          @unique 
+@map("user_id") @db.Uuid
+95 |   displayName     
+String          
+@map("display_name") 
+@db.VarChar(150)
+96 |   bio             
+String?         @db.Text
+97 |   tier            
+InfluencerTier  
+@default(NANO)
+98 |   instagramHandle 
+String?         
+@map("instagram_handle") 
+@db.VarChar(100)
+99 |   youtubeHandle   
+String?         
+@map("youtube_handle") 
+@db.VarChar(100)
+100 |   tiktokHandle    
+String?         
+@map("tiktok_handle") 
+@db.VarChar(100)
+101 |   twitterHandle   
+String?         
+@map("twitter_handle") 
+@db.VarChar(100)
+102 |   websiteUrl      
+String?         
+@map("website_url")
+103 |   followerCount   Int 
+            @default(0) 
+@map("follower_count")
+104 |   isVerified      
+Boolean         
+@default(false) 
+@map("is_verified")
+105 |   commissionRate  
+Decimal         @default(0) 
+@map("commission_rate") 
+@db.Decimal(5, 2) // e.g., 
+12.50%
+106 |   approvedAt      
+DateTime?       
+@map("approved_at")
+107 |   createdAt       
+DateTime        
+@default(now()) 
+@map("created_at")
+108 |   updatedAt       
+DateTime        @updatedAt 
+@map("updated_at")
+109 | 
+110 |   // Relations
+111 |   user              
+User                    
+@relation(fields: [userId], 
+references: [id], onDelete: 
+Cascade)
+112 |   storefront        
+Storefront?
+113 |   brandAssignments  
+InfluencerBrand[]
+114 |   affiliateClicks   
+AffiliateClick[]
+115 |   affiliateOrders   
+AffiliateConversion[]
+116 |   analyticsEvents   
+AnalyticsEvent[]
+117 | 
+118 |   @@index([tier])
+119 |   
+@@index([isVerified])
+120 |   
+@@map("influencer_profiles")
+121 | }
+   | 
+error: Error validating 
+model "Category": This 
+model is missing an 
+`@@schema` attribute.
+  -->  
+prisma\schema.prisma:127
+   | 
+126 | 
+127 | model Category {
+128 |   id          String  
+   @id @default(uuid()) 
+@db.Uuid
+129 |   name        String  
+   @db.VarChar(100)
+130 |   slug        String  
+   @unique @db.VarChar(120)
+131 |   description String? 
+   @db.Text
+132 |   imageUrl    String? 
+   @map("image_url")
+133 |   parentId    String? 
+   @map("parent_id") 
+@db.Uuid
+134 |   sortOrder   Int     
+   @default(0) 
+@map("sort_order")
+135 |   isActive    Boolean 
+   @default(true) 
+@map("is_active")
+136 |   createdAt   
+DateTime   @default(now()) 
+@map("created_at")
+137 |   updatedAt   
+DateTime   @updatedAt 
+@map("updated_at")
+138 | 
+139 |   // Self-referential 
+for subcategories
+140 |   parent      
+Category?  @relation("Catego
+ryHierarchy", fields: 
+[parentId], references: 
+[id])
+141 |   children    
+Category[] @relation("Catego
+ryHierarchy")
+142 |   products    
+Product[]
+143 | 
+144 |   @@index([slug])
+145 |   @@index([parentId])
+146 |   @@index([isActive, 
+sortOrder])
+147 |   @@map("categories")
+148 | }
+   | 
+error: Error validating 
+model "Brand": This model 
+is missing an `@@schema` 
+attribute.
+  -->  
+prisma\schema.prisma:150
+   | 
+149 | 
+150 | model Brand {
+151 |   id              
+String   @id 
+@default(uuid()) @db.Uuid
+152 |   name            
+String   @db.VarChar(150)
+153 |   slug            
+String   @unique 
+@db.VarChar(170)
+154 |   description     
+String?  @db.Text
+155 |   logoUrl         
+String?  @map("logo_url")
+156 |   websiteUrl      
+String?  @map("website_url")
+157 |   contactEmail    
+String?  
+@map("contact_email") 
+@db.VarChar(255)
+158 |   isActive        
+Boolean  @default(true) 
+@map("is_active")
+159 |   commissionRate  
+Decimal  @default(0) 
+@map("commission_rate") 
+@db.Decimal(5, 2) // 
+Brand-level commission
+160 |   createdAt       
+DateTime @default(now()) 
+@map("created_at")
+161 |   updatedAt       
+DateTime @updatedAt 
+@map("updated_at")
+162 |   deletedAt       
+DateTime? @map("deleted_at")
+163 | 
+164 |   // Relations
+165 |   products           
+Product[]
+166 |   influencerBrands   
+InfluencerBrand[]
+167 | 
+168 |   @@index([slug])
+169 |   @@index([isActive])
+170 |   @@map("brands")
+171 | }
+   | 
+error: Error validating 
+model "InfluencerBrand": 
+This model is missing an 
+`@@schema` attribute.
+  -->  
+prisma\schema.prisma:173
+   | 
+172 | 
+173 | model InfluencerBrand 
+{
+174 |   id             
+String   @id 
+@default(uuid()) @db.Uuid
+175 |   influencerId   
+String   
+@map("influencer_id") 
+@db.Uuid
+176 |   brandId        
+String   @map("brand_id") 
+@db.Uuid
+177 |   assignedAt     
+DateTime @default(now()) 
+@map("assigned_at")
+178 |   isActive       
+Boolean  @default(true) 
+@map("is_active")
+179 | 
+180 |   influencer 
+InfluencerProfile 
+@relation(fields: 
+[influencerId], references: 
+[id], onDelete: Cascade)
+181 |   brand      Brand    
+          @relation(fields: 
+[brandId], references: 
+[id], onDelete: Cascade)
+182 | 
+183 |   
+@@unique([influencerId, 
+brandId])
+184 |   
+@@index([influencerId])
+185 |   @@index([brandId])
+186 |   
+@@map("influencer_brands")
+187 | }
+   | 
+error: Error validating 
+model "Product": This model 
+is missing an `@@schema` 
+attribute.
+  -->  
+prisma\schema.prisma:201
+   | 
+200 | 
+201 | model Product {
+202 |   id              
+String        @id 
+@default(uuid()) @db.Uuid
+203 |   name            
+String        
+@db.VarChar(255)
+204 |   slug            
+String        @unique 
+@db.VarChar(280)
+205 |   description     
+String?       @db.Text
+206 |   shortDescription 
+String?      
+@map("short_description") 
+@db.VarChar(500)
+207 |   type            
+ProductType   
+@default(PHYSICAL)
+208 |   status          
+ProductStatus 
+@default(DRAFT)
+209 |   basePrice       
+Decimal       
+@map("base_price") 
+@db.Decimal(12, 2)
+210 |   compareAtPrice  
+Decimal?      
+@map("compare_at_price") 
+@db.Decimal(12, 2)
+211 |   costPrice       
+Decimal?      
+@map("cost_price") 
+@db.Decimal(12, 2) // For 
+margin calculation
+212 |   currency        
+String        
+@default("INR") 
+@db.VarChar(3)
+213 |   categoryId      
+String        
+@map("category_id") @db.Uuid
+214 |   brandId         
+String        
+@map("brand_id") @db.Uuid
+215 |   taxRate         
+Decimal       @default(0) 
+@map("tax_rate") 
+@db.Decimal(5, 2)
+216 |   weight          
+Decimal?      
+@db.Decimal(8, 2) // in 
+grams
+217 |   metaTitle       
+String?       
+@map("meta_title") 
+@db.VarChar(255)
+218 |   metaDescription 
+String?       
+@map("meta_description") 
+@db.VarChar(500)
+219 |   tags            
+String[]      @default([])
+220 |   isFeatured      
+Boolean       
+@default(false) 
+@map("is_featured")
+221 |   sortOrder       Int 
+          @default(0) 
+@map("sort_order")
+222 |   totalSold       Int 
+          @default(0) 
+@map("total_sold")
+223 |   avgRating       
+Decimal       @default(0) 
+@map("avg_rating") 
+@db.Decimal(3, 2)
+224 |   createdAt       
+DateTime      
+@default(now()) 
+@map("created_at")
+225 |   updatedAt       
+DateTime      @updatedAt 
+@map("updated_at")
+226 |   deletedAt       
+DateTime?     
+@map("deleted_at")
+227 | 
+228 |   // Relations
+229 |   category        
+Category          
+@relation(fields: 
+[categoryId], references: 
+[id])
+230 |   brand           
+Brand             
+@relation(fields: 
+[brandId], references: [id])
+231 |   variants        
+ProductVariant[]
+232 |   images          
+ProductImage[]
+233 |   orderItems      
+OrderItem[]
+234 |   storefrontProducts 
+StorefrontProduct[]
+235 | 
+236 |   @@index([slug])
+237 |   
+@@index([categoryId])
+238 |   @@index([brandId])
+239 |   @@index([status, 
+isFeatured])
+240 |   @@index([createdAt])
+241 |   @@index([basePrice])
+242 |   @@index([tags])
+243 |   @@map("products")
+244 | }
+   | 
+error: Error validating 
+model "ProductVariant": 
+This model is missing an 
+`@@schema` attribute.
+  -->  
+prisma\schema.prisma:246
+   | 
+245 | 
+246 | model ProductVariant {
+247 |   id          String  
+@id @default(uuid()) 
+@db.Uuid
+248 |   productId   String  
+@map("product_id") @db.Uuid
+249 |   sku         String  
+@unique @db.VarChar(100)
+250 |   name        String  
+@db.VarChar(255) // e.g., 
+"Red / Large"
+251 |   price       Decimal 
+@db.Decimal(12, 2)
+252 |   compareAtPrice 
+Decimal? 
+@map("compare_at_price") 
+@db.Decimal(12, 2)
+253 |   costPrice   
+Decimal? @map("cost_price") 
+@db.Decimal(12, 2)
+254 |   stock       Int     
+@default(0)
+255 |   lowStockThreshold 
+Int @default(5) 
+@map("low_stock_threshold")
+256 |   weight      
+Decimal? @db.Decimal(8, 2)
+257 |   barcode     String? 
+@db.VarChar(100)
+258 |   isActive    Boolean 
+@default(true) 
+@map("is_active")
+259 |   attributes  Json    
+@default("{}") // { 
+"color": "Red", "size": "L" 
+}
+260 |   sortOrder   Int     
+@default(0) 
+@map("sort_order")
+261 |   createdAt   
+DateTime @default(now()) 
+@map("created_at")
+262 |   updatedAt   
+DateTime @updatedAt 
+@map("updated_at")
+263 | 
+264 |   // Relations
+265 |   product    Product  
+  @relation(fields: 
+[productId], references: 
+[id], onDelete: Cascade)
+266 |   orderItems 
+OrderItem[]
+267 | 
+268 |   @@index([productId])
+269 |   @@index([sku])
+270 |   @@index([isActive, 
+stock])
+271 |   
+@@map("product_variants")
+272 | }
+   | 
+error: Error validating 
+model "ProductImage": This 
+model is missing an 
+`@@schema` attribute.
+  -->  
+prisma\schema.prisma:274
+   | 
+273 | 
+274 | model ProductImage {
+275 |   id        String  
+@id @default(uuid()) 
+@db.Uuid
+276 |   productId String  
+@map("product_id") @db.Uuid
+277 |   url       String
+278 |   altText   String? 
+@map("alt_text") 
+@db.VarChar(255)
+279 |   sortOrder Int     
+@default(0) 
+@map("sort_order")
+280 |   isPrimary Boolean 
+@default(false) 
+@map("is_primary")
+281 |   createdAt DateTime 
+@default(now()) 
+@map("created_at")
+282 | 
+283 |   product Product 
+@relation(fields: 
+[productId], references: 
+[id], onDelete: Cascade)
+284 | 
+285 |   @@index([productId, 
+sortOrder])
+286 |   
+@@map("product_images")
+287 | }
+   | 
+error: Error validating 
+model "Storefront": This 
+model is missing an 
+`@@schema` attribute.
+  -->  
+prisma\schema.prisma:299
+   | 
+298 | 
+299 | model Storefront {
+300 |   id             
+String           @id 
+@default(uuid()) @db.Uuid
+301 |   influencerId   
+String           @unique 
+@map("influencer_id") 
+@db.Uuid
+302 |   slug           
+String           @unique 
+@db.VarChar(100) // e.g., 
+"alex-chen"
+303 |   title          
+String           
+@db.VarChar(200)
+304 |   tagline        
+String?          
+@db.VarChar(300)
+305 |   description    
+String?          @db.Text
+306 |   status         
+StorefrontStatus 
+@default(DRAFT)
+307 |   themeColor     
+String?          
+@map("theme_color") 
+@db.VarChar(7) // hex
+308 |   bannerUrl      
+String?          
+@map("banner_url")
+309 |   logoUrl        
+String?          
+@map("logo_url")
+310 |   metaTitle      
+String?          
+@map("meta_title") 
+@db.VarChar(255)
+311 |   metaDescription 
+String?         
+@map("meta_description") 
+@db.VarChar(500)
+312 |   customCss      
+String?          
+@map("custom_css") @db.Text
+313 |   totalViews     Int  
+            @default(0) 
+@map("total_views")
+314 |   totalOrders    Int  
+            @default(0) 
+@map("total_orders")
+315 |   totalRevenue   
+Decimal          
+@default(0) 
+@map("total_revenue") 
+@db.Decimal(14, 2)
+316 |   publishedAt    
+DateTime?        
+@map("published_at")
+317 |   createdAt      
+DateTime         
+@default(now()) 
+@map("created_at")
+318 |   updatedAt      
+DateTime         @updatedAt 
+@map("updated_at")
+319 | 
+320 |   // Relations
+321 |   influencer         
+InfluencerProfile  
+@relation(fields: 
+[influencerId], references: 
+[id], onDelete: Cascade)
+322 |   products           
+StorefrontProduct[]
+323 |   affiliateClicks    
+AffiliateClick[]
+324 | 
+325 |   @@index([slug])
+326 |   @@index([status])
+327 |   @@map("storefronts")
+328 | }
+   | 
+error: Error validating 
+model "StorefrontProduct": 
+This model is missing an 
+`@@schema` attribute.
+  -->  
+prisma\schema.prisma:330
+   | 
+329 | 
+330 | model 
+StorefrontProduct {
+331 |   id           String 
+  @id @default(uuid()) 
+@db.Uuid
+332 |   storefrontId String 
+  @map("storefront_id") 
+@db.Uuid
+333 |   productId    String 
+  @map("product_id") 
+@db.Uuid
+334 |   sortOrder    Int    
+  @default(0) 
+@map("sort_order")
+335 |   isHighlighted 
+Boolean @default(false) 
+@map("is_highlighted")
+336 |   customNote   
+String?  
+@map("custom_note") 
+@db.VarChar(500) // 
+Influencer's note about 
+product
+337 |   addedAt      
+DateTime @default(now()) 
+@map("added_at")
+338 | 
+339 |   storefront 
+Storefront 
+@relation(fields: 
+[storefrontId], references: 
+[id], onDelete: Cascade)
+340 |   product    Product  
+  @relation(fields: 
+[productId], references: 
+[id], onDelete: Cascade)
+341 | 
+342 |   
+@@unique([storefrontId, 
+productId])
+343 |   
+@@index([storefrontId, 
+sortOrder])
+344 |   
+@@map("storefront_products")
+345 | }
+   | 
+error: Error validating 
+model "Order": This model 
+is missing an `@@schema` 
+attribute.
+  -->  
+prisma\schema.prisma:363
+   | 
+362 | 
+363 | model Order {
+364 |   id              
+String      @id 
+@default(uuid()) @db.Uuid
+365 |   orderNumber     
+String      @unique 
+@map("order_number") 
+@db.VarChar(30) // e.g., 
+SF-20260220-ABC123
+366 |   userId          
+String?     @map("user_id") 
+@db.Uuid // Nullable for 
+guest checkout
+367 |   status          
+OrderStatus 
+@default(PENDING)
+368 |   subtotal        
+Decimal     
+@map("subtotal") 
+@db.Decimal(14, 2)
+369 |   taxAmount       
+Decimal     @default(0) 
+@map("tax_amount") 
+@db.Decimal(14, 2)
+370 |   shippingAmount  
+Decimal     @default(0) 
+@map("shipping_amount") 
+@db.Decimal(14, 2)
+371 |   discountAmount  
+Decimal     @default(0) 
+@map("discount_amount") 
+@db.Decimal(14, 2)
+372 |   totalAmount     
+Decimal     
+@map("total_amount") 
+@db.Decimal(14, 2)
+373 |   currency        
+String      @default("INR") 
+@db.VarChar(3)
+374 | 
+375 |   // Shipping info 
+(denormalized for order 
+snapshot)
+376 |   shippingName    
+String?     
+@map("shipping_name") 
+@db.VarChar(200)
+377 |   shippingEmail   
+String?     
+@map("shipping_email") 
+@db.VarChar(255)
+378 |   shippingPhone   
+String?     
+@map("shipping_phone") 
+@db.VarChar(20)
+379 |   shippingAddress 
+String?     
+@map("shipping_address") 
+@db.Text
+380 |   shippingCity    
+String?     
+@map("shipping_city") 
+@db.VarChar(100)
+381 |   shippingState   
+String?     
+@map("shipping_state") 
+@db.VarChar(100)
+382 |   shippingZip     
+String?     
+@map("shipping_zip") 
+@db.VarChar(20)
+383 |   shippingCountry 
+String?     
+@map("shipping_country") 
+@db.VarChar(2)
+384 | 
+385 |   // Tracking
+386 |   trackingNumber  
+String?     
+@map("tracking_number") 
+@db.VarChar(100)
+387 |   trackingUrl     
+String?     
+@map("tracking_url")
+388 |   notes           
+String?     @db.Text
+389 |   cancelReason    
+String?     
+@map("cancel_reason") 
+@db.Text
+390 | 
+391 |   // Metadata
+392 |   ipAddress       
+String?     
+@map("ip_address") 
+@db.VarChar(50)
+393 |   userAgent       
+String?     
+@map("user_agent") 
+@db.VarChar(500)
+394 |   
+395 |   createdAt       
+DateTime    @default(now()) 
+@map("created_at")
+396 |   updatedAt       
+DateTime    @updatedAt 
+@map("updated_at")
+397 | 
+398 |   // Relations
+399 |   user               
+User?                
+@relation(fields: [userId], 
+references: [id])
+400 |   items              
+OrderItem[]
+401 |   payments           
+Payment[]
+402 |   affiliateConversion 
+AffiliateConversion?
+403 | 
+404 |   
+@@index([orderNumber])
+405 |   @@index([userId])
+406 |   @@index([status])
+407 |   @@index([createdAt])
+408 |   @@index([userId, 
+status])
+409 |   @@map("orders")
+410 | }
+   | 
+error: Error validating 
+model "OrderItem": This 
+model is missing an 
+`@@schema` attribute.
+  -->  
+prisma\schema.prisma:412
+   | 
+411 | 
+412 | model OrderItem {
+413 |   id              
+String  @id 
+@default(uuid()) @db.Uuid
+414 |   orderId         
+String  @map("order_id") 
+@db.Uuid
+415 |   productId       
+String  @map("product_id") 
+@db.Uuid
+416 |   variantId       
+String? @map("variant_id") 
+@db.Uuid
+417 |   
+418 |   // Snapshot at time 
+of purchase (prices can 
+change later)
+419 |   productName     
+String  
+@map("product_name") 
+@db.VarChar(255)
+420 |   variantName     
+String? 
+@map("variant_name") 
+@db.VarChar(255)
+421 |   sku             
+String? @db.VarChar(100)
+422 |   unitPrice       
+Decimal @map("unit_price") 
+@db.Decimal(12, 2)
+423 |   quantity        Int
+424 |   totalPrice      
+Decimal @map("total_price") 
+@db.Decimal(14, 2)
+425 |   taxAmount       
+Decimal @default(0) 
+@map("tax_amount") 
+@db.Decimal(12, 2)
+426 | 
+427 |   createdAt       
+DateTime @default(now()) 
+@map("created_at")
+428 | 
+429 |   // Relations
+430 |   order   Order       
+    @relation(fields: 
+[orderId], references: 
+[id], onDelete: Cascade)
+431 |   product Product     
+    @relation(fields: 
+[productId], references: 
+[id])
+432 |   variant 
+ProductVariant? 
+@relation(fields: 
+[variantId], references: 
+[id])
+433 | 
+434 |   @@index([orderId])
+435 |   @@index([productId])
+436 |   @@map("order_items")
+437 | }
+   | 
+error: Error validating 
+model "Payment": This model 
+is missing an `@@schema` 
+attribute.
+  -->  
+prisma\schema.prisma:469
+   | 
+468 | 
+469 | model Payment {
+470 |   id                
+String         @id 
+@default(uuid()) @db.Uuid
+471 |   orderId           
+String         
+@map("order_id") @db.Uuid
+472 |   idempotencyKey    
+String         @unique 
+@map("idempotency_key") 
+@db.VarChar(100) // Prevent 
+duplicate processing
+473 |   amount            
+Decimal        
+@db.Decimal(14, 2)
+474 |   currency          
+String         
+@default("INR") 
+@db.VarChar(3)
+475 |   status            
+PaymentStatus  
+@default(INITIATED)
+476 |   method            
+PaymentMethod?
+477 |   gateway           
+PaymentGateway 
+@default(RAZORPAY)
+478 |   
+479 |   // Gateway-specific
+480 |   gatewayPaymentId  
+String?        
+@map("gateway_payment_id") 
+@db.VarChar(255)
+481 |   gatewayOrderId    
+String?        
+@map("gateway_order_id") 
+@db.VarChar(255)
+482 |   gatewaySignature  
+String?        
+@map("gateway_signature") 
+@db.VarChar(500)
+483 |   gatewayResponse   
+Json?          
+@map("gateway_response") // 
+Full response for debugging
+484 |   
+485 |   // Refund tracking
+486 |   refundAmount      
+Decimal?       
+@map("refund_amount") 
+@db.Decimal(14, 2)
+487 |   refundReason      
+String?        
+@map("refund_reason") 
+@db.Text
+488 |   refundedAt        
+DateTime?      
+@map("refunded_at")
+489 |   
+490 |   // Metadata
+491 |   failureReason     
+String?        
+@map("failure_reason") 
+@db.Text
+492 |   attempts          
+Int            @default(1)
+493 |   paidAt            
+DateTime?      
+@map("paid_at")
+494 |   createdAt         
+DateTime       
+@default(now()) 
+@map("created_at")
+495 |   updatedAt         
+DateTime       @updatedAt 
+@map("updated_at")
+496 | 
+497 |   order Order 
+@relation(fields: 
+[orderId], references: [id])
+498 | 
+499 |   @@index([orderId])
+500 |   
+@@index([idempotencyKey])
+501 |   
+@@index([gatewayPaymentId])
+502 |   @@index([status])
+503 |   @@index([createdAt])
+504 |   @@map("payments")
+505 | }
+   | 
+error: Error validating 
+model "AffiliateClick": 
+This model is missing an 
+`@@schema` attribute.
+  -->  
+prisma\schema.prisma:511
+   | 
+510 | 
+511 | model AffiliateClick {
+512 |   id             
+String   @id 
+@default(uuid()) @db.Uuid
+513 |   influencerId   
+String   
+@map("influencer_id") 
+@db.Uuid
+514 |   storefrontId   
+String   
+@map("storefront_id") 
+@db.Uuid
+515 |   visitorId      
+String   @map("visitor_id") 
+@db.VarChar(100) // 
+Cookie/fingerprint
+516 |   ipAddress      
+String?  @map("ip_address") 
+@db.VarChar(50)
+517 |   userAgent      
+String?  @map("user_agent") 
+@db.VarChar(500)
+518 |   referrerUrl    
+String?  
+@map("referrer_url")
+519 |   utmSource      
+String?  @map("utm_source") 
+@db.VarChar(100)
+520 |   utmMedium      
+String?  @map("utm_medium") 
+@db.VarChar(100)
+521 |   utmCampaign    
+String?  
+@map("utm_campaign") 
+@db.VarChar(100)
+522 |   createdAt      
+DateTime @default(now()) 
+@map("created_at")
+523 | 
+524 |   influencer 
+InfluencerProfile 
+@relation(fields: 
+[influencerId], references: 
+[id])
+525 |   storefront 
+Storefront        
+@relation(fields: 
+[storefrontId], references: 
+[id])
+526 | 
+527 |   
+@@index([influencerId])
+528 |   
+@@index([storefrontId])
+529 |   @@index([visitorId])
+530 |   @@index([createdAt])
+531 |   
+@@map("affiliate_clicks")
+532 | }
+   | 
+error: Error validating 
+model 
+"AffiliateConversion": This 
+model is missing an 
+`@@schema` attribute.
+  -->  
+prisma\schema.prisma:541
+   | 
+540 | 
+541 | model 
+AffiliateConversion {
+542 |   id                
+String            @id 
+@default(uuid()) @db.Uuid
+543 |   influencerId      
+String            
+@map("influencer_id") 
+@db.Uuid
+544 |   orderId           
+String            @unique 
+@map("order_id") @db.Uuid
+545 |   clickId           
+String?           
+@map("click_id") @db.Uuid 
+// Originating click
+546 |   status            
+ConversionStatus  
+@default(PENDING)
+547 |   orderAmount       
+Decimal           
+@map("order_amount") 
+@db.Decimal(14, 2)
+548 |   commissionRate    
+Decimal           
+@map("commission_rate") 
+@db.Decimal(5, 2) // 
+Snapshot at conversion time
+549 |   commissionAmount  
+Decimal           
+@map("commission_amount") 
+@db.Decimal(14, 2)
+550 |   paidOutAt         
+DateTime?         
+@map("paid_out_at")
+551 |   createdAt         
+DateTime          
+@default(now()) 
+@map("created_at")
+552 |   updatedAt         
+DateTime          
+@updatedAt 
+@map("updated_at")
+553 | 
+554 |   influencer 
+InfluencerProfile 
+@relation(fields: 
+[influencerId], references: 
+[id])
+555 |   order      Order    
+          @relation(fields: 
+[orderId], references: [id])
+556 | 
+557 |   
+@@index([influencerId])
+558 |   @@index([status])
+559 |   @@index([createdAt])
+560 |   @@map("affiliate_con
+versions")
+561 | }
+   | 
+error: Error validating 
+model "AnalyticsEvent": 
+This model is missing an 
+`@@schema` attribute.
+  -->  
+prisma\schema.prisma:577
+   | 
+576 | 
+577 | model AnalyticsEvent {
+578 |   id             
+String    @id 
+@default(uuid()) @db.Uuid
+579 |   eventType      
+EventType @map("event_type")
+580 |   influencerId   
+String?   
+@map("influencer_id") 
+@db.Uuid
+581 |   storefrontSlug 
+String?   
+@map("storefront_slug") 
+@db.VarChar(100)
+582 |   productId      
+String?   
+@map("product_id") @db.Uuid
+583 |   visitorId      
+String    
+@map("visitor_id") 
+@db.VarChar(100)
+584 |   sessionId      
+String?   
+@map("session_id") 
+@db.VarChar(100)
+585 |   ipAddress      
+String?   
+@map("ip_address") 
+@db.VarChar(50)
+586 |   userAgent      
+String?   
+@map("user_agent") 
+@db.VarChar(500)
+587 |   referrer       
+String?   @db.VarChar(500)
+588 |   metadata       Json 
+     @default("{}")
+589 |   createdAt      
+DateTime  @default(now()) 
+@map("created_at")
+590 | 
+591 |   influencer 
+InfluencerProfile? 
+@relation(fields: 
+[influencerId], references: 
+[id])
+592 | 
+593 |   @@index([eventType])
+594 |   
+@@index([influencerId])
+595 |   
+@@index([storefrontSlug])
+596 |   @@index([createdAt])
+597 |   @@index([visitorId])
+598 |   @@index([eventType, 
+createdAt])
+599 |   
+@@map("analytics_events")
+600 | }
+   | 
+error: Error validating 
+model 
+"AnalyticsDailyAggregate": 
+This model is missing an 
+`@@schema` attribute.
+  -->  
+prisma\schema.prisma:603
+   | 
+602 | // Daily aggregate 
+for fast dashboard reads
+603 | model 
+AnalyticsDailyAggregate {
+604 |   id              
+String   @id 
+@default(uuid()) @db.Uuid
+605 |   date            
+DateTime @db.Date
+606 |   influencerId    
+String?  
+@map("influencer_id") 
+@db.Uuid
+607 |   storefrontSlug  
+String?  
+@map("storefront_slug") 
+@db.VarChar(100)
+608 |   totalViews      Int 
+     @default(0) 
+@map("total_views")
+609 |   uniqueVisitors  Int 
+     @default(0) 
+@map("unique_visitors")
+610 |   productClicks   Int 
+     @default(0) 
+@map("product_clicks")
+611 |   addToCarts      Int 
+     @default(0) 
+@map("add_to_carts")
+612 |   orders          Int 
+     @default(0)
+613 |   revenue         
+Decimal  @default(0) 
+@db.Decimal(14, 2)
+614 |   conversionRate  
+Decimal  @default(0) 
+@map("conversion_rate") 
+@db.Decimal(5, 4) // e.g., 
+0.0234
+615 |   createdAt       
+DateTime @default(now()) 
+@map("created_at")
+616 |   updatedAt       
+DateTime @updatedAt 
+@map("updated_at")
+617 | 
+618 |   @@unique([date, 
+influencerId, 
+storefrontSlug])
+619 |   @@index([date])
+620 |   
+@@index([influencerId, 
+date])
+621 |   @@map("analytics_dai
+ly_aggregates")
+622 | }
+   | 
+error: Error validating 
+model "AuditLog": This 
+model is missing an 
+`@@schema` attribute.
+  -->  
+prisma\schema.prisma:628
+   | 
+627 | 
+628 | model AuditLog {
+629 |   id          String  
+ @id @default(uuid()) 
+@db.Uuid
+630 |   userId      String  
+ @map("user_id") @db.Uuid
+631 |   action      String  
+ @db.VarChar(100) // e.g., 
+"user.approve", 
+"product.create"
+632 |   entityType  String  
+ @map("entity_type") 
+@db.VarChar(50)
+633 |   entityId    String  
+ @map("entity_id") 
+@db.VarChar(50)
+634 |   oldValues   Json?   
+ @map("old_values")
+635 |   newValues   Json?   
+ @map("new_values")
+636 |   ipAddress   String? 
+ @map("ip_address") 
+@db.VarChar(50)
+637 |   userAgent   String? 
+ @map("user_agent") 
+@db.VarChar(500)
+638 |   createdAt   
+DateTime @default(now()) 
+@map("created_at")
+639 | 
+640 |   user User 
+@relation(fields: [userId], 
+references: [id])
+641 | 
+642 |   @@index([userId])
+643 |   
+@@index([entityType, 
+entityId])
+644 |   @@index([action])
+645 |   @@index([createdAt])
+646 |   @@map("audit_logs")
+647 | }
+   | 
+error: Error validating 
+model "Notification": This 
+model is missing an 
+`@@schema` attribute.
+  -->  
+prisma\schema.prisma:653
+   | 
+652 | 
+653 | model Notification {
+654 |   id        String   
+@id @default(uuid()) 
+@db.Uuid
+655 |   userId    String   
+@map("user_id") @db.Uuid
+656 |   type      String   
+@db.VarChar(50) // e.g., 
+"ORDER", "PAYMENT", "SYSTEM"
+657 |   title     String   
+@db.VarChar(200)
+658 |   message   String   
+@db.Text
+659 |   read      Boolean  
+@default(false)
+660 |   createdAt DateTime 
+@default(now()) 
+@map("created_at")
+661 | 
+662 |   @@index([userId])
+663 |   @@index([createdAt])
+664 |   @@index([read])
+665 |   
+@@map("notifications")
+666 | }
+   | 
+error: Error validating 
+model "ContentIdea": This 
+model is missing an 
+`@@schema` attribute.
+  -->  
+prisma\schema.prisma:672
+   | 
+671 | 
+672 | model ContentIdea {
+673 |   id           String 
+  @id @default(uuid()) 
+@db.Uuid
+674 |   userId       String 
+  @map("user_id") @db.Uuid
+675 |   interestArea String 
+  @map("interest_area") 
+@db.VarChar(100)
+676 |   platform     String 
+  @db.VarChar(50)
+677 |   title        String 
+  @db.VarChar(255)
+678 |   hook         String 
+  @db.Text
+679 |   cta          String 
+  @db.Text
+680 |   hashtags     
+String[]
+681 |   isSaved      
+Boolean  @default(false) 
+@map("is_saved")
+682 |   createdAt    
+DateTime @default(now()) 
+@map("created_at")
+683 | 
+684 |   user         User   
+  @relation(fields: 
+[userId], references: [id], 
+onDelete: Cascade)
+685 | 
+686 |   @@index([userId])
+687 |   @@index([isSaved])
+688 |   @@index([createdAt])
+689 |   
+@@map("content_ideas")
+690 | }
+   | 
+error: Error validating 
+model "ShortLink": This 
+model is missing an 
+`@@schema` attribute.
+  -->  
+prisma\schema.prisma:696
+   | 
+695 | 
+696 | model ShortLink {
+697 |   id          String  
+ @id @default(uuid()) 
+@db.Uuid
+698 |   userId      String  
+ @map("user_id") 
+@db.VarChar(255)
+699 |   title       String  
+ @db.VarChar(255)
+700 |   originalUrl String  
+ @map("original_url") 
+@db.Text
+701 |   shortCode   String  
+ @unique @map("short_code") 
+@db.VarChar(50)
+702 |   clicks      Int     
+ @default(0)
+703 |   isActive    Boolean 
+ @default(true) 
+@map("is_active")
+704 |   createdAt   
+DateTime @default(now()) 
+@map("created_at")
+705 |   updatedAt   
+DateTime @updatedAt 
+@map("updated_at")
+706 | 
+707 |   linkClicks  
+LinkClick[]
+708 | 
+709 |   @@index([userId])
+710 |   @@index([shortCode])
+711 |   @@index([createdAt])
+712 |   @@map("short_links")
+713 | }
+   | 
+error: Error validating 
+model "LinkClick": This 
+model is missing an 
+`@@schema` attribute.
+  -->  
+prisma\schema.prisma:715
+   | 
+714 | 
+715 | model LinkClick {
+716 |   id          String  
+ @id @default(uuid()) 
+@db.Uuid
+717 |   shortLinkId String  
+ @map("short_link_id") 
+@db.Uuid
+718 |   ipAddress   String? 
+ @map("ip_address") 
+@db.VarChar(50)
+719 |   userAgent   String? 
+ @map("user_agent") 
+@db.VarChar(500)
+720 |   referrer    String? 
+ @db.VarChar(500)
+721 |   createdAt   
+DateTime @default(now()) 
+@map("created_at")
+722 | 
+723 |   shortLink   
+ShortLink @relation(fields: 
+[shortLinkId], references: 
+[id], onDelete: Cascade)
+724 | 
+725 |   
+@@index([shortLinkId])
+726 |   @@index([createdAt])
+727 |   @@map("link_clicks")
+728 | }
+   | 
+error: This enum is missing 
+an `@@schema` attribute.
+  -->  
+prisma\schema.prisma:22
+   | 
+21 | 
+22 | enum UserRole {
+23 |   ADMIN
+24 |   INFLUENCER
+25 |   CUSTOMER
+26 | }
+   | 
+error: This enum is missing 
+an `@@schema` attribute.
+  -->  
+prisma\schema.prisma:28
+   | 
+27 | 
+28 | enum UserStatus {
+29 |   ACTIVE
+30 |   INACTIVE
+31 |   SUSPENDED
+32 |   PENDING_APPROVAL
+33 | }
+   | 
+error: This enum is missing 
+an `@@schema` attribute.
+  -->  
+prisma\schema.prisma:84
+   | 
+83 | 
+84 | enum InfluencerTier {
+85 |   NANO       // < 10K 
+followers
+86 |   MICRO      // 10K - 
+100K
+87 |   MID        // 100K - 
+500K
+88 |   MACRO      // 500K - 
+1M
+89 |   MEGA       // 1M+
+90 | }
+   | 
+error: This enum is missing 
+an `@@schema` attribute.
+  -->  
+prisma\schema.prisma:189
+   | 
+188 | 
+189 | enum ProductType {
+190 |   PHYSICAL
+191 |   DIGITAL
+192 | }
+   | 
+error: This enum is missing 
+an `@@schema` attribute.
+  -->  
+prisma\schema.prisma:194
+   | 
+193 | 
+194 | enum ProductStatus {
+195 |   DRAFT
+196 |   ACTIVE
+197 |   OUT_OF_STOCK
+198 |   DISCONTINUED
+199 | }
+   | 
+error: This enum is missing 
+an `@@schema` attribute.
+  -->  
+prisma\schema.prisma:293
+   | 
+292 | 
+293 | enum StorefrontStatus 
+{
+294 |   DRAFT
+295 |   PUBLISHED
+296 |   DISABLED
+297 | }
+   | 
+error: This enum is missing 
+an `@@schema` attribute.
+  -->  
+prisma\schema.prisma:351
+   | 
+350 | 
+351 | enum OrderStatus {
+352 |   PENDING         // 
+Created, awaiting payment
+353 |   PAYMENT_PENDING // 
+Payment initiated
+354 |   CONFIRMED       // 
+Payment successful
+355 |   PROCESSING      // 
+Being prepared
+356 |   SHIPPED         // 
+In transit
+357 |   DELIVERED       // 
+Received by customer
+358 |   CANCELLED       // 
+Cancelled
+359 |   REFUNDED        // 
+Money returned
+360 |   FAILED          // 
+Payment failed
+361 | }
+   | 
+error: This enum is missing 
+an `@@schema` attribute.
+  -->  
+prisma\schema.prisma:443
+   | 
+442 | 
+443 | enum PaymentStatus {
+444 |   INITIATED
+445 |   PENDING
+446 |   AUTHORIZED
+447 |   CAPTURED
+448 |   FAILED
+449 |   REFUNDED
+450 |   PARTIALLY_REFUNDED
+451 | }
+   | 
+error: This enum is missing 
+an `@@schema` attribute.
+  -->  
+prisma\schema.prisma:453
+   | 
+452 | 
+453 | enum PaymentMethod {
+454 |   UPI
+455 |   CREDIT_CARD
+456 |   DEBIT_CARD
+457 |   NET_BANKING
+458 |   WALLET
+459 |   COD
+460 | }
+   | 
+error: This enum is missing 
+an `@@schema` attribute.
+  -->  
+prisma\schema.prisma:462
+   | 
+461 | 
+462 | enum PaymentGateway {
+463 |   RAZORPAY
+464 |   STRIPE
+465 |   CASHFREE
+466 |   MANUAL
+467 | }
+   | 
+error: This enum is missing 
+an `@@schema` attribute.
+  -->  
+prisma\schema.prisma:534
+   | 
+533 | 
+534 | enum ConversionStatus 
+{
+535 |   PENDING
+536 |   CONFIRMED
+537 |   PAID_OUT
+538 |   CANCELLED
+539 | }
+   | 
+error: This enum is missing 
+an `@@schema` attribute.
+  -->  
+prisma\schema.prisma:567
+   | 
+566 | 
+567 | enum EventType {
+568 |   STOREFRONT_VIEW
+569 |   PRODUCT_VIEW
+570 |   PRODUCT_CLICK
+571 |   ADD_TO_CART
+572 |   CHECKOUT_START
+573 |   PURCHASE
+574 |   SHARE
+575 | }
+   | 
+
+

@@ -8,8 +8,9 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -50,7 +51,6 @@ model User {
   refreshTokens     RefreshToken[]
   auditLogs         AuditLog[]
   contentIdeas      ContentIdea[]
-  shortLinks        ShortLink[]
 
   @@index([email])
   @@index([role, status])
@@ -693,7 +693,7 @@ model ContentIdea {
 
 model ShortLink {
   id          String   @id @default(uuid()) @db.Uuid
-  userId      String   @map("user_id") @db.Uuid
+  userId      String   @map("user_id") @db.VarChar(255)
   title       String   @db.VarChar(255)
   originalUrl String   @map("original_url") @db.Text
   shortCode   String   @unique @map("short_code") @db.VarChar(50)
@@ -702,7 +702,6 @@ model ShortLink {
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @updatedAt @map("updated_at")
 
-  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   linkClicks  LinkClick[]
 
   @@index([userId])

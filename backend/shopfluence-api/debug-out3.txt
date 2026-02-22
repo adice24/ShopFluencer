@@ -1,0 +1,12 @@
+﻿stores columns: []
+
+Resolve zeCzxudf: [
+  {
+    id: '7314b08d-359f-449f-9722-c184376d4adc',
+    url: 'https://blog-website-zeta-bay.vercel.app/',
+    click_count: 0,
+    is_visible: true,
+    store_id: 'c2416cb1-79bd-4b59-af58-1e30550aa5c5',
+    user_id: '9a8367ce-4c48-452e-b003-14fa25d1f2f9'
+  }
+]

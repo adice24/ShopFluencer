@@ -1,0 +1,39 @@
+﻿Creating tables and indexes...
+
+Γ£à short_links table
+Γ£à link_clicks table
+Γ£à idx_short_links_user_id
+Γ£à idx_short_links_short_code
+Γ£à idx_short_links_created_at
+node.exe : Γ¥î idx_link_clic
+ks_short_link_id FAILED: 
+At line:1 char:1
++ & "C:\Program 
+Files\nodejs/node.exe" 
+"C:\Program 
+Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~
+    + CategoryInfo          
+    : NotSpecified: (Γ¥î i  
+  dx_link_cl...ink_id FAI   
+ LED: :String) [], Remot    
+eException
+    + FullyQualifiedErrorId 
+    : NativeCommandError
+ 
+Invalid `prisma.$executeRawU
+nsafe()` invocation:
+
+
+Raw query failed. Code: 
+`42703`. Message: `column 
+"short_link_id" does not 
+exist`
+Γ£à idx_link_clicks_created_at
+
+≡ƒôè short_links rows: 0
+≡ƒöù Sample links: []
+
+Γ£à Migration complete!

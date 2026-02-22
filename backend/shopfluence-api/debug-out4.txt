@@ -1,0 +1,47 @@
+﻿influencer_stores cols: id, user_id, slug, display_name, bio, avatar_url, banner_gradient, theme, is_approved, is_active, social_links, created_at, updated_at
+sample: [
+  {
+    id: '151eff9f-c6ab-41c1-8efd-da39d94d4b90',
+    user_id: '131c46b9-3501-40bf-ad18-41a8f10548d2',
+    slug: 'kanthara125-4aqw',
+    display_name: 'kanthara125',
+    bio: 'Nothing can beat me',
+    avatar_url: 'https://images.pexels.com/photos/771742/pexels-photo-771742.jpeg?cs=srgb&dl=pexels-moh-adbelghaffar-771742.jpg&fm=jpg',
+    banner_gradient: 'linear-gradient(135deg, hsl(68, 80%, 52%), hsl(236, 60%, 50%))',
+    theme: { font: 'Inter', radius: '0.75rem', primary: '#6366f1' },
+    is_approved: true,
+    is_active: true,
+    social_links: {
+      tiktok: 'asdasd',
+      twitch: 'asdasdad',
+      twitter: 'asdasd',
+      youtube: 'asdasd',
+      facebook: 'asdas',
+      instagram: 'FSADFAS'
+    },
+    created_at: 2026-02-20T20:17:01.342Z,
+    updated_at: 2026-02-22T10:52:20.735Z
+  },
+  {
+    id: 'c2416cb1-79bd-4b59-af58-1e30550aa5c5',
+    user_id: '9a8367ce-4c48-452e-b003-14fa25d1f2f9',
+    slug: 'asus-3668',
+    display_name: 'Asus',
+    bio: 'Nothing About Me',
+    avatar_url: 'https://englishleaflet.com/wp-content/uploads/2025/04/whatsapp-dp-80-e1744744670618.jpg',
+    banner_gradient: 'linear-gradient(135deg, hsl(68, 80%, 52%), hsl(236, 60%, 50%))',
+    theme: { font: 'Inter', radius: '0.75rem', primary: '#6366f1' },
+    is_approved: true,
+    is_active: true,
+    social_links: {
+      tiktok: 'asdasd',
+      twitch: 'asdas',
+      twitter: 'asdasd',
+      youtube: 'asdad',
+      facebook: 'asdasd',
+      instagram: 'asdasd'
+    },
+    created_at: 2026-02-22T16:15:34.878Z,
+    updated_at: 2026-02-22T16:15:34.878Z
+  }
+]

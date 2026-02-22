@@ -1,0 +1,38 @@
+﻿Environment variables loaded from .env
+Prisma schema loaded from prisma\schema.prisma
+Datasource "db": PostgreSQL database "postgres", schema "public" at "aws-1-ap-southeast-2.pooler.supabase.com:5432"
+node.exe : Error: P4002
+At line:1 char:1
++ & "C:\Program 
+Files\nodejs/node.exe" 
+"C:\Program 
+Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~
+    + CategoryInfo          
+    : NotSpecified: (Error  
+  : P4002:String) [], Rem   
+ oteException
+    + FullyQualifiedErrorId 
+    : NativeCommandError
+ 
+
+The schema of the 
+introspected database was 
+inconsistent: The schema of 
+the introspected database 
+was inconsistent: Cross 
+schema references are only 
+allowed when the target 
+schema is listed in the 
+schemas property of your 
+datasource. 
+`public.auth_audit_log` 
+points to `auth.users` in 
+constraint `auth_audit_log_u
+ser_id_fkey`. Please add 
+`auth` to your `schemas` 
+property and run this 
+command again.
+
