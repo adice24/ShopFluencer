@@ -4,70 +4,56 @@ import { supabase } from "../lib/supabase";
 import LinktreePage from "./LinktreePage";
 
 export default function DynamicRouteRenderer() {
-    const { slug } = useParams(); // ✅ Correct param
-    const [loading, setLoading] = useState(true);
-    const [isShortLink, setIsShortLink] = useState(false);
+    const { slug } = useParams();
+    const [status, setStatus] = useState<"checking" | "redirect" | "store">("checking");
 
     useEffect(() => {
         async function resolveSlug() {
             if (!slug) {
-                setLoading(false);
+                setStatus("store");
                 return;
             }
 
-            try {
-                // 🔎 1️⃣ Check if slug is a short link
-                const { data: linkData, error } = await supabase
+            console.log("Slug received:", slug); // DEBUG
+
+            const { data, error } = await supabase
+                .from("short_links")
+                .select("id, original_url, clicks")
+                .eq("short_code", slug)
+                .eq("is_active", true)
+                .maybeSingle();
+
+            if (!error && data?.original_url) {
+                console.log("Short link found:", data.original_url);
+
+                await supabase
                     .from("short_links")
-                    .select("id, original_url, clicks")
-                    .eq("short_code", slug)
-                    .eq("is_active", true)
-                    .maybeSingle();
+                    .update({ clicks: (data.clicks || 0) + 1 })
+                    .eq("id", data.id);
 
-                if (!error && linkData?.original_url) {
-                    setIsShortLink(true);
-
-                    // 🚀 Increment clicks safely
-                    await supabase
-                        .from("short_links")
-                        .update({ clicks: (linkData.clicks || 0) + 1 })
-                        .eq("id", linkData.id);
-
-                    // 📊 Insert analytics
-                    await supabase.from("link_clicks").insert({
-                        short_link_id: linkData.id,
-                        user_agent: navigator.userAgent,
-                        created_at: new Date().toISOString(),
-                    });
-
-                    // 🔁 Redirect
-                    window.location.replace(linkData.original_url);
-                    return;
-                }
-
-            } catch (err) {
-                console.error("Slug resolve error:", err);
+                setStatus("redirect");
+                window.location.replace(data.original_url);
+                return;
             }
 
-            // If not short link → allow LinktreePage to render
-            setLoading(false);
+            console.log("Not a short link, loading store...");
+            setStatus("store");
         }
 
         resolveSlug();
     }, [slug]);
 
-    // 🔄 Loading spinner while checking short link
-    if (loading && !isShortLink) {
+    if (status === "checking") {
         return (
-            <div className="min-h-screen bg-[#FDFBF9] flex flex-col items-center justify-center gap-4">
-                <div className="w-8 h-8 border-2 border-[#E5976D] border-t-transparent rounded-full animate-spin" />
-                <p className="text-[14px] text-muted-foreground font-medium animate-pulse">
-                    Checking link...
-                </p>
+            <div className="min-h-screen flex items-center justify-center">
+                <div className="w-8 h-8 border-2 border-orange-400 border-t-transparent rounded-full animate-spin" />
             </div>
         );
     }
 
-    // 🏪 Not a short link → render influencer page
+    if (status === "redirect") {
+        return null;
+    }
+
     return <LinktreePage />;
 }
