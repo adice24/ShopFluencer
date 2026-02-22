@@ -1,0 +1,35 @@
+﻿RLS Policies:
+  [influencer_stores] public_read_stores (SELECT): true
+  [influencer_stores] user_insert_store (INSERT): null
+  [influencer_stores] user_update_store (UPDATE): (auth.uid() = user_id)
+  [links] links_delete_own (DELETE): (auth.uid() = user_id)
+  [links] links_insert_own (INSERT): null
+  [links] links_select_own (SELECT): (auth.uid() = user_id)
+  [links] links_select_public (SELECT): (is_visible = true)
+  [links] links_update_own (UPDATE): (auth.uid() = user_id)
+  [products] products_delete_own (DELETE): (store_id IN ( SELECT influencer_stores.id
+   FROM influencer_stores
+  WHERE (influencer_stores.user_id = auth.uid())))
+  [products] products_insert_own (INSERT): null
+  [products] products_select_admin (SELECT): (EXISTS ( SELECT 1
+   FROM profiles
+  WHERE ((profiles.id = auth.uid()) AND (profiles.role = 'admin'::text))))
+  [products] products_select_own (SELECT): (store_id IN ( SELECT influencer_stores.id
+   FROM influencer_stores
+  WHERE (influencer_stores.user_id = auth.uid())))
+  [products] products_select_public (SELECT): ((is_visible = true) AND (store_id IN ( SELECT influencer_stores.id
+   FROM influencer_stores
+  WHERE ((influencer_stores.is_approved = true) AND (influencer_stores.is_active = true)))))
+  [products] products_update_own (UPDATE): (store_id IN ( SELECT influencer_stores.id
+   FROM influencer_stores
+  WHERE (influencer_stores.user_id = auth.uid())))
+  [themes] themes_insert_own (INSERT): null
+  [themes] themes_select_own (SELECT): (store_id IN ( SELECT influencer_stores.id
+   FROM influencer_stores
+  WHERE (influencer_stores.user_id = auth.uid())))
+  [themes] themes_select_public (SELECT): (store_id IN ( SELECT influencer_stores.id
+   FROM influencer_stores
+  WHERE ((influencer_stores.is_approved = true) AND (influencer_stores.is_active = true))))
+  [themes] themes_update_own (UPDATE): (store_id IN ( SELECT influencer_stores.id
+   FROM influencer_stores
+  WHERE (influencer_stores.user_id = auth.uid())))

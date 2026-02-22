@@ -2,21 +2,20 @@ import { PrismaClient } from '@prisma/client';
 const p = new PrismaClient();
 
 async function main() {
-    // Check get_store_stats function definition
-    const def = await p.$queryRaw<any[]>`
-        SELECT prosrc FROM pg_proc p
-        JOIN pg_namespace n ON p.pronamespace = n.oid
-        WHERE n.nspname = 'public' AND p.proname = 'get_store_stats'
+    // Check influencer_stores columns
+    const cols = await p.$queryRaw<any[]>`
+        SELECT column_name, column_default, is_nullable
+        FROM information_schema.columns
+        WHERE table_name = 'influencer_stores'
+        ORDER BY ordinal_position
     `;
-    console.log("get_store_stats definition:\n", def[0]?.prosrc);
+    console.log("influencer_stores cols:", cols.map((c: any) => c.column_name).join(', '));
 
-    // Check orders data
-    const orders = await p.$queryRaw<any[]>`SELECT store_id, status, total, created_at FROM orders LIMIT 5`;
-    console.log("\norders:", orders);
-
-    // Check link_clicks data
-    const clicks = await p.$queryRaw<any[]>`SELECT link_id, store_id, created_at FROM link_clicks LIMIT 5`;
-    console.log("\nlink_clicks:", clicks);
+    // Check actual is_active values for the stores
+    const stores = await p.$queryRaw<any[]>`
+        SELECT id, slug, is_approved, is_active FROM influencer_stores
+    `;
+    console.log("Store is_active values:", JSON.stringify(stores, null, 2));
 }
 
 main().catch(e => console.error(e.message)).finally(() => p.$disconnect());

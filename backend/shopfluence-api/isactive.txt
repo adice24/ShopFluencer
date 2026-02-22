@@ -1,0 +1,15 @@
+﻿influencer_stores cols: id, user_id, slug, display_name, bio, avatar_url, banner_gradient, theme, is_approved, is_active, social_links, created_at, updated_at
+Store is_active values: [
+  {
+    "id": "151eff9f-c6ab-41c1-8efd-da39d94d4b90",
+    "slug": "kanthara125-4aqw",
+    "is_approved": true,
+    "is_active": true
+  },
+  {
+    "id": "c2416cb1-79bd-4b59-af58-1e30550aa5c5",
+    "slug": "asus-3668",
+    "is_approved": true,
+    "is_active": true
+  }
+]
