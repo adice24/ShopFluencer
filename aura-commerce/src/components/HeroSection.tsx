@@ -109,7 +109,7 @@ export const HeroSection = () => {
 
           {/* Right Column — Card Swap Carousel */}
           <motion.div
-            className="relative hidden lg:flex items-center justify-center h-[420px]"
+            className="relative flex items-center justify-center h-[340px] md:h-[420px] mt-8 lg:mt-0"
             initial={{ opacity: 0, x: 40 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
@@ -128,7 +128,7 @@ export const HeroSection = () => {
                     animate={{
                       opacity: offset > 2 ? 0 : 1 - offset * 0.15,
                       scale: 1 - offset * 0.08,
-                      x: offset * 50,
+                      x: offset * 40,
                       y: offset * 12,
                       rotateZ: offset * -3,
                     }}
@@ -137,7 +137,7 @@ export const HeroSection = () => {
                     whileHover={offset === 0 ? { y: -8, scale: 1.02 } : {}}
                     onClick={() => setActiveCard((activeCard + 1) % carouselCards.length)}
                   >
-                    <div className="w-64 h-80 rounded-3xl overflow-hidden shadow-2xl relative group">
+                    <div className="w-[14rem] h-[18rem] md:w-64 md:h-80 rounded-3xl overflow-hidden shadow-2xl relative group">
                       <img
                         src={card.image}
                         alt={card.label}
