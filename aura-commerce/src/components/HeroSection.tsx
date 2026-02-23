@@ -69,8 +69,8 @@ export const HeroSection = () => {
             transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
           >
             <h1
-              className="font-bold text-secondary leading-[1.05] tracking-tight"
-              style={{ fontSize: "clamp(2.8rem, 6vw, 5rem)" }}
+              className="font-bold text-secondary leading-[1.05] tracking-tight max-w-full break-words"
+              style={{ fontSize: "clamp(2rem, 8vw, 5rem)" }}
             >
               Own your link.
               <br />
@@ -82,8 +82,8 @@ export const HeroSection = () => {
             </p>
 
             {/* URL Input */}
-            <div className="flex flex-col sm:flex-row gap-3 max-w-md">
-              <div className="flex-1 relative">
+            <div className="flex flex-col sm:flex-row gap-3 w-full max-w-md mx-auto lg:mx-0">
+              <div className="flex-1 w-full relative">
                 <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground text-sm font-medium pointer-events-none select-none">
                   shopfluence.com/
                 </span>
@@ -97,7 +97,7 @@ export const HeroSection = () => {
               </div>
               <motion.a
                 href="/auth"
-                className="flex items-center justify-center gap-2 px-6 py-4 rounded-pill bg-secondary text-secondary-foreground font-semibold text-sm whitespace-nowrap"
+                className="flex items-center justify-center gap-2 px-6 py-4 rounded-pill bg-secondary text-secondary-foreground font-semibold text-sm whitespace-nowrap w-full sm:w-auto"
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.97 }}
               >

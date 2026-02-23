@@ -267,24 +267,26 @@ const FeatureBlock = ({ feature, index }: { feature: typeof features[0]; index: 
       className={`grid md:grid-cols-2 gap-0 rounded-4xl overflow-hidden ${feature.bgColor} min-h-[400px]`}
     >
       {/* Visual Side */}
-      <div className="relative p-8 flex items-center justify-center min-h-[250px]">
+      <div className="relative p-6 md:p-8 flex items-center justify-center min-h-[250px] overflow-hidden">
         {feature.cards && (
           <TiltedCards cards={feature.cards} />
         )}
         {feature.isPhone && (
-          <div className="w-full h-[400px]">
+          <div className="w-full h-[300px] md:h-[400px]">
             <Suspense fallback={<div className="w-full h-full flex items-center justify-center text-white/50">Loading...</div>}>
               <Lanyard position={[0, 0, 25]} gravity={[0, -40, 0]} />
             </Suspense>
           </div>
         )}
         {feature.products && (
-          <div className="flex items-center justify-center w-full">
-            <InfiniteMenu
-              items={feature.products}
-              width="420px"
-              height="500px"
-            />
+          <div className="flex items-center justify-center w-full max-w-full overflow-hidden">
+            <div className="w-full max-w-[420px]">
+              <InfiniteMenu
+                items={feature.products}
+                width="100%"
+                height="500px"
+              />
+            </div>
           </div>
         )}
         {feature.isAnalytics && (
@@ -293,19 +295,19 @@ const FeatureBlock = ({ feature, index }: { feature: typeof features[0]; index: 
       </div>
 
       {/* Text Side */}
-      <div className={`p-10 flex flex-col justify-center ${isDark ? "text-white" : "text-foreground"}`}>
+      <div className={`p-6 md:p-10 flex flex-col justify-center ${isDark ? "text-white" : "text-foreground"}`}>
         <h3
           className="font-bold tracking-tight leading-tight mb-4"
           style={{ fontSize: "clamp(1.5rem, 3vw, 2.2rem)" }}
         >
           {feature.title}
         </h3>
-        <p className={`text-base leading-relaxed mb-6 ${isDark ? "text-white/70" : "text-muted-foreground"}`}>
+        <p className={`text-base md:text-lg leading-relaxed mb-6 md:mb-8 ${isDark ? "text-white/80" : "text-muted-foreground"}`}>
           {feature.description}
         </p>
         <motion.a
           href="/auth"
-          className={`inline-flex items-center gap-2 px-6 py-3 rounded-pill text-sm font-semibold w-fit ${isDark ? "bg-white text-foreground" : "bg-secondary text-secondary-foreground"
+          className={`inline-flex items-center justify-center gap-2 px-6 py-4 rounded-pill text-sm font-semibold w-full sm:w-fit mt-auto md:mt-0 ${isDark ? "bg-white text-foreground" : "bg-secondary text-secondary-foreground"
             }`}
           whileHover={{ scale: 1.03 }}
           whileTap={{ scale: 0.97 }}
