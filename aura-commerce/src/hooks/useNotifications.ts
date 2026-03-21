@@ -1,8 +1,9 @@
-import { useState, useEffect, useCallback } from 'react';
-import { io, Socket } from 'socket.io-client';
-import { fetchApi, API_URL } from '../lib/api';
-import { useAuth } from '../contexts/AuthContext';
-import { toast } from 'sonner';
+import { useState, useEffect, useCallback, useRef } from "react";
+import { io, Socket } from "socket.io-client";
+import { fetchApi, getBackendOrigin } from "../lib/api";
+import { supabase } from "../lib/supabase";
+import { useAuth } from "../contexts/AuthContext";
+import { toast } from "sonner";
 
 export interface Notification {
     id: string;
@@ -17,67 +18,72 @@ export function useNotifications() {
     const { user } = useAuth();
     const [notifications, setNotifications] = useState<Notification[]>([]);
     const [unreadCount, setUnreadCount] = useState(0);
-    const [socket, setSocket] = useState<Socket | null>(null);
+    const socketRef = useRef<Socket | null>(null);
+    const cancelledRef = useRef(false);
 
-    // Load initial notifications
-    useEffect(() => {
-        if (!user) return;
-
-        const loadNotifications = async () => {
-            try {
-                const data = await fetchApi('/notifications');
-                setNotifications(data);
-                setUnreadCount(data.filter((n: Notification) => !n.read).length);
-            } catch (error) {
-                console.error("Failed to load notifications:", error);
-            }
-        };
-
-        loadNotifications();
-    }, [user]);
-
-    // Connect WebSocket
     useEffect(() => {
         if (!user) {
-            if (socket) socket.disconnect();
+            socketRef.current?.disconnect();
+            socketRef.current = null;
+            setNotifications([]);
+            setUnreadCount(0);
             return;
         }
 
-        const token = localStorage.getItem('access_token');
-        if (!token) return;
+        cancelledRef.current = false;
 
-        const newSocket = io(`${API_URL}/notifications`, {
-            auth: { token: `Bearer ${token}` }
-        });
+        void (async () => {
+            try {
+                const data = await fetchApi("/notifications");
+                if (cancelledRef.current) return;
+                const list = Array.isArray(data) ? data : [];
+                setNotifications(list);
+                setUnreadCount(list.filter((n: Notification) => !n.read).length);
+            } catch {
+                /* Nest API not running — skip WebSocket entirely (no console spam) */
+                return;
+            }
 
-        newSocket.on('connect', () => {
-            console.log('Connected to notifications WebSocket');
-        });
+            const { data: { session } } = await supabase.auth.getSession();
+            if (cancelledRef.current || !session?.access_token) return;
 
-        newSocket.on('notification', (newNotification: Notification) => {
-            setNotifications(prev => [newNotification, ...prev]);
-            setUnreadCount(prev => prev + 1);
-
-            // Also show a toast when a new notification comes in
-            toast.success(newNotification.title, {
-                description: newNotification.message,
+            const newSocket = io(`${getBackendOrigin()}/notifications`, {
+                auth: { token: `Bearer ${session.access_token}` },
+                transports: ["polling", "websocket"],
+                reconnectionAttempts: 2,
+                reconnectionDelay: 4000,
             });
-        });
 
-        setSocket(newSocket);
+            if (cancelledRef.current) {
+                newSocket.disconnect();
+                return;
+            }
+
+            socketRef.current = newSocket;
+
+            newSocket.on("notification", (newNotification: Notification) => {
+                setNotifications((prev) => [newNotification, ...prev]);
+                setUnreadCount((prev) => prev + 1);
+                toast.success(newNotification.title, {
+                    description: newNotification.message,
+                });
+            });
+        })();
 
         return () => {
-            newSocket.disconnect();
+            cancelledRef.current = true;
+            socketRef.current?.disconnect();
+            socketRef.current = null;
         };
     }, [user]);
 
     const markAsRead = useCallback(async (id: string) => {
         try {
-            await fetchApi(`/notifications/${id}/read`, { method: 'PATCH' });
-            setNotifications(prev =>
-                prev.map(n => n.id === id ? { ...n, read: true } : n)
+            await fetchApi(`/notifications/${id}/read`, { method: "PATCH" });
+            setNotifications((prev) =>
+                prev.map((n) => (n.id === id ? { ...n, read: true } : n))
             );
-            setUnreadCount(prev => Math.max(0, prev - 1));
+            setUnreadCount((prev) => Math.max(0, prev - 1));
         } catch (error) {
             console.error("Failed to mark notification as read", error);
         }
@@ -85,8 +91,8 @@ export function useNotifications() {
 
     const markAllAsRead = useCallback(async () => {
         try {
-            await fetchApi('/notifications/read-all', { method: 'PATCH' });
-            setNotifications(prev => prev.map(n => ({ ...n, read: true })));
+            await fetchApi("/notifications/read-all", { method: "PATCH" });
+            setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
             setUnreadCount(0);
         } catch (error) {
             console.error("Failed to mark all as read", error);
@@ -97,6 +103,6 @@ export function useNotifications() {
         notifications,
         unreadCount,
         markAsRead,
-        markAllAsRead
+        markAllAsRead,
     };
 }

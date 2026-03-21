@@ -89,14 +89,14 @@ export default function LinksPage() {
                 <h1 className="text-[26px] font-bold text-[#2F3E46] mb-2 tracking-tight">Links</h1>
 
                 {/* Add New Link Card */}
-                <div className="bg-white/60 backdrop-blur-md rounded-[24px] p-4 shadow-[0_8px_30px_rgba(0,0,0,0.04)] border border-white">
+                <div className="bg-card/60 backdrop-blur-md rounded-[24px] p-4 shadow-[0_8px_30px_rgba(0,0,0,0.04)] border border-white">
                     {!isAdding ? (
                         <div className="flex items-center justify-between">
                             <motion.button
                                 initial={{ opacity: 0, y: 10 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 onClick={() => setIsAdding(true)}
-                                className="bg-gradient-to-r from-[#F6A678] to-[#E28362] hover:from-[#E28362] hover:to-[#CF6C4B] text-white py-[12px] px-6 rounded-full font-bold text-[14px] transition-all flex items-center gap-2 shadow-md shadow-[#E28362]/30"
+                                className="bg-gradient-to-r from-[#F6A678] to-[#E28362] hover:from-[#E28362] hover:to-[#CF6C4B] text-blush py-[12px] px-6 rounded-full font-bold text-[14px] transition-all flex items-center gap-2 shadow-md shadow-[#E28362]/30"
                             >
                                 <Plus size={18} strokeWidth={2.5} />
                                 Add New Link
@@ -106,7 +106,7 @@ export default function LinksPage() {
                         <motion.div
                             initial={{ opacity: 0, scale: 0.98, y: -10 }}
                             animate={{ opacity: 1, scale: 1, y: 0 }}
-                            className="bg-white/80 rounded-[20px] overflow-hidden"
+                            className="bg-card/80 rounded-[20px] overflow-hidden"
                         >
                             <div className="flex items-center justify-between px-5 py-3 border-b border-border/40">
                                 <h3 className="font-bold text-[15px] text-[#2F3E46]">Add Link</h3>
@@ -120,7 +120,7 @@ export default function LinksPage() {
                                     <input
                                         type="text"
                                         placeholder="URL (e.g. https://example.com)"
-                                        className="w-full pl-10 pr-4 py-3 bg-black/5 border border-transparent rounded-[16px] focus:outline-none focus:ring-2 focus:ring-[#E28362]/40 focus:bg-white transition-all font-medium text-[14px]"
+                                        className="w-full pl-10 pr-4 py-3 bg-black/5 border border-transparent rounded-[16px] focus:outline-none focus:ring-2 focus:ring-[#E28362]/40 focus:bg-card transition-all font-medium text-[14px]"
                                         value={newUrl}
                                         onChange={e => setNewUrl(e.target.value)}
                                         autoFocus
@@ -129,12 +129,12 @@ export default function LinksPage() {
                                 <input
                                     type="text"
                                     placeholder="Title (optional)"
-                                    className="w-full px-4 py-3 bg-black/5 border border-transparent rounded-[16px] focus:outline-none focus:ring-2 focus:ring-[#E28362]/40 focus:bg-white transition-all font-medium text-[14px]"
+                                    className="w-full px-4 py-3 bg-black/5 border border-transparent rounded-[16px] focus:outline-none focus:ring-2 focus:ring-[#E28362]/40 focus:bg-card transition-all font-medium text-[14px]"
                                     value={newTitle}
                                     onChange={e => setNewTitle(e.target.value)}
                                 />
                                 <div className="pt-2 flex justify-end">
-                                    <button type="submit" className="bg-[#E28362] text-white px-6 py-2.5 rounded-full font-bold text-[13px] hover:bg-[#CF6C4B] transition-colors disabled:opacity-50" disabled={!newUrl}>
+                                    <button type="submit" className="bg-[#E28362] text-blush px-6 py-2.5 rounded-full font-bold text-[13px] hover:bg-[#CF6C4B] transition-colors disabled:opacity-50" disabled={!newUrl}>
                                         Save Link
                                     </button>
                                 </div>
@@ -153,10 +153,10 @@ export default function LinksPage() {
                                 animate={{ opacity: 1, y: 0 }}
                                 exit={{ opacity: 0, scale: 0.95 }}
                                 transition={{ delay: idx * 0.04 }}
-                                className={`bg-white/70 backdrop-blur-md rounded-[20px] p-5 shadow-[0_4px_24px_rgba(0,0,0,0.03)] border transition-all flex items-center justify-between group ${!link.is_visible ? 'border-white/40 opacity-70' : 'border-white'}`}
+                                className={`bg-card/70 backdrop-blur-md rounded-[20px] p-5 shadow-[0_4px_24px_rgba(0,0,0,0.03)] border transition-all flex items-center justify-between group ${!link.is_visible ? 'border-white/40 opacity-70' : 'border-white'}`}
                             >
                                 <div className="flex items-center gap-4 flex-1 min-w-0">
-                                    <div className="w-10 h-10 rounded-full bg-white shadow-sm flex items-center justify-center shrink-0 border border-black/5 text-muted-foreground">
+                                    <div className="w-10 h-10 rounded-full bg-card shadow-sm flex items-center justify-center shrink-0 border border-black/5 text-muted-foreground">
                                         <LayoutGrid size={16} />
                                     </div>
 
@@ -193,7 +193,7 @@ export default function LinksPage() {
 
                                 {/* Right Actions */}
                                 <div className="flex items-center gap-3 shrink-0">
-                                    <div className="flex items-center gap-1 bg-white px-2 py-1 rounded-full shadow-sm">
+                                    <div className="flex items-center gap-1 bg-card px-2 py-1 rounded-full shadow-sm">
                                         <span className="text-[12px] font-bold text-muted-foreground pl-1">{link.click_count || 0}</span>
                                         <ArrowUpRight size={14} className="text-[#32C980]" />
                                     </div>
@@ -202,7 +202,7 @@ export default function LinksPage() {
                                         onClick={() => toggleVisibility.mutate({ id: link.id, is_visible: !link.is_visible })}
                                         className={`relative inline-flex h-[28px] w-[50px] shrink-0 cursor-pointer items-center justify-center rounded-full outline-none transition-colors duration-200 ${link.is_visible ? 'bg-[#F19875]' : 'bg-border/80'}`}
                                     >
-                                        <span className={`inline-block h-[24px] w-[24px] transform rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out ${link.is_visible ? 'translate-x-[10px]' : '-translate-x-[11px]'}`} />
+                                        <span className={`inline-block h-[24px] w-[24px] transform rounded-full bg-card shadow-sm ring-0 transition duration-200 ease-in-out ${link.is_visible ? 'translate-x-[10px]' : '-translate-x-[11px]'}`} />
                                     </button>
 
                                     {/* 3-Dot Menu */}
@@ -220,7 +220,7 @@ export default function LinksPage() {
                                                     initial={{ opacity: 0, scale: 0.92, y: -4 }}
                                                     animate={{ opacity: 1, scale: 1, y: 0 }}
                                                     exit={{ opacity: 0, scale: 0.92 }}
-                                                    className="absolute right-0 top-10 z-50 bg-white rounded-[16px] shadow-[0_8px_40px_rgba(0,0,0,0.12)] border border-black/5 overflow-hidden min-w-[160px]"
+                                                    className="absolute right-0 top-10 z-50 bg-card rounded-[16px] shadow-[0_8px_40px_rgba(0,0,0,0.12)] border border-black/5 overflow-hidden min-w-[160px]"
                                                 >
                                                     <button
                                                         onClick={() => { handleCopy(link.short_slug || link.id, link.id); setOpenMenuId(null); }}
@@ -246,7 +246,7 @@ export default function LinksPage() {
                                                     <div className="h-px bg-black/5 mx-3" />
                                                     <button
                                                         onClick={() => handleDelete(link.id)}
-                                                        className="w-full flex items-center gap-2.5 px-4 py-3 text-[13px] font-semibold text-red-500 hover:bg-red-50 transition-colors"
+                                                        className="w-full flex items-center gap-2.5 px-4 py-3 text-[13px] font-semibold text-rose hover:bg-rose/10 transition-colors"
                                                     >
                                                         <Trash2 size={14} />
                                                         Delete Link

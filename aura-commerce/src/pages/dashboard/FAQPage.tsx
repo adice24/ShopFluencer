@@ -35,7 +35,7 @@ export default function FAQPage() {
                 <p className="text-muted-foreground text-[15px] font-medium">Find answers to the most common questions about setting up and using ShopFluence.</p>
             </div>
 
-            <div className="bg-white rounded-[24px] shadow-[0_8px_30px_rgba(0,0,0,0.04)] border border-border/40 p-2">
+            <div className="bg-card rounded-[24px] shadow-[0_8px_30px_rgba(0,0,0,0.04)] border border-border/40 p-2">
                 {faqs.map((faq, index) => (
                     <div key={index} className="border-b border-border/40 last:border-0">
                         <button
@@ -71,7 +71,7 @@ export default function FAQPage() {
                 </div>
                 <a
                     href="mailto:support@shopfluence.com"
-                    className="bg-white hover:bg-black/5 text-[#2F3E46] font-bold py-3 px-6 rounded-full shadow-sm transition-colors border border-border/50 flex items-center gap-2 shrink-0"
+                    className="bg-card hover:bg-black/5 text-[#2F3E46] font-bold py-3 px-6 rounded-full shadow-sm transition-colors border border-border/50 flex items-center gap-2 shrink-0"
                 >
                     <MessageCircle size={18} />
                     Contact Support

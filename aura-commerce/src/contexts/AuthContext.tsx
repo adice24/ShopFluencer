@@ -24,8 +24,10 @@ import {
     useRef,
     type ReactNode,
 } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import type { User, Session, AuthError } from "@supabase/supabase-js";
 import { supabase } from "../lib/supabase";
+import { fetchApi } from "../lib/api";
 import {
     RateLimiter,
     sanitizeEmail,
@@ -49,7 +51,8 @@ interface AuthContextType extends AuthState {
     signUp: (
         email: string,
         password: string,
-        name?: string
+        name?: string,
+        role?: string
     ) => Promise<{ error: string | null; requiresEmailConfirmation: boolean }>;
     signIn: (
         email: string,
@@ -70,8 +73,17 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 /* ─── Constants ──────────────────────────────────── */
 const RATE_LIMIT_KEY = "auth:login";
 
+/** Ensures Nest/Prisma has a `users` row for this Supabase session (admin lists use Prisma). */
+function syncNestUserProfile(session: Session | null): void {
+    if (!session?.access_token) return;
+    void fetchApi("/users/me").catch(() => {
+        /* Backend offline or misconfigured — Supabase session still works */
+    });
+}
+
 /* ─── Provider ───────────────────────────────────── */
 export function AuthProvider({ children }: { children: ReactNode }) {
+    const queryClient = useQueryClient();
     const [state, setState] = useState<AuthState>({
         user: null,
         session: null,
@@ -104,6 +116,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 loading: false,
                 mfaVerified,
             });
+
+            if (session?.user?.id) {
+                queryClient.invalidateQueries({ queryKey: ["profile", session.user.id] });
+                queryClient.invalidateQueries({ queryKey: ["affiliate-onboarding-status", session.user.id] });
+            }
         });
 
         // Subscribe to auth state changes
@@ -120,6 +137,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 loading: false,
                 mfaVerified,
             });
+
+            if (session?.user?.id && (event === "SIGNED_IN" || event === "INITIAL_SESSION")) {
+                syncNestUserProfile(session);
+                queryClient.invalidateQueries({ queryKey: ["profile", session.user.id] });
+                queryClient.invalidateQueries({ queryKey: ["affiliate-onboarding-status", session.user.id] });
+            }
 
             // Log auth events
             if (event === "SIGNED_IN") {
@@ -194,7 +217,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
        SIGN UP — With full security controls
        ══════════════════════════════════════════════════ */
     const signUp = useCallback(
-        async (email: string, password: string, name?: string) => {
+        async (email: string, password: string, name?: string, role?: string) => {
             // 1. Sanitize inputs (XSS defense)
             const cleanEmail = sanitizeEmail(email);
             const cleanName = name ? sanitizeInput(name) : undefined;
@@ -233,7 +256,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                     options: {
                         data: {
                             full_name: cleanName || "",
-                            role: "customer", // Default role — never trust client for role assignment
+                            role: role || "affiliate", // affiliate, brand, or admin
                         },
                         emailRedirectTo: `${window.location.origin}/auth`,
                     },

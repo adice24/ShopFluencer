@@ -336,7 +336,7 @@ export async function logAuditEvent(entry: AuditEntry): Promise<void> {
             emailHash = hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
         }
 
-        await supabase.from("auth_audit_log").insert({
+        const { error } = await supabase.from("auth_audit_log").insert({
             action: entry.action,
             user_id: entry.user_id || null,
             email_hash: emailHash || null,
@@ -347,6 +347,14 @@ export async function logAuditEvent(entry: AuditEntry): Promise<void> {
             failure_reason: entry.failure_reason || null,
             created_at: new Date().toISOString(),
         });
+        // PGRST205 = table missing from PostgREST cache; 42P01 = relation does not exist — expected until migration runs
+        const missingTable =
+            error &&
+            (error.code === "PGRST205" ||
+                /does not exist|schema cache/i.test(String(error.message ?? "")));
+        if (error && import.meta.env.DEV && !missingTable) {
+            console.warn("[Audit] insert skipped:", error.code, error.message);
+        }
     } catch (err) {
         // Never let audit logging break the auth flow
         if (import.meta.env.DEV) {
@@ -375,7 +383,16 @@ export function sanitizeAuthError(error: string, context: "login" | "signup"): s
     const errorLower = error.toLowerCase();
 
     if (context === "login") {
-        // All login failures get the same generic message
+        // Check email confirmation FIRST (before generic catch-all)
+        if (errorLower.includes("confirm") || errorLower.includes("verify") || errorLower.includes("not confirmed")) {
+            return "Please verify your email address before signing in.";
+        }
+
+        if (errorLower.includes("rate") || errorLower.includes("limit")) {
+            return "Too many attempts. Please try again later.";
+        }
+
+        // All other login failures get the same generic message
         if (
             errorLower.includes("invalid") ||
             errorLower.includes("not found") ||
@@ -385,14 +402,6 @@ export function sanitizeAuthError(error: string, context: "login" | "signup"): s
             errorLower.includes("password")
         ) {
             return "Invalid email or password";
-        }
-
-        if (errorLower.includes("rate") || errorLower.includes("limit")) {
-            return "Too many attempts. Please try again later.";
-        }
-
-        if (errorLower.includes("confirm") || errorLower.includes("verify")) {
-            return "Please verify your email address before signing in.";
         }
     }
 

@@ -91,7 +91,7 @@ export default function PostIdeasPage() {
                 <h1 className="text-[28px] font-extrabold text-[#2F3E46] mb-8">Point us in the right direction and we'll give you ideas</h1>
 
                 {/* Configuration Card */}
-                <div className="bg-white rounded-[24px] p-6 shadow-[0_2px_20px_rgba(0,0,0,0.03)] border border-border">
+                <div className="bg-card rounded-[24px] p-6 shadow-[0_2px_20px_rgba(0,0,0,0.03)] border border-border">
                     {/* Top Pills */}
                     <div className="flex flex-wrap gap-3 mb-6">
                         {contentTypes.map((type) => {
@@ -104,8 +104,8 @@ export default function PostIdeasPage() {
                                     className={clsx(
                                         "px-5 py-2.5 rounded-full flex items-center gap-2 text-[14px] font-bold transition-all",
                                         isActive
-                                            ? "bg-[#1C1F1E] text-white shadow-md shadow-black/10"
-                                            : "bg-white border border-[#EBEBEB] text-[#4d606B] hover:bg-black/5"
+                                            ? "bg-[#1C1F1E] text-blush shadow-md shadow-black/10"
+                                            : "bg-card border border-[#EBEBEB] text-[#4d606B] hover:bg-black/5"
                                     )}
                                 >
                                     <Icon size={16} className={isActive ? (type.id === "Trending" ? "text-red-400" : type.id === "Evergreen" ? "text-amber-400" : type.id === "Video hooks" ? "text-orange-400" : "text-sky-400") : "text-muted-foreground"} />
@@ -132,14 +132,14 @@ export default function PostIdeasPage() {
                                 placeholder="E.g., 3D Architecture, Fitness, Tech Setup..."
                                 value={interestArea}
                                 onChange={(e) => setInterestArea(e.target.value)}
-                                className="w-full h-12 bg-white border border-[#EBEBEB] rounded-xl px-4 text-[15px] font-medium text-[#2F3E46] focus:border-black/20 focus:outline-none focus:ring-4 focus:ring-black/5 transition-all"
+                                className="w-full h-12 bg-card border border-[#EBEBEB] rounded-xl px-4 text-[15px] font-medium text-[#2F3E46] focus:border-black/20 focus:outline-none focus:ring-4 focus:ring-black/5 transition-all"
                             />
                         </div>
                         <div className="relative">
                             <select
                                 value={platform}
                                 onChange={(e) => setPlatform(e.target.value)}
-                                className="w-full h-12 bg-white border border-[#EBEBEB] rounded-xl px-4 text-[15px] font-medium text-[#2F3E46] appearance-none focus:border-black/20 focus:outline-none focus:ring-4 focus:ring-black/5 transition-all cursor-pointer"
+                                className="w-full h-12 bg-card border border-[#EBEBEB] rounded-xl px-4 text-[15px] font-medium text-[#2F3E46] appearance-none focus:border-black/20 focus:outline-none focus:ring-4 focus:ring-black/5 transition-all cursor-pointer"
                             >
                                 {platforms.map(p => (
                                     <option key={p} value={p}>{p}</option>
@@ -153,7 +153,7 @@ export default function PostIdeasPage() {
                         <button
                             onClick={handleGenerate}
                             disabled={isGenerating || !interestArea}
-                            className="bg-[#1C1F1E] disabled:bg-[#1C1F1E]/50 text-white font-bold h-12 px-8 rounded-full flex items-center gap-2 hover:bg-[#2F3E46] transition-all shadow-md shadow-black/10"
+                            className="bg-[#1C1F1E] disabled:bg-[#1C1F1E]/50 text-blush font-bold h-12 px-8 rounded-full flex items-center gap-2 hover:bg-[#2F3E46] transition-all shadow-md shadow-black/10"
                         >
                             {isGenerating ? <Loader2 size={18} className="animate-spin" /> : <Sparkle size={18} />}
                             Generate Ideas
@@ -189,12 +189,12 @@ export default function PostIdeasPage() {
                                             className={clsx(
                                                 "p-6 rounded-2xl cursor-pointer transition-all border-2 relative h-full flex flex-col justify-between",
                                                 isSelected
-                                                    ? "bg-white border-[#1C1F1E] shadow-[0_4px_24px_rgba(0,0,0,0.06)]"
-                                                    : "bg-white border-[#EBEBEB] hover:border-[#1C1F1E]/30 text-[#4D606B]/90"
+                                                    ? "bg-card border-[#1C1F1E] shadow-[0_4px_24px_rgba(0,0,0,0.06)]"
+                                                    : "bg-card border-[#EBEBEB] hover:border-[#1C1F1E]/30 text-[#4D606B]/90"
                                             )}
                                         >
                                             {isSelected && (
-                                                <div className="absolute -top-3 -right-3 w-7 h-7 bg-[#1C1F1E] rounded-full flex items-center justify-center text-white border-4 border-white">
+                                                <div className="absolute -top-3 -right-3 w-7 h-7 bg-[#1C1F1E] rounded-full flex items-center justify-center text-blush border-4 border-white">
                                                     <Check size={14} strokeWidth={3} />
                                                 </div>
                                             )}
@@ -258,11 +258,11 @@ export default function PostIdeasPage() {
                             <div className="flex items-center gap-3">
                                 <button
                                     onClick={() => handleGenerate()}
-                                    className="bg-white border border-[#EBEBEB] text-[#1C1F1E] font-bold h-11 px-6 rounded-full flex items-center gap-2 hover:bg-black/5 transition-all shadow-[0_2px_12px_rgba(0,0,0,0.03)]"
+                                    className="bg-card border border-[#EBEBEB] text-[#1C1F1E] font-bold h-11 px-6 rounded-full flex items-center gap-2 hover:bg-black/5 transition-all shadow-[0_2px_12px_rgba(0,0,0,0.03)]"
                                 >
                                     Regenerate ideas
                                 </button>
-                                <button className="bg-[#1C1F1E] text-white font-bold h-11 px-8 rounded-full flex items-center gap-2 hover:bg-[#2F3E46] transition-all shadow-md shadow-black/10">
+                                <button className="bg-[#1C1F1E] text-blush font-bold h-11 px-8 rounded-full flex items-center gap-2 hover:bg-[#2F3E46] transition-all shadow-md shadow-black/10">
                                     Get captions &rarr;
                                 </button>
                             </div>

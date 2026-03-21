@@ -5,9 +5,9 @@ import { OrdersModule } from '../orders/orders.module';
 import { NotificationsModule } from '../notifications/notifications.module';
 
 @Module({
-    imports: [OrdersModule, NotificationsModule],
-    controllers: [PaymentsController],
-    providers: [PaymentsService],
-    exports: [PaymentsService],
+  imports: [OrdersModule, NotificationsModule],
+  controllers: [PaymentsController],
+  providers: [PaymentsService],
+  exports: [PaymentsService],
 })
-export class PaymentsModule { }
+export class PaymentsModule {}

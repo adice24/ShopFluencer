@@ -1,0 +1,142 @@
+﻿D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\admin\admin.controller.ts:74: @Post('influencers/:influencerId/brands/:brandId')
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\admin\admin.controller.ts:75: @ApiOperation({ summary: 'Assign brand to influencer' })
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\admin\admin.controller.ts:77: @Param('influencerId') influencerId: string,
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\admin\admin.controller.ts:80: return this.adminService.assignBrand(influencerId, brandId);
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\admin\admin.controller.ts:83: @Delete('influencers/:influencerId/brands/:brandId')
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\admin\admin.controller.ts:84: @ApiOperation({ summary: 'Remove brand from influencer' })
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\admin\admin.controller.ts:86: @Param('influencerId') influencerId: string,
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\admin\admin.controller.ts:89: return this.adminService.removeBrand(influencerId, brandId);
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\admin\admin.service.ts:20: this.prisma.influencerProfile.update({
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\admin\admin.service.ts:94: include: { influencer: true }
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\admin\admin.service.ts:103: * Assign brand to influencer
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\admin\admin.service.ts:105: async assignBrand(influencerId: string, brandId: string) {
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\admin\admin.service.ts:106: return this.prisma.influencerBrand.create({
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\admin\admin.service.ts:107: data: { influencerId, brandId },
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\admin\admin.service.ts:112: * Remove brand from influencer
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\admin\admin.service.ts:114: async removeBrand(influencerId: string, brandId: string) {
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\admin\admin.service.ts:115: return this.prisma.influencerBrand.deleteMany({
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\admin\admin.service.ts:116: where: { influencerId, brandId },
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\admin\admin.service.ts:140: influencerProfile: true,
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\admin\admin.service.ts:174: this.prisma.influencerProfile.count({ where: { isVerified: true } }),
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\affiliates\affiliates.controller.ts:34: return this.affiliatesService.getInfluencerConversions(userId, query);
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\affiliates\affiliates.service.ts:16: influencerId: string;
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\affiliates\affiliates.service.ts:30: * Get affiliate conversions for an influencer
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\affiliates\affiliates.service.ts:32: async getInfluencerConversions(influencerId: string, query: PaginationDto & { status?: ConversionStatus }) {
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\affiliates\affiliates.service.ts:33: const where: any = { influencerId };
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\affiliates\affiliates.service.ts:60: * Get commission summary for an influencer
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\affiliates\affiliates.service.ts:62: async getCommissionSummary(influencerId: string) {
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\affiliates\affiliates.service.ts:65: where: { influencerId, status: ConversionStatus.PENDING },
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\affiliates\affiliates.service.ts:70: where: { influencerId, status: ConversionStatus.CONFIRMED },
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\affiliates\affiliates.service.ts:75: where: { influencerId, status: ConversionStatus.PAID_OUT },
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\affiliates\affiliates.service.ts:99: * Get click analytics for an influencer
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\affiliates\affiliates.service.ts:101: async getClickAnalytics(influencerId: string, days: number = 30) {
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\affiliates\affiliates.service.ts:107: where: { influencerId, createdAt: { gte: since } },
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\affiliates\affiliates.service.ts:111: where: { influencerId, createdAt: { gte: since } },
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\affiliates\affiliates.service.ts:115: where: { influencerId, createdAt: { gte: since }, utmSource: { not: null } },
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\analytics\analytics.controller.ts:20: influencerId?: string;
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\analytics\analytics.controller.ts:36: @Get('influencer')
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\analytics\analytics.controller.ts:38: @Roles(UserRole.INFLUENCER)
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\analytics\analytics.controller.ts:40: @ApiOperation({ summary: 'Get influencer analytics dashboard' })
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\analytics\analytics.controller.ts:41: async getInfluencerDashboard(
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\analytics\analytics.controller.ts:46: // Get influencer profile ID from user
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\analytics\analytics.controller.ts:47: return this.analyticsService.getInfluencerDashboard(userId, dateFrom, dateTo);
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\analytics\analytics.controller.ts:64: @Roles(UserRole.INFLUENCER)
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\analytics\analytics.controller.ts:68: // Find influencerId from userId
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\analytics\analytics.controller.ts:71: include: { influencerProfile: true },
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\analytics\analytics.controller.ts:74: if (!user?.influencerProfile) {
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\analytics\analytics.controller.ts:78: return this.analyticsService.getSuggestions(user.influencerProfile.id);
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\analytics\analytics.service.ts:16: influencerId?: string;
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\analytics\analytics.service.ts:30: influencerId: data.influencerId || null,
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\analytics\analytics.service.ts:48: * Get dashboard summary for an influencer
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\analytics\analytics.service.ts:50: async getInfluencerDashboard(influencerId: string, dateFrom?: string, dateTo?: string) {
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\analytics\analytics.service.ts:56: influencerId,
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\analytics\analytics.service.ts:95: influencerId,
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\analytics\analytics.service.ts:133: activeInfluencers,
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\analytics\analytics.service.ts:146: this.prisma.influencerProfile.count({
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\analytics\analytics.service.ts:178: activeInfluencers,
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\analytics\analytics.service.ts:200: // Get all influencer IDs that had events
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\analytics\analytics.service.ts:201: const influencerEvents = await this.prisma.analyticsEvent.groupBy({
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\analytics\analytics.service.ts:202: by: ['influencerId', 'storefrontSlug'],
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\analytics\analytics.service.ts:203: where: { ...dateFilter, influencerId: { not: null } },
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\analytics\analytics.service.ts:207: for (const group of influencerEvents) {
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\analytics\analytics.service.ts:208: if (!group.influencerId) continue;
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\analytics\analytics.service.ts:211: where: { ...dateFilter, influencerId: group.influencerId, eventType: EventType.STOREFRONT_VIEW },
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\analytics\analytics.service.ts:216: where: { ...dateFilter, influencerId: group.influencerId, eventType: EventType.STOREFRONT_VIEW },
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\analytics\analytics.service.ts:220: where: { ...dateFilter, influencerId: group.influencerId, eventType: EventType.PRODUCT_CLICK },
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\analytics\analytics.service.ts:224: where: { influencerId: group.influencerId, ...dateFilter, status: 'CONFIRMED' },
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\analytics\analytics.service.ts:228: where: { influencerId: group.influencerId, ...dateFilter, status: 'CONFIRMED' },
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\analytics\analytics.service.ts:234: date_influencerId_storefrontSlug: {
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\analytics\analytics.service.ts:236: influencerId: group.influencerId,
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\analytics\analytics.service.ts:242: influencerId: group.influencerId,
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\analytics\analytics.service.ts:268: async getSuggestions(influencerId: string) {
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\analytics\analytics.service.ts:270: const metrics = await this.getInfluencerDashboard(influencerId);
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\analytics\analytics.service.ts:277: const profile = await this.prisma.influencerProfile.findUnique({
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\analytics\analytics.service.ts:278: where: { id: influencerId },
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\auth\auth.service.ts:68: await this.prisma.influencerProfile.create({
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\content-ideas\content-ideas.controller.ts:24: @Roles(UserRole.INFLUENCER)
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\links\links.service.ts:37: (SELECT id FROM influencer_stores WHERE user_id = ${userId}::uuid LIMIT 1),
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\orders\orders.controller.ts:52: async getAllOrders(@Query() query: PaginationDto & { status?: OrderStatus; influencerId?: string }) {
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\orders\orders.service.ts:117: // 4. Create affiliate conversion if influencer tracking exists
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\orders\orders.service.ts:118: if (dto.influencerId) {
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\orders\orders.service.ts:119: const influencer = await tx.influencerProfile.findUnique({
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\orders\orders.service.ts:120: where: { id: dto.influencerId },
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\orders\orders.service.ts:123: if (influencer) {
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\orders\orders.service.ts:124: const commissionRate = Number(influencer.commissionRate);
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\orders\orders.service.ts:127: influencerId: dto.influencerId,
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\orders\orders.service.ts:135: // Send notification to influencer
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\orders\orders.service.ts:137: userId: influencer.userId,
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\orders\orders.service.ts:217: influencerId?: string;
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\orders\orders.service.ts:230: if (query.influencerId) {
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\orders\orders.service.ts:231: where.affiliateConversion = { influencerId: query.influencerId };
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\orders\orders.service.ts:244: select: { influencerId: true, commissionAmount: true },
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\orders\dto\create-order.dto.ts:76: influencerId?: string;
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\payments\payments.service.ts:155: const influencer = await this.prisma.influencerProfile.findUnique({
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\payments\payments.service.ts:156: where: { id: order.affiliateConversion.influencerId },
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\payments\payments.service.ts:160: if (influencer?.storefront) {
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\payments\payments.service.ts:162: where: { id: influencer.storefront.id },
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\payments\payments.service.ts:176: // Notify Influencer of successful payment / confirmed sale
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\payments\payments.service.ts:177: if (influencer) {
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\payments\payments.service.ts:179: userId: influencer.userId,
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\storefront\storefront.service.ts:12: private async getInfluencerId(userId: string, role: string, providedInfluencerId?: string): Promise<string> {
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\storefront\storefront.service.ts:13: if (role === UserRole.ADMIN && providedInfluencerId) {
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\storefront\storefront.service.ts:14: return providedInfluencerId;
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\storefront\storefront.service.ts:17: const profile = await this.prisma.influencerProfile.findUnique({
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\storefront\storefront.service.ts:22: throw new NotFoundException('Influencer profile not found for this user');
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\storefront\storefront.service.ts:28: private async checkStorefrontOwnership(influencerId: string, storefrontId: string) {
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\storefront\storefront.service.ts:31: if (storefront.influencerId !== influencerId) {
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\storefront\storefront.service.ts:45: influencer: {
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\storefront\storefront.service.ts:83: ogImage: storefront.bannerUrl || storefront.influencer.user.avatarUrl,
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\storefront\storefront.service.ts:90: * Create or update storefront for an influencer
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\storefront\storefront.service.ts:93: const influencerId = await this.getInfluencerId(userId, role, data.influencerId);
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\storefront\storefront.service.ts:96: if (existingWithSlug && existingWithSlug.influencerId !== influencerId) {
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\storefront\storefront.service.ts:100: const { influencerId: _omitted, ...upsertData } = data;
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\storefront\storefront.service.ts:103: where: { influencerId },
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\storefront\storefront.service.ts:104: create: { influencerId, ...upsertData },
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\storefront\storefront.service.ts:130: const influencerId = await this.getInfluencerId(userId, role);
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\storefront\storefront.service.ts:131: await this.checkStorefrontOwnership(influencerId, storefrontId);
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\storefront\storefront.service.ts:153: const influencerId = await this.getInfluencerId(userId, role);
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\storefront\storefront.service.ts:154: await this.checkStorefrontOwnership(influencerId, storefrontId);
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\storefront\storefront.service.ts:172: influencer: {
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\storefront\dto\upsert-storefront.dto.ts:8: influencerId?: string;
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\users\users.service.ts:27: influencerProfile: true,
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\users\users.service.ts:101: influencerProfile: {
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\users\users.service.ts:114: include: { influencerProfile: true },
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\users\users.service.ts:127: // Prepare Influencer Profile Updates
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\users\users.service.ts:128: const influencerUpdates: any = {};
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\users\users.service.ts:129: if (dto.displayName !== undefined) influencerUpdates.displayName = dto.displayName;
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\users\users.service.ts:130: if (dto.bio !== undefined) influencerUpdates.bio = dto.bio;
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\users\users.service.ts:131: if (dto.websiteUrl !== undefined) influencerUpdates.websiteUrl = dto.websiteUrl;
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\users\users.service.ts:132: if (dto.instagramHandle !== undefined) influencerUpdates.instagramHandle = dto.instagramHandle;
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\users\users.service.ts:133: if (dto.youtubeHandle !== undefined) influencerUpdates.youtubeHandle = dto.youtubeHandle;
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\users\users.service.ts:134: if (dto.tiktokHandle !== undefined) influencerUpdates.tiktokHandle = dto.tiktokHandle;
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\users\users.service.ts:135: if (dto.twitterHandle !== undefined) influencerUpdates.twitterHandle = dto.twitterHandle;
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\users\users.service.ts:144: include: { influencerProfile: true },
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\users\users.service.ts:148: // Update or Create Influencer Profile if needed
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\users\users.service.ts:149: if (Object.keys(influencerUpdates).length > 0) {
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\users\users.service.ts:150: if (user.influencerProfile) {
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\users\users.service.ts:151: await tx.influencerProfile.update({
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\users\users.service.ts:153: data: influencerUpdates,
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\users\users.service.ts:156: // Only create profile if they are an influencer
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\users\users.service.ts:158: await tx.influencerProfile.create({
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\users\users.service.ts:162: ...influencerUpdates,
+D:\PROJECTS\ShopFuence\ShopFuence\backend\shopfluence-api\src\modules\users\users.service.ts:180: influencerProfile: true, // safe to expose profile

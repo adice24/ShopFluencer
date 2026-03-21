@@ -7,46 +7,45 @@ export function useLinkAnalytics(storeId: string | undefined) {
         queryFn: async () => {
             if (!storeId) return null;
 
-            // Fetch total clicks for this store
-            const { data: clicksData, error: clicksError } = await supabase
-                .from("link_clicks")
-                .select("id, created_at, link_id", { count: "exact" })
-                .eq("store_id", storeId);
+            const { data: sf, error: sfErr } = await supabase
+                .from("storefronts")
+                .select("influencer_id")
+                .eq("id", storeId)
+                .maybeSingle();
+            if (sfErr || !sf) throw sfErr ?? new Error("Store not found");
 
-            if (clicksError) throw clicksError;
+            const { data: prof, error: pErr } = await supabase
+                .from("influencer_profiles")
+                .select("user_id")
+                .eq("id", sf.influencer_id)
+                .maybeSingle();
+            if (pErr || !prof?.user_id) throw pErr ?? new Error("Profile not found");
 
-            // Group by link_id to find top links
-            const clickCounts: Record<string, number> = {};
-            clicksData?.forEach(click => {
-                const linkId = click.link_id;
-                clickCounts[linkId] = (clickCounts[linkId] || 0) + 1;
-            });
+            const uid = prof.user_id;
 
-            // Fetch links to map titles
             const { data: linksData, error: linksError } = await supabase
-                .from("links")
-                .select("id, title, url, thumbnail_url")
-                .eq("store_id", storeId);
+                .from("short_links")
+                .select("id, title, original_url, clicks")
+                .eq("user_id", uid);
 
             if (linksError) throw linksError;
 
-            const topLinks = Object.entries(clickCounts)
-                .map(([linkId, count]) => {
-                    const link = linksData?.find(l => l.id === linkId);
-                    return {
-                        id: linkId,
-                        title: link?.title || "Unknown Link",
-                        url: link?.url || "",
-                        thumbnail_url: link?.thumbnail_url || null,
-                        clicks: count
-                    };
-                })
-                .sort((a, b) => b.clicks - a.clicks)
-                .slice(0, 5); // top 5
+            const list = linksData ?? [];
+            const totalClicks = list.reduce((s, l) => s + Number(l.clicks ?? 0), 0);
+            const topLinks = [...list]
+                .sort((a, b) => Number(b.clicks ?? 0) - Number(a.clicks ?? 0))
+                .slice(0, 5)
+                .map((l) => ({
+                    id: l.id,
+                    title: l.title || "Link",
+                    url: l.original_url || "",
+                    thumbnail_url: null as string | null,
+                    clicks: Number(l.clicks ?? 0),
+                }));
 
             return {
-                totalClicks: clicksData?.length || 0,
-                topLinks
+                totalClicks,
+                topLinks,
             };
         },
         enabled: !!storeId,
@@ -54,6 +53,6 @@ export function useLinkAnalytics(storeId: string | undefined) {
 
     return {
         analytics,
-        isLoading
+        isLoading,
     };
 }

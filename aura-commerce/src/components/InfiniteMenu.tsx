@@ -84,14 +84,14 @@ export const InfiniteMenu = ({ items, width = '420px', height = '500px' }: Infin
             }}
           >
             <div className="flex flex-col items-center justify-center p-6 h-full">
-              <div className="w-20 h-20 mb-3 rounded-full overflow-hidden bg-white/20 flex items-center justify-center shadow-md">
+              <div className="w-20 h-20 mb-3 rounded-full overflow-hidden bg-card/20 flex items-center justify-center shadow-md">
                 <img
                   src={item.image}
                   alt={`Product ${item.id}`}
                   className="w-full h-full object-cover"
                 />
               </div>
-              <span className="text-white text-xl font-bold">{item.price}</span>
+              <span className="text-blush text-xl font-bold">{item.price}</span>
             </div>
           </motion.div>
         ))}

@@ -107,17 +107,17 @@ export default function AnalyticsAndOrders() {
           <p className="text-[#6B7280] font-medium text-[15px] mt-1">Track your audience and sales</p>
         </div>
 
-        <div className="flex items-center bg-white border border-gray-200 rounded-full p-1.5 shadow-sm">
+        <div className="flex items-center bg-card border border-blush/12 rounded-full p-1.5 shadow-sm">
           <button
             onClick={() => setActiveTab("insights")}
-            className={`px-6 py-2.5 rounded-full text-[14px] font-bold transition-all ${activeTab === "insights" ? "bg-[#111827] text-white shadow-md" : "text-[#4B5563] hover:text-[#111827]"
+            className={`px-6 py-2.5 rounded-full text-[14px] font-bold transition-all ${activeTab === "insights" ? "bg-[#111827] text-blush shadow-md" : "text-[#4B5563] hover:text-[#111827]"
               }`}
           >
             Insights
           </button>
           <button
             onClick={() => setActiveTab("orders")}
-            className={`px-6 py-2.5 rounded-full text-[14px] font-bold transition-all ${activeTab === "orders" ? "bg-[#111827] text-white shadow-md" : "text-[#4B5563] hover:text-[#111827]"
+            className={`px-6 py-2.5 rounded-full text-[14px] font-bold transition-all ${activeTab === "orders" ? "bg-[#111827] text-blush shadow-md" : "text-[#4B5563] hover:text-[#111827]"
               }`}
           >
             Orders
@@ -143,7 +143,7 @@ export default function AnalyticsAndOrders() {
                 { label: "Add to Cart", value: safe.addToCarts, icon: ShoppingCart, color: "#F59E0B", bg: "#FFFBEB" },
                 { label: "Sales Conversion", value: `${safe.conversionRate || 0}%`, icon: TrendingUp, color: "#10B981", bg: "#ECFDF5" }
               ].map((stat, i) => (
-                <motion.div {...fadeUp(i + 1)} key={i} className="bg-white rounded-[24px] p-6 border border-gray-100 shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)] transition-shadow">
+                <motion.div {...fadeUp(i + 1)} key={i} className="bg-card rounded-[24px] p-6 border border-blush/08 shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)] transition-shadow">
                   <div className="w-12 h-12 rounded-2xl flex items-center justify-center mb-4" style={{ backgroundColor: stat.bg, color: stat.color }}>
                     <stat.icon size={24} strokeWidth={2.5} />
                   </div>
@@ -154,7 +154,7 @@ export default function AnalyticsAndOrders() {
             </div>
 
             {/* Premium Chart Area */}
-            <motion.div {...fadeUp(5)} className="bg-white rounded-[28px] p-8 border border-gray-100 shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
+            <motion.div {...fadeUp(5)} className="bg-card rounded-[28px] p-8 border border-blush/08 shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
               <div className="flex flex-col sm:flex-row items-center justify-between mb-8 gap-4">
                 <div>
                   <h3 className="text-[20px] font-bold text-[#111827]">Performance Summary</h3>
@@ -165,12 +165,12 @@ export default function AnalyticsAndOrders() {
                 </div>
 
                 {/* Timeframe selector matching SC2 */}
-                <div className="flex items-center bg-gray-50 rounded-full p-1 border border-gray-200">
+                <div className="flex items-center bg-card rounded-full p-1 border border-blush/12">
                   {["7d", "30d", "90d", "365d"].map((t) => (
                     <button
                       key={t}
                       onClick={() => setTimeframe(t as "7d" | "30d" | "90d" | "365d")}
-                      className={`px-5 py-2 text-[13px] font-bold rounded-full transition-all ${timeframe === t ? "bg-white text-[#111827] shadow-sm" : "text-[#6B7280] hover:text-[#374151]"
+                      className={`px-5 py-2 text-[13px] font-bold rounded-full transition-all ${timeframe === t ? "bg-card text-[#111827] shadow-sm" : "text-[#6B7280] hover:text-[#374151]"
                         }`}
                     >
                       {t}
@@ -207,8 +207,8 @@ export default function AnalyticsAndOrders() {
             </motion.div>
 
             {/* Top Links Section */}
-            <motion.div {...fadeUp(6)} className="bg-white rounded-[28px] border border-gray-100 shadow-[0_8px_30px_rgba(0,0,0,0.04)] overflow-hidden">
-              <div className="p-6 md:p-8 flex items-center justify-between border-b border-gray-100">
+            <motion.div {...fadeUp(6)} className="bg-card rounded-[28px] border border-blush/08 shadow-[0_8px_30px_rgba(0,0,0,0.04)] overflow-hidden">
+              <div className="p-6 md:p-8 flex items-center justify-between border-b border-blush/08">
                 <div>
                   <h3 className="text-[20px] font-bold text-[#111827]">Top performing links</h3>
                   <p className="text-[#6B7280] text-[14px] mt-1">Measured by click-through rates</p>
@@ -219,13 +219,13 @@ export default function AnalyticsAndOrders() {
               <div className="p-6 md:p-8 space-y-4">
                 {linkAnalytics?.topLinks && linkAnalytics.topLinks.length > 0 ? (
                   linkAnalytics.topLinks.map((link, idx) => (
-                    <div key={link.id} className="group flex items-center justify-between p-4 rounded-2xl hover:bg-gray-50 transition-colors border border-transparent hover:border-gray-100 cursor-pointer">
+                    <div key={link.id} className="group flex items-center justify-between p-4 rounded-2xl hover:bg-card transition-colors border border-transparent hover:border-blush/08 cursor-pointer">
                       <div className="flex items-center gap-5">
-                        <span className="text-[16px] font-bold text-gray-400 w-4">{idx + 1}</span>
+                        <span className="text-[16px] font-bold text-blush/40 w-4">{idx + 1}</span>
                         {link.thumbnail_url ? (
                           <img src={link.thumbnail_url} alt="" className="w-12 h-12 rounded-xl object-cover shadow-sm" />
                         ) : (
-                          <div className="w-12 h-12 rounded-xl bg-gradient-to-tr from-[#E5E7EB] to-[#F3F4F6] flex items-center justify-center text-gray-400 shadow-sm">
+                          <div className="w-12 h-12 rounded-xl bg-gradient-to-tr from-[#E5E7EB] to-[#F3F4F6] flex items-center justify-center text-blush/40 shadow-sm">
                             <ExternalLink size={20} />
                           </div>
                         )}
@@ -239,14 +239,14 @@ export default function AnalyticsAndOrders() {
                           <p className="font-bold text-[#111827] text-[16px]">{link.clicks}</p>
                           <p className="text-[#6B7280] text-[12px] uppercase tracking-wider font-semibold">Clicks</p>
                         </div>
-                        <MoreHorizontal className="text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity" />
+                        <MoreHorizontal className="text-blush/40 opacity-0 group-hover:opacity-100 transition-opacity" />
                       </div>
                     </div>
                   ))
                 ) : (
-                  <div className="flex flex-col items-center justify-center py-12 text-center bg-gray-50 rounded-2xl border border-dashed border-gray-200">
-                    <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-3">
-                      <ExternalLink className="text-gray-400" />
+                  <div className="flex flex-col items-center justify-center py-12 text-center bg-card rounded-2xl border border-dashed border-blush/12">
+                    <div className="w-12 h-12 bg-muted rounded-full flex items-center justify-center mb-3">
+                      <ExternalLink className="text-blush/40" />
                     </div>
                     <p className="text-[#111827] font-bold">No active links</p>
                     <p className="text-[#6B7280] text-[14px] max-w-sm mt-1">Add links to your page to start tracking their performance here.</p>
@@ -267,126 +267,126 @@ export default function AnalyticsAndOrders() {
             {/* Orders Header */}
             <motion.div {...fadeUp(1)} className="flex flex-col sm:flex-row gap-4 mb-2">
               <div className="flex-1 relative">
-                <Search size={18} className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400" />
+                <Search size={18} className="absolute left-5 top-1/2 -translate-y-1/2 text-blush/40" />
                 <input
                   type="text"
                   placeholder="Search orders by ID, email, or name..."
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  className="w-full pl-12 pr-5 py-3.5 bg-white border border-gray-200 rounded-[20px] text-[15px] text-[#111827] placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#7C3AED]/20 focus:border-[#7C3AED] transition-all shadow-sm"
+                  className="w-full pl-12 pr-5 py-3.5 bg-card border border-blush/12 rounded-[20px] text-[15px] text-[#111827] placeholder:text-blush/40 focus:outline-none focus:ring-2 focus:ring-[#7C3AED]/20 focus:border-[#7C3AED] transition-all shadow-sm"
                 />
               </div>
-              <button className="flex items-center justify-center gap-2 px-6 py-3.5 bg-white border border-gray-200 rounded-[20px] text-[15px] font-bold text-[#4B5563] hover:bg-gray-50 transition-colors shadow-sm shrink-0">
+              <button className="flex items-center justify-center gap-2 px-6 py-3.5 bg-card border border-blush/12 rounded-[20px] text-[15px] font-bold text-[#4B5563] hover:bg-card transition-colors shadow-sm shrink-0">
                 <Filter size={18} /> Filter Status
               </button>
             </motion.div>
 
             {/* Orders List */}
-            <motion.div {...fadeUp(2)} className="bg-white border border-gray-100 text-gray-900 rounded-[28px] overflow-hidden shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
+            <motion.div {...fadeUp(2)} className="bg-card border border-blush/08 text-blush rounded-[28px] overflow-hidden shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
               {/* Header row */}
-              <div className="hidden md:grid grid-cols-[1fr_2fr_1.5fr_1fr_1fr_50px] gap-4 px-8 py-5 bg-[#F9FAFB] border-b border-gray-100 text-[12px] font-bold text-[#6B7280] uppercase tracking-wider">
+              <div className="hidden md:grid grid-cols-[1fr_2fr_1fr_0.8fr_1fr_1.2fr_50px] gap-4 px-8 py-5 bg-[#F9FAFB] border-b border-blush/08 text-[12px] font-bold text-[#6B7280] uppercase tracking-wider">
                 <span>Order ID</span>
-                <span>Customer</span>
+                <span>Product</span>
                 <span>Date</span>
+                <span className="text-center">Qty</span>
                 <span>Status</span>
-                <span className="text-right">Total</span>
+                <span className="text-right">Commission</span>
                 <span />
               </div>
-
+ 
               {filteredOrders.length === 0 ? (
-                <div className="p-16 text-center text-gray-500 font-medium">No orders found.</div>
+                <div className="p-16 text-center text-blush/55 font-medium">No orders found.</div>
               ) : (
-                <div className="divide-y divide-gray-100">
-                  {filteredOrders.map((order) => (
-                    <div key={order.id} className="group hover:bg-[#F9FAFB] transition-colors">
-                      <div
-                        onClick={() => setExpandedOrder(expandedOrder === order.id ? null : order.id)}
-                        className="w-full grid md:grid-cols-[1fr_2fr_1.5fr_1fr_1fr_50px] items-center gap-4 px-8 py-5 cursor-pointer"
-                      >
-                        <span className="font-mono text-[14px] font-semibold text-gray-500">#{order.id.split('-')[0]}</span>
-                        <div className="flex flex-col">
-                          <span className="text-[15px] font-bold text-[#111827] truncate">{order.customer_name}</span>
-                          <span className="text-[13px] text-gray-500 truncate">{order.customer_email}</span>
-                        </div>
-                        <span className="text-[14px] text-gray-500 hidden md:block font-medium">
-                          {new Date(order.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
-                        </span>
-                        <span>
-                          <span className={`inline-flex items-center text-[12px] font-bold px-3 py-1 rounded-full capitalize ${statusColors[order.status] || "bg-gray-100 text-gray-700"}`}>
-                            {order.status}
-                          </span>
-                        </span>
-                        <span className="text-[15px] font-extrabold text-[#111827] text-right">${order.total.toFixed(2)}</span>
-                        <div className="flex justify-end text-gray-400 group-hover:text-gray-900 transition-colors">
-                          {expandedOrder === order.id ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
-                        </div>
-                      </div>
+                <div className="divide-y divide-blush/08">
+                  {filteredOrders.map((order) => {
+                    const firstItem = order.order_items?.[0];
+                    const itemCount = order.order_items?.reduce((s, i) => s + i.quantity, 0) || 0;
+                    const commission = order.total * 0.15;
 
-                      {/* Expanded Section */}
-                      <AnimatePresence>
-                        {expandedOrder === order.id && (
-                          <motion.div
-                            initial={{ height: 0, opacity: 0 }}
-                            animate={{ height: "auto", opacity: 1 }}
-                            exit={{ height: 0, opacity: 0 }}
-                            className="overflow-hidden bg-[#F3F4F6]/50"
-                          >
-                            <div className="px-8 py-6 border-t border-gray-100">
-                              <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-6">
-                                <div>
-                                  <h4 className="text-[12px] font-bold text-gray-400 uppercase tracking-widest mb-3">Update Status</h4>
-                                  <select
-                                    className={`w-full text-[14px] font-bold px-4 py-2.5 rounded-xl capitalize outline-none cursor-pointer border border-gray-200 appearance-none bg-white shadow-sm ${statusColors[order.status]}`}
-                                    value={order.status}
-                                    onChange={(e) => updateOrderStatus.mutate({ orderId: order.id, status: e.target.value as import("../../lib/types").OrderStatus })}
-                                  >
-                                    {Object.keys(statusColors).map(s => (
-                                      <option key={s} value={s}>{s}</option>
-                                    ))}
-                                  </select>
-                                </div>
-                                <div>
-                                  <h4 className="text-[12px] font-bold text-gray-400 uppercase tracking-widest mb-3">Shipping</h4>
-                                  {order.shipping_address ? (
-                                    <p className="text-[14px] text-[#4B5563] font-medium leading-relaxed">
-                                      {order.shipping_address.line1}<br />
-                                      {order.shipping_address.city}, {order.shipping_address.state} {order.shipping_address.postal_code}<br />
-                                      {order.shipping_address.country}
-                                    </p>
-                                  ) : (
-                                    <p className="text-[14px] text-gray-500 italic">No physical shipping required.</p>
-                                  )}
-                                </div>
-                                <div className="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm">
-                                  <h4 className="text-[12px] font-bold text-gray-400 uppercase tracking-widest mb-3">Order Details</h4>
-                                  <div className="space-y-2">
-                                    {(order.order_items || []).map((item) => (
-                                      <div key={item.id} className="flex justify-between items-center text-[14px]">
-                                        <span className="font-medium text-[#111827]">{item.product_name} <span className="text-gray-400">x{item.quantity}</span></span>
-                                        <span className="font-bold text-[#111827]">${item.subtotal.toFixed(2)}</span>
+                    return (
+                      <div key={order.id} className="group hover:bg-[#F9FAFB] transition-colors">
+                        <div
+                          onClick={() => setExpandedOrder(expandedOrder === order.id ? null : order.id)}
+                          className="w-full grid md:grid-cols-[1fr_2fr_1fr_0.8fr_1fr_1.2fr_50px] items-center gap-4 px-8 py-5 cursor-pointer"
+                        >
+                          <span className="font-mono text-[14px] font-semibold text-blush/55">#{order.id.split('-')[0]}</span>
+                          <div className="flex flex-col">
+                            <span className="text-[15px] font-bold text-[#111827] truncate">
+                              {firstItem?.product_name || "Custom Order"}
+                              {order.order_items && order.order_items.length > 1 && <span className="text-blush/40 ml-1">+{order.order_items.length - 1} more</span>}
+                            </span>
+                            <span className="text-[13px] text-blush/55 truncate">Customer: {order.customer_name}</span>
+                          </div>
+                          <span className="text-[14px] text-blush/55 hidden md:block font-medium">
+                            {new Date(order.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                          </span>
+                          <span className="text-center font-bold text-[#4B5563]">{itemCount}</span>
+                          <span>
+                            <span className={`inline-flex items-center text-[10px] font-bold px-2.5 py-0.5 rounded-full capitalize ${statusColors[order.status] || "bg-muted text-blush"}`}>
+                              {order.status}
+                            </span>
+                          </span>
+                          <span className="text-[15px] font-extrabold text-emerald-600 text-right">₹{commission.toLocaleString()}</span>
+                          <div className="flex justify-end text-blush/40 group-hover:text-blush transition-colors">
+                            {expandedOrder === order.id ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+                          </div>
+                        </div>
+
+                        {/* Expanded Section */}
+                        <AnimatePresence>
+                          {expandedOrder === order.id && (
+                            <motion.div
+                              initial={{ height: 0, opacity: 0 }}
+                              animate={{ height: "auto", opacity: 1 }}
+                              exit={{ height: 0, opacity: 0 }}
+                              className="overflow-hidden bg-[#F3F4F6]/50"
+                            >
+                              <div className="px-8 py-6 border-t border-blush/08">
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-6">
+                                  <div>
+                                    <h4 className="text-[12px] font-bold text-blush/40 uppercase tracking-widest mb-3">Update Order</h4>
+                                    <select
+                                      className={`w-full text-[14px] font-bold px-4 py-2.5 rounded-xl capitalize outline-none cursor-pointer border border-blush/12 appearance-none bg-card shadow-sm ${statusColors[order.status]}`}
+                                      value={order.status}
+                                      onChange={(e) => updateOrderStatus.mutate({ orderId: order.id, status: e.target.value as any })}
+                                    >
+                                      {Object.keys(statusColors).map(s => (
+                                        <option key={s} value={s}>{s}</option>
+                                      ))}
+                                    </select>
+                                  </div>
+                                  <div>
+                                    <h4 className="text-[12px] font-bold text-blush/40 uppercase tracking-widest mb-3">Shipping</h4>
+                                    {order.shipping_address ? (
+                                      <p className="text-[14px] text-[#4B5563] font-medium leading-relaxed">
+                                        {(order.shipping_address as any).line1 || "N/A"}<br />
+                                        {(order.shipping_address as any).city || "N/A"}, {(order.shipping_address as any).state || ""}
+                                      </p>
+                                    ) : (
+                                      <p className="text-[14px] text-blush/55 italic">No shipping details.</p>
+                                    )}
+                                  </div>
+                                  <div className="bg-card rounded-2xl p-4 border border-blush/08 shadow-sm">
+                                    <h4 className="text-[12px] font-bold text-blush/40 uppercase tracking-widest mb-3">Revenue Summary</h4>
+                                    <div className="space-y-2">
+                                      <div className="flex justify-between items-center text-[14px]">
+                                        <span className="font-medium text-blush/55">Order Value</span>
+                                        <span className="font-bold text-[#111827]">₹{order.total.toLocaleString()}</span>
                                       </div>
-                                    ))}
-                                    <div className="pt-3 mt-3 border-t border-gray-100 flex justify-between items-center">
-                                      <span className="text-[14px] font-medium text-gray-500">Subtotal</span>
-                                      <span className="text-[14px] font-bold text-[#111827]">${order.subtotal.toFixed(2)}</span>
-                                    </div>
-                                    <div className="flex justify-between items-center mt-1">
-                                      <span className="text-[14px] font-medium text-gray-500">Tax</span>
-                                      <span className="text-[14px] font-bold text-[#111827]">${order.tax.toFixed(2)}</span>
-                                    </div>
-                                    <div className="pt-3 mt-3 border-t border-gray-200 flex justify-between items-center bg-[#F9FAFB] -mx-4 -mb-4 px-4 py-3 rounded-b-2xl">
-                                      <span className="text-[14px] font-extrabold text-[#111827]">Total</span>
-                                      <span className="text-[16px] font-black text-[#7C3AED]">${order.total.toFixed(2)}</span>
+                                      <div className="pt-3 mt-3 border-t border-blush/12 flex justify-between items-center">
+                                        <span className="text-[14px] font-extrabold text-[#111827]">Your Commission</span>
+                                        <span className="text-[16px] font-black text-emerald-600">₹{commission.toLocaleString()}</span>
+                                      </div>
                                     </div>
                                   </div>
                                 </div>
                               </div>
-                            </div>
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
-                    </div>
-                  ))}
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                      </div>
+                    );
+                  })}
                 </div>
               )}
             </motion.div>

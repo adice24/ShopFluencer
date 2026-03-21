@@ -265,7 +265,7 @@ export default function AppearancePage() {
   if (themeLoading || linksLoading) {
     return (
       <div className="flex items-center justify-center min-h-[50vh]">
-        <Loader2 className="w-8 h-8 flex animate-spin text-black" />
+        <Loader2 className="w-8 h-8 flex animate-spin text-void" />
       </div>
     );
   }
@@ -279,7 +279,7 @@ export default function AppearancePage() {
 
         <div className="space-y-8">
           {/* Themes Grid */}
-          <section className="bg-white rounded-[24px] shadow-[0_2px_12px_rgba(0,0,0,0.03)] border border-border/60 p-6 md:p-8 relative overflow-hidden">
+          <section className="bg-card rounded-[24px] shadow-[0_2px_12px_rgba(0,0,0,0.03)] border border-border/60 p-6 md:p-8 relative overflow-hidden">
             <div className="mb-6 flex flex-col items-center">
               <h2 className="text-[22px] font-bold text-foreground mt-2 mb-1">Select a theme</h2>
               <p className="text-[15px] font-medium text-muted-foreground text-center max-w-sm">Pick the style that feels right - you can add your content later</p>
@@ -323,7 +323,7 @@ export default function AppearancePage() {
             <h2 className="text-[18px] font-bold text-foreground mt-4 ml-1">Custom appearance</h2>
 
             {/* Background settings */}
-            <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} className="bg-white border border-border/60 rounded-[24px] p-6 shadow-[0_2px_12px_rgba(0,0,0,0.03)]">
+            <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} className="bg-card border border-border/60 rounded-[24px] p-6 shadow-[0_2px_12px_rgba(0,0,0,0.03)]">
               <h3 className="font-semibold text-foreground mb-4">Background Settings</h3>
 
               <div className="flex gap-2 mb-6 bg-muted/40 p-1.5 rounded-[12px]">
@@ -331,7 +331,7 @@ export default function AppearancePage() {
                   <button
                     key={bg.id}
                     onClick={() => handleChange('background_type', bg.id)}
-                    className={`flex-1 py-2 rounded-lg transition-all duration-200 text-[14px] font-bold ${localTheme.background_type === bg.id ? "bg-white text-foreground shadow-sm border border-border/40" : "text-muted-foreground hover:text-foreground hover:bg-black/5"}`}
+                    className={`flex-1 py-2 rounded-lg transition-all duration-200 text-[14px] font-bold ${localTheme.background_type === bg.id ? "bg-card text-foreground shadow-sm border border-border/40" : "text-muted-foreground hover:text-foreground hover:bg-black/5"}`}
                   >
                     {bg.label}
                   </button>
@@ -349,7 +349,7 @@ export default function AppearancePage() {
                         className={`w-12 h-12 rounded-[14px] flex items-center justify-center transition-all duration-200 shadow-sm ${localTheme.background_value === color.hex ? "ring-2 ring-offset-2 ring-foreground scale-110" : "hover:scale-105"}`}
                         style={{ backgroundColor: color.hex }}
                       >
-                        {localTheme.background_value === color.hex && <Check size={18} className={['#f8fafc', '#ffffff'].includes(color.hex) ? "text-black" : "text-white"} />}
+                        {localTheme.background_value === color.hex && <Check size={18} className={['#f8fafc', '#ffffff'].includes(color.hex) ? "text-void" : "text-blush"} />}
                       </button>
                     ))}
                   </div>
@@ -394,7 +394,7 @@ export default function AppearancePage() {
             </motion.div>
 
             {/* Fonts & Texts */}
-            <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="bg-white border border-border/60 rounded-[24px] p-6 shadow-[0_2px_12px_rgba(0,0,0,0.03)]">
+            <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="bg-card border border-border/60 rounded-[24px] p-6 shadow-[0_2px_12px_rgba(0,0,0,0.03)]">
               <div className="flex items-center justify-between mb-5">
                 <h3 className="font-semibold text-foreground">Fonts & Colors</h3>
 
@@ -425,7 +425,7 @@ export default function AppearancePage() {
             </motion.div>
 
             {/* Buttons */}
-            <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="bg-white border border-border/60 rounded-[24px] p-6 shadow-[0_2px_12px_rgba(0,0,0,0.03)]">
+            <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="bg-card border border-border/60 rounded-[24px] p-6 shadow-[0_2px_12px_rgba(0,0,0,0.03)]">
               <div className="flex items-center justify-between mb-5">
                 <h3 className="font-semibold text-foreground">Button Elements</h3>
 
@@ -449,7 +449,7 @@ export default function AppearancePage() {
                     className={`py-6 rounded-xl border transition-all duration-200 flex flex-col items-center justify-center gap-4 ${localTheme.button_style === b.id ? "bg-[#E28362]/10 border-[#E28362] ring-1 ring-[#E28362]/50" : "bg-[#FAFAFA] border-border/60 hover:border-black/30 hover:bg-muted/50"}`}
                   >
                     {b.id === 'rounded' && <div className="w-20 h-10 rounded-[24px] shadow-sm bg-foreground/20" />}
-                    {b.id === 'glass' && <div className="w-20 h-10 rounded-xl border border-foreground/30 shadow-lg bg-transparent" />}
+                    {b.id === 'glass' && <div className="w-20 h-10 rounded-xl border border-foreground/30 shadow-lg shadow-void/50 bg-transparent" />}
                     {b.id === 'flat' && <div className="w-20 h-10 rounded-none border border-border bg-foreground/20 shadow-none" />}
 
                     <span className="text-[13px] font-bold uppercase tracking-wider text-foreground/80">{b.label}</span>

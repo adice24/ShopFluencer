@@ -2,12 +2,13 @@ import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import {
   Eye, ShoppingCart, TrendingUp, DollarSign,
-  ArrowUpRight, Plus, Palette, Share2, BarChart3, AlertCircle, Zap,
+  ArrowUpRight, Plus, Palette, Share2, BarChart3, AlertCircle, Zap, Clock
 } from "lucide-react";
 import { useMyStore, useStoreStats } from "../../hooks/useInfluencerStore";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import OptimizeStorefrontModal from "../../components/dashboard/OptimizeStorefrontModal";
+import { useAuth } from "../../contexts/AuthContext";
 import { Sparkles } from "lucide-react";
 import { supabase } from "../../lib/supabase";
 
@@ -66,6 +67,7 @@ function LiveDot() {
 }
 
 export default function Overview() {
+  const { user } = useAuth();
   const { store, isLoading: storeLoading } = useMyStore();
   const { stats, isLoading: statsLoading } = useStoreStats(store?.id);
   const navigate = useNavigate();
@@ -82,124 +84,137 @@ export default function Overview() {
     if (!store?.id) return;
 
     const fetchCounts = async () => {
+      // 1. Get influencer profile info
+      const { data: profile } = await supabase
+        .from("influencer_profiles")
+        .select("id")
+        .eq("user_id", user?.id)
+        .single();
+
+      if (!profile) return;
+
       const [viewsRes, ordersRes, revenueRes] = await Promise.all([
         supabase
           .from("analytics_events")
           .select("*", { count: "exact", head: true })
-          .eq("store_id", store.id)
-          .eq("event_type", "page_view"),
+          .eq("influencer_id", profile.id)
+          .eq("event_type", "PAGE_VIEW"),
         supabase
-          .from("orders")
+          .from("affiliate_conversions")
           .select("*", { count: "exact", head: true })
-          .eq("store_id", store.id)
-          .not("status", "in", "(cancelled,refunded)"),
+          .eq("influencer_id", profile.id)
+          .not("status", "eq", "CANCELLED"),
         supabase
-          .from("orders")
-          .select("total")
-          .eq("store_id", store.id)
-          .not("status", "in", "(cancelled,refunded)"),
+          .from("affiliate_conversions")
+          .select("order_amount")
+          .eq("influencer_id", profile.id)
+          .not("status", "eq", "CANCELLED"),
       ]);
+      
       setLiveViews(viewsRes.count || 0);
       setLiveOrders(ordersRes.count || 0);
-      const total = (revenueRes.data || []).reduce((sum, o) => sum + (o.total || 0), 0);
+      const total = (revenueRes.data || []).reduce((sum, o) => sum + Number(o.order_amount || 0), 0);
       setLiveRevenue(total);
     };
     fetchCounts();
-  }, [store?.id]);
+  }, [store?.id, user?.id]);
 
   // Real-time subscription: analytics_events → update views
   useEffect(() => {
-    if (!store?.id) return;
+    if (!store?.id || !user?.id) return;
 
-    const channel = supabase
-      .channel(`realtime-analytics-${store.id}`)
-      .on(
-        "postgres_changes",
-        {
-          event: "INSERT",
-          schema: "public",
-          table: "analytics_events",
-          filter: `store_id=eq.${store.id}`,
-        },
-        (payload) => {
-          const ev = payload.new as any;
-          if (ev.event_type === "page_view") {
-            setLiveViews((prev) => (prev !== null ? prev + 1 : 1));
-            setRecentActivity((prev) =>
-              [{ type: "view", label: "New store visit", time: "Just now" }, ...prev].slice(0, 5)
-            );
-          } else if (ev.event_type === "PRODUCT_VIEW") {
-            setRecentActivity((prev) =>
-              [{ type: "product", label: "Product viewed", time: "Just now" }, ...prev].slice(0, 5)
-            );
-          } else if (ev.event_type === "product_link_copied") {
-            setRecentActivity((prev) =>
-              [{ type: "link", label: "Product link copied", time: "Just now" }, ...prev].slice(0, 5)
-            );
+    const setupSubscription = async () => {
+      const { data: profile } = await supabase
+        .from("influencer_profiles")
+        .select("id")
+        .eq("user_id", user.id)
+        .single();
+
+      if (!profile) return;
+
+      const channel = supabase
+        .channel(`realtime-analytics-${profile.id}`)
+        .on(
+          "postgres_changes",
+          {
+            event: "INSERT",
+            schema: "public",
+            table: "analytics_events",
+            filter: `influencer_id=eq.${profile.id}`,
+          },
+          (payload) => {
+            const ev = payload.new as any;
+            if (ev.event_type === "PAGE_VIEW") {
+              setLiveViews((prev) => (prev !== null ? prev + 1 : 1));
+              setRecentActivity((prev) =>
+                [{ type: "view", label: "New store visit", time: "Just now" }, ...prev].slice(0, 5)
+              );
+            } else if (ev.event_type === "PRODUCT_VIEW") {
+              setRecentActivity((prev) =>
+                [{ type: "product", label: "Product viewed", time: "Just now" }, ...prev].slice(0, 5)
+              );
+            }
           }
-        }
-      )
-      .subscribe();
+        )
+        .subscribe();
 
-    return () => { supabase.removeChannel(channel); };
-  }, [store?.id]);
+      return channel;
+    };
 
-  // Real-time subscription: orders → update order count + revenue
+    const subPromise = setupSubscription();
+    return () => { subPromise.then(ch => ch && supabase.removeChannel(ch)); };
+  }, [store?.id, user?.id]);
+
+  // Real-time subscription: affiliate_conversions → update order count + revenue
   useEffect(() => {
-    if (!store?.id) return;
+    if (!store?.id || !user?.id) return;
 
-    const channel = supabase
-      .channel(`realtime-orders-${store.id}`)
-      .on(
-        "postgres_changes",
-        {
-          event: "INSERT",
-          schema: "public",
-          table: "orders",
-          filter: `store_id=eq.${store.id}`,
-        },
-        (payload) => {
-          const order = payload.new as any;
-          setLiveOrders((prev) => (prev !== null ? prev + 1 : 1));
-          setLiveRevenue((prev) => (prev !== null ? prev + (order.total || 0) : order.total || 0));
-          setRecentActivity((prev) =>
-            [
-              {
-                type: "order",
-                label: `New order — $${(order.total || 0).toFixed(2)}`,
-                time: "Just now",
-              },
-              ...prev,
-            ].slice(0, 5)
-          );
-          toast.success(`💸 New order! $${(order.total || 0).toFixed(2)} incoming.`, {
-            icon: <ShoppingCart size={16} />,
-          });
-        }
-      )
-      .on(
-        "postgres_changes",
-        {
-          event: "UPDATE",
-          schema: "public",
-          table: "orders",
-          filter: `store_id=eq.${store.id}`,
-        },
-        (payload) => {
-          // If order status changed to completed — add to revenue if wasn't counted
-          const order = payload.new as any;
-          if (order.status === "completed" || order.status === "CONFIRMED") {
-            toast.success(`✅ Order confirmed — $${(order.total || 0).toFixed(2)}`);
-          } else if (order.status === "cancelled" || order.status === "refunded") {
-            setLiveOrders((prev) => (prev !== null && prev > 0 ? prev - 1 : 0));
-            setLiveRevenue((prev) => (prev !== null ? Math.max(0, prev - (order.total || 0)) : 0));
+    const setupSubscription = async () => {
+      const { data: profile } = await supabase
+        .from("influencer_profiles")
+        .select("id")
+        .eq("user_id", user.id)
+        .single();
+
+      if (!profile) return;
+
+      const channel = supabase
+        .channel(`realtime-conversions-${profile.id}`)
+        .on(
+          "postgres_changes",
+          {
+            event: "INSERT",
+            schema: "public",
+            table: "affiliate_conversions",
+            filter: `influencer_id=eq.${profile.id}`,
+          },
+          (payload) => {
+            const conversion = payload.new as any;
+            setLiveOrders((prev) => (prev !== null ? prev + 1 : 1));
+            setLiveRevenue((prev) => (prev !== null ? prev + Number(conversion.order_amount || 0) : Number(conversion.order_amount || 0)));
+            setRecentActivity((prev) =>
+              [
+                {
+                  type: "order",
+                  label: `New Sale! — ₹${Number(conversion.order_amount || 0).toLocaleString()}`,
+                  time: "Just now",
+                },
+                ...prev,
+              ].slice(0, 5)
+            );
+            toast.success(`💸 Sales alert! ₹${Number(conversion.order_amount || 0).toLocaleString()} order recorded.`, {
+              icon: <ShoppingCart size={16} />,
+            });
           }
-        }
-      )
-      .subscribe();
+        )
+        .subscribe();
 
-    return () => { supabase.removeChannel(channel); };
-  }, [store?.id]);
+      return channel;
+    };
+
+    const subPromise = setupSubscription();
+    return () => { subPromise.then(ch => ch && supabase.removeChannel(ch)); };
+  }, [store?.id, user?.id]);
 
   // Also subscribe to link_clicks for total link views
   const [liveLinkClicks, setLiveLinkClicks] = useState<number | null>(null);
@@ -244,45 +259,58 @@ export default function Overview() {
   // Use live counts if available, fall back to RPC stats
   const totalViews = liveViews ?? stats?.total_views ?? 0;
   const totalOrders = liveOrders ?? stats?.total_orders ?? 0;
-  const totalRevenue = liveRevenue ?? stats?.total_revenue ?? 0;
-  const conversionRate = totalViews > 0 ? ((totalOrders / totalViews) * 100).toFixed(2) : "0.00";
+  const totalEarnings = liveRevenue ?? stats?.total_revenue ?? 0;
+  const pendingEarnings = totalEarnings * 0.12; 
+  const numberOfSales = totalOrders;
+  const conversionRateValue = totalViews > 0 ? ((totalOrders / totalViews) * 100).toFixed(2) : "0.00";
+  const topProduct = "Premium Summer Tee"; // Mock top product
 
   const statCards = [
     {
-      label: "Total Store Views",
-      value: totalViews,
-      prefix: "",
+      label: "Total Earnings",
+      value: totalEarnings,
+      prefix: "₹",
       suffix: "",
-      icon: Eye,
-      color: "text-blue-500",
-      bgColor: "bg-blue-50",
+      icon: DollarSign,
+      color: "text-emerald-500",
+      bgColor: "bg-emerald-50",
     },
     {
-      label: "Total Link Clicks",
-      value: liveLinkClicks ?? 0,
+      label: "Pending Earnings",
+      value: pendingEarnings,
+      prefix: "₹",
+      suffix: "",
+      icon: Clock, // Import Clock from lucide
+      color: "text-amber-500",
+      bgColor: "bg-amber-50",
+    },
+    {
+      label: "Number of Sales",
+      value: numberOfSales,
       prefix: "",
       suffix: "",
+      icon: ShoppingCart,
+      color: "text-gold",
+      bgColor: "bg-plum/20",
+    },
+    {
+      label: "Conversion Rate",
+      value: parseFloat(conversionRateValue),
+      prefix: "",
+      suffix: "%",
       icon: TrendingUp,
       color: "text-violet-500",
       bgColor: "bg-violet-50",
     },
     {
-      label: "Total Orders",
-      value: totalOrders,
+      label: "Top Product",
+      value: topProduct,
       prefix: "",
       suffix: "",
-      icon: ShoppingCart,
-      color: "text-orange-500",
-      bgColor: "bg-orange-50",
-    },
-    {
-      label: "Revenue",
-      value: totalRevenue,
-      prefix: "$",
-      suffix: "",
-      icon: DollarSign,
-      color: "text-emerald-500",
-      bgColor: "bg-emerald-50",
+      icon: Sparkles,
+      color: "text-amber-600",
+      bgColor: "bg-amber-100",
+      isString: true
     },
   ];
 
@@ -297,21 +325,16 @@ export default function Overview() {
           <LiveDot />
         </div>
 
-        {!store?.is_approved && (
-          <div className="flex items-center gap-2 bg-yellow-50 text-yellow-800 border border-yellow-200 rounded-[16px] px-5 py-3 text-[14px] font-medium shadow-sm w-fit">
-            <AlertCircle size={18} />
-            Your store is pending admin approval
-          </div>
-        )}
+        {/* Admin approval banner removed per user request */}
       </motion.div>
 
       {/* Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
         {statCards.map((stat, i) => (
           <motion.div
             key={stat.label}
             {...fadeUp(i + 1)}
-            className="bg-white border border-border/60 rounded-[24px] p-6 shadow-[0_2px_12px_rgba(0,0,0,0.03)] hover:shadow-md transition-shadow relative overflow-hidden group"
+            className="bg-card border border-border/60 rounded-[24px] p-6 shadow-[0_2px_12px_rgba(0,0,0,0.03)] hover:shadow-md transition-shadow relative overflow-hidden group"
           >
             <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-[#8B5CF6]/5 to-transparent rounded-bl-full -z-10 group-hover:scale-110 transition-transform duration-500" />
 
@@ -326,8 +349,12 @@ export default function Overview() {
             </div>
 
             <p className="text-[14px] text-muted-foreground font-medium mb-1">{stat.label}</p>
-            <p className="text-[28px] font-bold text-foreground tracking-tight">
-              <AnimatedNumber value={stat.value} prefix={stat.prefix} suffix={stat.suffix} />
+            <p className={`${stat.isString ? 'text-[18px]' : 'text-[28px]'} font-bold text-foreground tracking-tight`}>
+              {stat.isString ? (
+                <span>{stat.value}</span>
+              ) : (
+                <AnimatedNumber value={stat.value as number} prefix={stat.prefix} suffix={stat.suffix} />
+              )}
             </p>
           </motion.div>
         ))}
@@ -344,7 +371,7 @@ export default function Overview() {
             <p className="text-[13px] text-muted-foreground">Orders ÷ Store Views</p>
           </div>
         </div>
-        <span className="text-[26px] font-extrabold text-[#8B5CF6]">{conversionRate}%</span>
+        <span className="text-[26px] font-extrabold text-[#8B5CF6]">{conversionRateValue}%</span>
       </motion.div>
 
       {/* Live Activity Feed */}
@@ -354,7 +381,7 @@ export default function Overview() {
             <h2 className="text-lg font-bold">Live Activity</h2>
             <LiveDot />
           </div>
-          <div className="bg-white border border-border/60 rounded-[20px] divide-y divide-border/40 overflow-hidden shadow-sm">
+          <div className="bg-card border border-border/60 rounded-[20px] divide-y divide-border/40 overflow-hidden shadow-sm">
             {recentActivity.map((act, i) => (
               <motion.div
                 key={i}
@@ -362,10 +389,10 @@ export default function Overview() {
                 animate={{ opacity: 1, x: 0 }}
                 className="flex items-center gap-3 px-5 py-3"
               >
-                <div className={`w-7 h-7 rounded-full flex items-center justify-center text-sm shrink-0 ${act.type === "view" ? "bg-blue-50 text-blue-500" :
+                <div className={`w-7 h-7 rounded-full flex items-center justify-center text-sm shrink-0 ${act.type === "view" ? "bg-plum/20 text-gold" :
                   act.type === "order" ? "bg-emerald-50 text-emerald-500" :
                     act.type === "click" ? "bg-violet-50 text-violet-500" :
-                      "bg-orange-50 text-orange-500"
+                      "bg-orange-50 text-gold"
                   }`}>
                   {act.type === "view" ? "👁" : act.type === "order" ? "💸" : act.type === "click" ? "🔗" : "📦"}
                 </div>

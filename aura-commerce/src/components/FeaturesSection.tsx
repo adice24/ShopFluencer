@@ -51,7 +51,7 @@ const AnalyticsFloatingCard = ({ inView }: { inView: boolean }) => {
             height: "120px",
             borderRadius: "50%",
             background:
-              "radial-gradient(ellipse at center, rgba(52,211,153,0.45) 0%, rgba(16,185,129,0.18) 50%, transparent 75%)",
+              "radial-gradient(ellipse at center, rgba(237,158,89,0.45) 0%, rgba(237,158,89,0.18) 50%, transparent 75%)",
             filter: "blur(28px)",
             willChange: "transform, opacity",
           }}
@@ -88,12 +88,12 @@ const AnalyticsFloatingCard = ({ inView }: { inView: boolean }) => {
           {/* ── Frosted container card ── */}
           <motion.div
             style={{
-              background: "rgba(255,255,255,0.06)",
+              background: "rgba(233,188,185,0.06)",
               backdropFilter: "blur(12px)",
               borderRadius: "20px",
-              border: "1px solid rgba(255,255,255,0.12)",
+              border: "1px solid rgba(233,188,185,0.12)",
               boxShadow:
-                "0 20px 60px rgba(0,0,0,0.35), 0 4px 20px rgba(16,185,129,0.25)",
+                "0 20px 60px rgba(0,0,0,0.35), 0 4px 20px rgba(237,158,89,0.25)",
               padding: "28px 32px 20px",
               display: "flex",
               flexDirection: "column",
@@ -118,9 +118,9 @@ const AnalyticsFloatingCard = ({ inView }: { inView: boolean }) => {
                     borderRadius: "6px 6px 0 0",
                     transformOrigin: "bottom center",
                     background:
-                      "linear-gradient(180deg, #6ee7b7 0%, #10b981 60%, #059669 100%)",
+                      "linear-gradient(180deg, #ED9E59 0%, #A34054 60%, #662249 100%)",
                     boxShadow:
-                      "inset 0 2px 6px rgba(255,255,255,0.25), 0 4px 16px rgba(16,185,129,0.35)",
+                      "inset 0 2px 6px rgba(233,188,185,0.25), 0 4px 16px rgba(237,158,89,0.35)",
                     cursor: "default",
                     willChange: "transform, opacity",
                   }}
@@ -151,7 +151,7 @@ const AnalyticsFloatingCard = ({ inView }: { inView: boolean }) => {
                     rotateX: 6,
                     y: -4,
                     boxShadow:
-                      "inset 0 2px 8px rgba(255,255,255,0.35), 0 8px 24px rgba(16,185,129,0.55)",
+                      "inset 0 2px 8px rgba(233,188,185,0.35), 0 8px 24px rgba(237,158,89,0.55)",
                     transition: { duration: 0.3, ease: "easeOut" },
                   }}
                 />
@@ -164,7 +164,7 @@ const AnalyticsFloatingCard = ({ inView }: { inView: boolean }) => {
                 width: "100%",
                 height: "1px",
                 background:
-                  "linear-gradient(90deg, transparent, rgba(110,231,183,0.4), transparent)",
+                  "linear-gradient(90deg, transparent, rgba(237,158,89,0.4), transparent)",
               }}
             />
           </motion.div>
@@ -178,7 +178,7 @@ const features = [
   {
     title: "Create and customize your ShopFluence in minutes",
     description: "Connect all your content across social media, websites, stores and more in one link in bio. Customize every detail or let ShopFluence automatically enhance it to match your brand and drive more clicks.",
-    bgColor: "bg-rose-100",
+    bgColor: "bg-card",
     cards: [
       { image: gymProduct, label: "Gym" },
       { image: shoppingProduct, label: "Shopping" },
@@ -205,7 +205,7 @@ const features = [
   {
     title: "Analyze your audience and keep them engaged",
     description: "Track your engagement over time, monitor revenue and learn what's converting your audience. Make informed updates on the fly to keep them coming back.",
-    bgColor: "bg-emerald-800",
+    bgColor: "bg-plum",
     isAnalytics: true,
   },
 ];
@@ -217,8 +217,8 @@ const TiltedCards = ({ cards }: { cards: { image: string; label: string }[] }) =
       <TiltedCard className="col-span-2 row-span-1 cursor-pointer" maxTilt={20} scale={1.05}>
         <div className="w-full h-full rounded-2xl overflow-hidden shadow-xl relative">
           <img src={cards[0].image} alt={cards[0].label} className="w-full h-full object-cover" />
-          <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/60 to-transparent p-3">
-            <span className="text-white text-sm font-bold">{cards[0].label}</span>
+          <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-void/80 to-transparent p-3">
+            <span className="text-blush text-sm font-bold">{cards[0].label}</span>
           </div>
         </div>
       </TiltedCard>
@@ -226,8 +226,8 @@ const TiltedCards = ({ cards }: { cards: { image: string; label: string }[] }) =
       <TiltedCard className="col-span-1 row-span-1 cursor-pointer" maxTilt={25} scale={1.08}>
         <div className="w-full h-full rounded-2xl overflow-hidden shadow-xl relative">
           <img src={cards[1].image} alt={cards[1].label} className="w-full h-full object-cover" />
-          <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/60 to-transparent p-2">
-            <span className="text-white text-xs font-bold">{cards[1].label}</span>
+          <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-void/80 to-transparent p-2">
+            <span className="text-blush text-xs font-bold">{cards[1].label}</span>
           </div>
         </div>
       </TiltedCard>
@@ -235,8 +235,8 @@ const TiltedCards = ({ cards }: { cards: { image: string; label: string }[] }) =
       <TiltedCard className="col-span-1 row-span-1 cursor-pointer" maxTilt={25} scale={1.08}>
         <div className="w-full h-full rounded-2xl overflow-hidden shadow-xl relative">
           <img src={cards[2].image} alt={cards[2].label} className="w-full h-full object-cover" />
-          <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/60 to-transparent p-2">
-            <span className="text-white text-xs font-bold">{cards[2].label}</span>
+          <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-void/80 to-transparent p-2">
+            <span className="text-blush text-xs font-bold">{cards[2].label}</span>
           </div>
         </div>
       </TiltedCard>
@@ -244,8 +244,8 @@ const TiltedCards = ({ cards }: { cards: { image: string; label: string }[] }) =
       <TiltedCard className="col-span-2 row-span-1 cursor-pointer" maxTilt={20} scale={1.05}>
         <div className="w-full h-full rounded-2xl overflow-hidden shadow-xl relative">
           <img src={cards[0].image} alt={cards[0].label} className="w-full h-full object-cover" />
-          <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/60 to-transparent p-3">
-            <span className="text-white text-sm font-bold">{cards[0].label}</span>
+          <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-void/80 to-transparent p-3">
+            <span className="text-blush text-sm font-bold">{cards[0].label}</span>
           </div>
         </div>
       </TiltedCard>
@@ -273,7 +273,7 @@ const FeatureBlock = ({ feature, index }: { feature: typeof features[0]; index: 
         )}
         {feature.isPhone && (
           <div className="w-full h-[300px] md:h-[400px]">
-            <Suspense fallback={<div className="w-full h-full flex items-center justify-center text-white/50">Loading...</div>}>
+            <Suspense fallback={<div className="w-full h-full flex items-center justify-center text-blush/50">Loading...</div>}>
               <Lanyard position={[0, 0, 25]} gravity={[0, -40, 0]} />
             </Suspense>
           </div>
@@ -295,19 +295,19 @@ const FeatureBlock = ({ feature, index }: { feature: typeof features[0]; index: 
       </div>
 
       {/* Text Side */}
-      <div className={`p-6 md:p-10 flex flex-col justify-center ${isDark ? "text-white" : "text-foreground"}`}>
+      <div className={`p-6 md:p-10 flex flex-col justify-center ${feature.isAnalytics ? "text-yellow-200" : (isDark ? "text-blush" : "text-foreground")}`}>
         <h3
           className="font-bold tracking-tight leading-tight mb-4"
           style={{ fontSize: "clamp(1.5rem, 3vw, 2.2rem)" }}
         >
           {feature.title}
         </h3>
-        <p className={`text-base md:text-lg leading-relaxed mb-6 md:mb-8 ${isDark ? "text-white/80" : "text-muted-foreground"}`}>
+        <p className={`text-base md:text-lg leading-relaxed mb-6 md:mb-8 ${feature.isAnalytics ? "text-yellow-200/80" : (isDark ? "text-blush/80" : "text-muted-foreground")}`}>
           {feature.description}
         </p>
         <motion.a
           href="/auth"
-          className={`inline-flex items-center justify-center gap-2 px-6 py-4 rounded-pill text-sm font-semibold w-full sm:w-fit mt-auto md:mt-0 ${isDark ? "bg-white text-foreground" : "bg-secondary text-secondary-foreground"
+          className={`inline-flex items-center justify-center gap-2 px-6 py-4 rounded-pill text-sm font-semibold w-full sm:w-fit mt-auto md:mt-0 ${isDark ? "bg-card text-foreground" : "bg-secondary text-secondary-foreground"
             }`}
           whileHover={{ scale: 1.03 }}
           whileTap={{ scale: 0.97 }}
@@ -324,7 +324,7 @@ export const FeaturesSection = () => {
   return (
     <>
       <section id="features" className="py-20 bg-background">
-        <div className="max-w-6xl mx-auto px-6 space-y-12 bg-[#fdf9d8] border-primary-foreground">
+        <div className="max-w-6xl mx-auto px-6 space-y-12">
           {features.map((feature, i) => (
             <FeatureBlock key={feature.title} feature={feature} index={i} />
           ))}

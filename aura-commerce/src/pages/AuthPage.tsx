@@ -47,35 +47,38 @@ export default function AuthPage() {
         validatePasswordStrength, user, remainingAttempts, retryAfter,
     } = useAuth();
     const [mode, setMode] = useState<"login" | "signup">("login");
+
+    // Initialize mode from URL params
+    useEffect(() => {
+        const params = new URLSearchParams(window.location.search);
+        const urlMode = params.get("mode");
+        if (urlMode === "signup") setMode("signup");
+        else if (urlMode === "login") setMode("login");
+    }, []);
+
     const [showPass, setShowPass] = useState(false);
     const [showConfirm, setShowConfirm] = useState(false);
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPass, setConfirmPass] = useState("");
     const [name, setName] = useState("");
+    const [role, setRole] = useState<"affiliate" | "brand">("affiliate");
     const [loading, setLoading] = useState(false);
     const [errorMsg, setErrorMsg] = useState("");
     const [successMsg, setSuccessMsg] = useState("");
 
-    // Handle auto-redirect if user gets logged in (e.g. via OAuth redirect)
     useEffect(() => {
         if (user && !loading) {
-            const checkRole = async () => {
-                try {
-                    const { supabase } = await import("../lib/supabase");
-                    const { data } = await supabase.from("profiles").select("role").eq("id", user.id).single();
-                    if (data?.role === "influencer" || data?.role === "admin") {
-                        navigate("/dashboard", { replace: true });
-                    } else if (data?.role === "customer") {
-                        navigate("/customer", { replace: true });
-                    } else {
-                        navigate("/role-select", { replace: true });
-                    }
-                } catch {
-                    navigate("/role-select", { replace: true });
-                }
-            };
-            checkRole();
+            const userRole = (user.user_metadata?.role || "").toUpperCase();
+            if (userRole === "ADMIN") {
+                navigate("/admin", { replace: true });
+            } else if (userRole === "AFFILIATE") {
+                navigate("/dashboard", { replace: true });
+            } else if (userRole === "BRAND") {
+                navigate("/brand", { replace: true });
+            } else {
+                navigate("/role-select", { replace: true });
+            }
         }
     }, [user, loading, navigate]);
 
@@ -101,19 +104,16 @@ export default function AuthPage() {
                     return;
                 }
                 // Password policy enforced by AuthContext (validatePassword)
-                const { error, requiresEmailConfirmation } = await signUp(email, password, name);
+                const { error, requiresEmailConfirmation } = await signUp(email, password, name, role);
                 if (error) {
                     setErrorMsg(error);
                     toast.error(error);
-                } else if (requiresEmailConfirmation) {
-                    setSuccessMsg("Check your email for a confirmation link to activate your account.");
-                    toast.success("Confirmation email sent!");
+                } else {
+                    toast.success("Account created successfully!");
+                    setSuccessMsg("Account created! Now please log in with your credentials.");
                     setMode("login");
                     setPassword("");
                     setConfirmPass("");
-                } else {
-                    toast.success("Account created!");
-                    navigate("/role-select", { replace: true });
                 }
             } else {
                 const { error, requiresMFA } = await signIn(email, password);
@@ -126,14 +126,16 @@ export default function AuthPage() {
                 } else {
                     toast.success("Welcome back!");
 
-                    // Fetch profile to determine where to redirect
-                    const { data: { user } } = await import("../lib/supabase").then(m => m.supabase.auth.getUser());
-                    if (user) {
-                        const { data: profile } = await import("../lib/supabase").then(m => m.supabase.from("profiles").select("role").eq("id", user.id).single());
-                        if (profile?.role === "influencer" || profile?.role === "admin") {
+                    // Use user_metadata for role-based routing (no DB query needed)
+                    const { data: { user: authUser } } = await import("../lib/supabase").then(m => m.supabase.auth.getUser());
+                    if (authUser) {
+                        const userRole = (authUser.user_metadata?.role || "").toUpperCase();
+                        if (userRole === "ADMIN") {
+                            navigate("/admin", { replace: true });
+                        } else if (userRole === "AFFILIATE") {
                             navigate("/dashboard", { replace: true });
-                        } else if (profile?.role === "customer") {
-                            navigate("/customer", { replace: true });
+                        } else if (userRole === "BRAND") {
+                            navigate("/brand", { replace: true });
                         } else {
                             navigate("/role-select", { replace: true });
                         }
@@ -181,7 +183,7 @@ export default function AuthPage() {
                 display: "flex",
                 fontFamily: "'Inter', 'Helvetica Neue', Arial, sans-serif",
                 overflow: "hidden",
-                background: "#ffffff",
+                background: "#F5F0FF",
             }}
         >
             {/* ════════════════════════════════════════
@@ -191,7 +193,7 @@ export default function AuthPage() {
                 style={{
                     position: "relative",
                     width: "50%",
-                    background: "#ffffff",
+                    background: "#FFFFFF",
                     display: "flex",
                     flexDirection: "column",
                     justifyContent: "center",
@@ -204,18 +206,18 @@ export default function AuthPage() {
                 {/* Logo */}
                 <div style={{ position: "absolute", top: "28px", left: "36px", display: "flex", alignItems: "center", gap: "8px" }}>
                     <svg width="26" height="26" viewBox="0 0 26 26" fill="none">
-                        <path d="M13 2C7.48 2 3 6.48 3 12s4.48 10 10 10 10-4.48 10-10S18.52 2 13 2z" fill="#22c55e" opacity="0.15" />
-                        <path d="M8 13c0-2.76 2.24-5 5-5s5 2.24 5 5" stroke="#22c55e" strokeWidth="2.5" strokeLinecap="round" fill="none" />
-                        <circle cx="13" cy="8" r="1.5" fill="#22c55e" />
-                        <path d="M13 13v4M10 16h6" stroke="#22c55e" strokeWidth="2" strokeLinecap="round" />
+                        <path d="M13 2C7.48 2 3 6.48 3 12s4.48 10 10 10 10-4.48 10-10S18.52 2 13 2z" fill="#ED9E59" opacity="0.15" />
+                        <path d="M8 13c0-2.76 2.24-5 5-5s5 2.24 5 5" stroke="#ED9E59" strokeWidth="2.5" strokeLinecap="round" fill="none" />
+                        <circle cx="13" cy="8" r="1.5" fill="#ED9E59" />
+                        <path d="M13 13v4M10 16h6" stroke="#ED9E59" strokeWidth="2" strokeLinecap="round" />
                     </svg>
-                    <span style={{ fontWeight: 700, fontSize: "20px", color: "#0d1117", letterSpacing: "-0.02em" }}>
+                    <span style={{ fontWeight: 700, fontSize: "20px", color: "#2D1B4E", letterSpacing: "-0.02em" }}>
                         ShopFluence
                     </span>
                 </div>
 
                 {/* Cookie preferences */}
-                <div style={{ position: "absolute", bottom: "16px", left: "36px", fontSize: "11px", color: "#9ca3af" }}>
+                <div style={{ position: "absolute", bottom: "16px", left: "36px", fontSize: "11px", color: "rgba(45,27,78,0.4)" }}>
                     Cookie preferences
                 </div>
 
@@ -234,20 +236,22 @@ export default function AuthPage() {
                                 style={{
                                     fontSize: "28px",
                                     fontWeight: 800,
-                                    color: "#0d1117",
+                                    color: "#2D1B4E",
                                     margin: "0 0 6px",
                                     letterSpacing: "-0.025em",
                                 }}
                             >
-                                {mode === "login" ? "Welcome Back" : "Create Account"}
+                                {mode === "login" ? "Welcome Back" : (role === "brand" ? "Register as Brand" : "Join as Affiliate")}
                             </h1>
-                            <p style={{ fontSize: "14px", color: "#6b7280", margin: "0 0 32px" }}>
-                                {mode === "login" ? "Sign up for free!" : "Join thousands of creators today"}
+                            <p style={{ fontSize: "14px", color: "rgba(45,27,78,0.5)", margin: "0 0 32px" }}>
+                                {mode === "login" 
+                                    ? "Sign in to your account" 
+                                    : (role === "brand" ? "Start selling your products" : "Start earning through sales")}
                             </p>
                         </motion.div>
                     </AnimatePresence>
 
-                    {/* Fields */}
+                    {/* Authentication Form */}
                     <AnimatePresence mode="wait">
                         <motion.form
                             key={mode + "-form"}
@@ -258,13 +262,73 @@ export default function AuthPage() {
                             onSubmit={handleSubmit}
                             style={{ display: "flex", flexDirection: "column", gap: "0" }}
                         >
+                            {/* Success message */}
+                            {successMsg && (
+                                <div style={{
+                                    padding: "10px 14px",
+                                    background: "rgba(16,185,129,0.15)",
+                                    border: "1px solid rgba(16,185,129,0.4)",
+                                    borderRadius: "8px",
+                                    color: "#10B981",
+                                    fontSize: "13px",
+                                    marginBottom: "12px",
+                                }}>
+                                    {successMsg}
+                                </div>
+                            )}
+
+                            {/* Error message */}
+                            {errorMsg && (
+                                <div style={{
+                                    padding: "10px 14px",
+                                    background: "rgba(163,64,84,0.15)",
+                                    border: "1px solid rgba(163,64,84,0.4)",
+                                    borderRadius: "8px",
+                                    color: "#A34054",
+                                    fontSize: "13px",
+                                    marginBottom: "12px",
+                                }}>
+                                    {errorMsg}
+                                </div>
+                            )}
+
+                            {/* Role Selector — signup only */}
+                            {mode === "signup" && (
+                                <div style={{ marginBottom: "20px", display: "flex", background: "rgba(45,27,78,0.05)", borderRadius: "10px", padding: "4px" }}>
+                                    <button
+                                        type="button"
+                                        onClick={() => setRole("affiliate")}
+                                        style={{
+                                            flex: 1, padding: "10px", border: "none", borderRadius: "8px",
+                                            background: role === "affiliate" ? "#44174E" : "transparent",
+                                            color: role === "affiliate" ? "#FFFFFF" : "#2D1B4E",
+                                            fontSize: "13px", fontWeight: 600, cursor: "pointer", transition: "all 0.2s"
+                                        }}
+                                    >
+                                        Affiliate
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => setRole("brand")}
+                                        style={{
+                                            flex: 1, padding: "10px", border: "none", borderRadius: "8px",
+                                            background: role === "brand" ? "#44174E" : "transparent",
+                                            color: role === "brand" ? "#FFFFFF" : "#2D1B4E",
+                                            fontSize: "13px", fontWeight: 600, cursor: "pointer", transition: "all 0.2s"
+                                        }}
+                                    >
+                                        Brand
+                                    </button>
+                                </div>
+                            )}
+
                             {/* Name — signup only */}
                             {mode === "signup" && (
                                 <div style={{ marginBottom: "6px" }}>
-                                    <label style={labelStyle}>Full Name</label>
+                                    <label style={labelStyle}>{role === "brand" ? "Brand/Company Name" : "Full Name"}</label>
                                     <input
                                         type="text"
-                                        placeholder="Your name"
+                                        placeholder={role === "brand" ? "Brand name" : "Your name"}
                                         value={name}
                                         onChange={(e) => setName(e.target.value)}
                                         style={inputStyle}
@@ -280,6 +344,8 @@ export default function AuthPage() {
                                 <input
                                     type="email"
                                     placeholder="you@example.com"
+                                    name="email"
+                                    id="email"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
                                     style={inputStyle}
@@ -295,6 +361,8 @@ export default function AuthPage() {
                                     <input
                                         type={showPass ? "text" : "password"}
                                         placeholder="••••••••"
+                                        name="password"
+                                        id="password"
                                         value={password}
                                         onChange={(e) => setPassword(e.target.value)}
                                         style={{ ...inputStyle, paddingRight: "44px" }}
@@ -315,47 +383,7 @@ export default function AuthPage() {
                                 </div>
                             </div>
 
-                            {/* Password Strength Meter — signup only */}
-                            {mode === "signup" && password && passwordStrength && (
-                                <div style={{ marginBottom: "8px" }}>
-                                    <div style={{
-                                        display: "flex", alignItems: "center", gap: "8px",
-                                        marginBottom: "4px",
-                                    }}>
-                                        <div style={{
-                                            flex: 1, height: "4px", borderRadius: "2px",
-                                            background: "#e5e7eb", overflow: "hidden",
-                                        }}>
-                                            <div style={{
-                                                width: `${(passwordStrength.score / 5) * 100}%`,
-                                                height: "100%",
-                                                borderRadius: "2px",
-                                                background: getPasswordStrengthColor(passwordStrength.score),
-                                                transition: "width 0.3s ease, background 0.3s ease",
-                                            }} />
-                                        </div>
-                                        <span style={{
-                                            fontSize: "11px", fontWeight: 600,
-                                            color: getPasswordStrengthColor(passwordStrength.score),
-                                            minWidth: "60px", textAlign: "right",
-                                        }}>
-                                            {getPasswordStrengthLabel(passwordStrength.score)}
-                                        </span>
-                                    </div>
-                                    {passwordStrength.errors.length > 0 && (
-                                        <ul style={{
-                                            margin: "4px 0 0", paddingLeft: "16px",
-                                            fontSize: "11px", color: "#dc2626", lineHeight: "1.6",
-                                        }}>
-                                            {passwordStrength.errors.map((err, i) => (
-                                                <li key={i}>{err}</li>
-                                            ))}
-                                        </ul>
-                                    )}
-                                </div>
-                            )}
-
-                            {/* Confirm password — signup only */}
+                            {/* Confirm Password — signup only */}
                             {mode === "signup" && (
                                 <div style={{ marginBottom: "6px", position: "relative" }}>
                                     <label style={labelStyle}>Confirm Password</label>
@@ -364,6 +392,7 @@ export default function AuthPage() {
                                             type={showConfirm ? "text" : "password"}
                                             placeholder="••••••••"
                                             value={confirmPass}
+                                            id="confirmPassword"
                                             onChange={(e) => setConfirmPass(e.target.value)}
                                             style={{ ...inputStyle, paddingRight: "44px" }}
                                             onFocus={(e) => Object.assign(e.target.style, { ...inputFocusStyle, paddingRight: "44px" })}
@@ -391,7 +420,7 @@ export default function AuthPage() {
                                         type="button"
                                         onClick={handleForgotPassword}
                                         style={{
-                                            fontSize: "12px", color: "#4b9ef4", textDecoration: "none",
+                                            fontSize: "12px", color: "#ED9E59", textDecoration: "none",
                                             background: "none", border: "none", cursor: "pointer", padding: 0,
                                         }}
                                     >
@@ -402,55 +431,6 @@ export default function AuthPage() {
 
                             {mode === "signup" && <div style={{ marginBottom: "20px" }} />}
 
-                            {/* Rate limit lockout warning */}
-                            {isLockedOut && (
-                                <div style={{
-                                    padding: "10px 14px",
-                                    background: "#fefce8",
-                                    border: "1px solid #fde68a",
-                                    borderRadius: "8px",
-                                    color: "#92400e",
-                                    fontSize: "13px",
-                                    marginBottom: "12px",
-                                    display: "flex",
-                                    alignItems: "center",
-                                    gap: "8px",
-                                }}>
-                                    <Shield size={14} />
-                                    Account temporarily locked. Try again in {retryAfter}s
-                                </div>
-                            )}
-
-                            {/* Success message */}
-                            {successMsg && (
-                                <div style={{
-                                    padding: "10px 14px",
-                                    background: "#f0fdf4",
-                                    border: "1px solid #bbf7d0",
-                                    borderRadius: "8px",
-                                    color: "#166534",
-                                    fontSize: "13px",
-                                    marginBottom: "12px",
-                                }}>
-                                    {successMsg}
-                                </div>
-                            )}
-
-                            {/* Error message */}
-                            {errorMsg && (
-                                <div style={{
-                                    padding: "10px 14px",
-                                    background: "#fef2f2",
-                                    border: "1px solid #fecaca",
-                                    borderRadius: "8px",
-                                    color: "#dc2626",
-                                    fontSize: "13px",
-                                    marginBottom: "12px",
-                                }}>
-                                    {errorMsg}
-                                </div>
-                            )}
-
                             {/* Primary CTA */}
                             <motion.button
                                 type="submit"
@@ -460,12 +440,12 @@ export default function AuthPage() {
                                 style={{
                                     width: "100%",
                                     padding: "14px",
-                                    background: loading ? "#d1d5db" : "#e5e7eb",
+                                    background: loading ? "#D4C8E8" : "#44174E",
                                     border: "none",
                                     borderRadius: "10px",
                                     fontSize: "15px",
                                     fontWeight: 600,
-                                    color: "#374151",
+                                    color: "#FFFFFF",
                                     cursor: loading ? "not-allowed" : "pointer",
                                     marginBottom: "20px",
                                     letterSpacing: "0.01em",
@@ -488,12 +468,12 @@ export default function AuthPage() {
                             <div
                                 style={{
                                     display: "flex", alignItems: "center", gap: "12px",
-                                    margin: "0 0 20px", color: "#9ca3af", fontSize: "13px",
+                                    margin: "0 0 20px", color: "rgba(45,27,78,0.3)", fontSize: "13px",
                                 }}
                             >
-                                <div style={{ flex: 1, height: "1px", background: "#e5e7eb" }} />
+                                <div style={{ flex: 1, height: "1px", background: "rgba(45,27,78,0.1)" }} />
                                 OR
-                                <div style={{ flex: 1, height: "1px", background: "#e5e7eb" }} />
+                                <div style={{ flex: 1, height: "1px", background: "rgba(45,27,78,0.1)" }} />
                             </div>
 
                             {/* Google */}
@@ -504,10 +484,10 @@ export default function AuthPage() {
                                 whileTap={{ scale: 0.98 }}
                                 style={{
                                     width: "100%", padding: "12px 16px", marginBottom: "10px",
-                                    background: "#fff", border: "1.5px solid #e5e7eb",
+                                    background: "#FFFFFF", border: "1.5px solid rgba(45,27,78,0.12)",
                                     borderRadius: "10px", cursor: "pointer", display: "flex",
                                     alignItems: "center", justifyContent: "center", gap: "10px",
-                                    fontSize: "14px", fontWeight: 500, color: "#374151",
+                                    fontSize: "14px", fontWeight: 500, color: "#2D1B4E",
                                 }}
                             >
                                 <GoogleIcon />
@@ -524,7 +504,7 @@ export default function AuthPage() {
                                     background: "#0f172a", border: "none",
                                     borderRadius: "10px", cursor: "pointer", display: "flex",
                                     alignItems: "center", justifyContent: "center", gap: "10px",
-                                    fontSize: "14px", fontWeight: 500, color: "#ffffff",
+                                    fontSize: "14px", fontWeight: 500, color: "#FFFFFF",
                                     marginBottom: "24px",
                                 }}
                             >
@@ -533,14 +513,14 @@ export default function AuthPage() {
                             </motion.button>
 
                             {/* Toggle */}
-                            <p style={{ textAlign: "center", fontSize: "13px", color: "#6b7280", margin: 0 }}>
-                                {mode === "login" ? "Already have an account? " : "Already have an account? "}
+                            <p style={{ textAlign: "center", fontSize: "14px", color: "rgba(45,27,78,0.6)", margin: 0 }}>
+                                {mode === "login" ? "Don't have an account? " : "Already have an account? "}
                                 <button
                                     type="button"
                                     onClick={() => setMode(mode === "login" ? "signup" : "login")}
                                     style={{
                                         background: "none", border: "none", cursor: "pointer",
-                                        color: "#4b9ef4", fontWeight: 600, fontSize: "13px",
+                                        color: "#ED9E59", fontWeight: 600, fontSize: "13px",
                                         textDecoration: "none", padding: 0,
                                     }}
                                 >
@@ -559,7 +539,7 @@ export default function AuthPage() {
                 style={{
                     width: "50%",
                     flexShrink: 0,
-                    background: "linear-gradient(145deg, #3d7a7a 0%, #2a5858 40%, #1a3e3e 100%)",
+                    background: "linear-gradient(145deg, #44174E 0%, #662249 40%, #1B1931 100%)",
                     position: "relative",
                     overflow: "hidden",
                     display: "flex",
@@ -572,19 +552,19 @@ export default function AuthPage() {
                 <div style={{
                     position: "absolute", top: "5%", right: "10%",
                     width: "380px", height: "380px", borderRadius: "50%",
-                    background: "radial-gradient(circle, rgba(90,180,140,0.14) 0%, transparent 65%)",
+                    background: "radial-gradient(circle, rgba(237,158,89,0.14) 0%, transparent 65%)",
                     filter: "blur(50px)", pointerEvents: "none",
                 }} />
                 <div style={{
                     position: "absolute", bottom: "5%", left: "5%",
                     width: "260px", height: "260px", borderRadius: "50%",
-                    background: "radial-gradient(circle, rgba(180,200,140,0.10) 0%, transparent 65%)",
+                    background: "radial-gradient(circle, rgba(163,64,84,0.10) 0%, transparent 65%)",
                     filter: "blur(60px)", pointerEvents: "none",
                 }} />
                 <div style={{
                     position: "absolute", top: "40%", left: "20%",
                     width: "200px", height: "200px", borderRadius: "50%",
-                    background: "radial-gradient(circle, rgba(200,160,80,0.08) 0%, transparent 70%)",
+                    background: "radial-gradient(circle, rgba(233,188,185,0.08) 0%, transparent 70%)",
                     filter: "blur(40px)", pointerEvents: "none",
                 }} />
 
@@ -951,19 +931,19 @@ export default function AuthPage() {
 const labelStyle: React.CSSProperties = {
     display: "block",
     fontSize: "13px",
-    color: "#6b7280",
-    marginBottom: "4px",
-    fontWeight: 400,
+    color: "#44174E",
+    marginBottom: "6px",
+    fontWeight: 600,
 };
 
 const inputStyle: React.CSSProperties = {
     width: "100%",
-    padding: "11px 14px",
-    border: "1.5px solid #e5e7eb",
+    padding: "12px 14px",
+    border: "1.5px solid rgba(68,23,78,0.2)",
     borderRadius: "10px",
-    fontSize: "14px",
-    color: "#0d1117",
-    background: "#fafafa",
+    fontSize: "15px",
+    color: "#2D1B4E",
+    background: "#FFFFFF",
     outline: "none",
     boxSizing: "border-box",
     marginBottom: "14px",
@@ -973,7 +953,7 @@ const inputStyle: React.CSSProperties = {
 
 const inputFocusStyle: React.CSSProperties = {
     ...inputStyle,
-    borderColor: "#22c55e",
-    boxShadow: "0 0 0 3px rgba(34,197,94,0.12)",
-    background: "#fff",
+    borderColor: "#ED9E59",
+    boxShadow: "0 0 0 3px rgba(237,158,89,0.15)",
+    background: "#FFFFFF",
 };

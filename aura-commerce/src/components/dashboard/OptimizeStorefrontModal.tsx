@@ -49,14 +49,14 @@ export default function OptimizeStorefrontModal({ open, onOpenChange }: { open: 
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="sm:max-w-[500px] p-0 overflow-hidden bg-white/95 backdrop-blur-xl border border-white/40 shadow-2xl rounded-[32px]">
+            <DialogContent className="sm:max-w-[500px] p-0 overflow-hidden bg-card/95 backdrop-blur-xl border border-white/40 shadow-2xl rounded-[32px]">
 
                 <div className="bg-gradient-to-br from-[#80DADA] to-[#FFD8B5] p-6 pb-8 relative">
-                    <div className="absolute top-4 right-4 w-24 h-24 bg-white/20 blur-2xl rounded-full" />
+                    <div className="absolute top-4 right-4 w-24 h-24 bg-card/20 blur-2xl rounded-full" />
                     <DialogHeader className="relative z-10 text-left">
                         <div className="flex items-center gap-3 mb-2">
-                            <div className="p-2 bg-white/30 rounded-xl">
-                                <Sparkles className="text-white w-6 h-6" />
+                            <div className="p-2 bg-card/30 rounded-xl">
+                                <Sparkles className="text-blush w-6 h-6" />
                             </div>
                             <DialogTitle className="text-2xl font-black text-[#2F3E46]">Optimize Your Store</DialogTitle>
                         </div>
@@ -82,7 +82,7 @@ export default function OptimizeStorefrontModal({ open, onOpenChange }: { open: 
                     ) : (
                         <div className="space-y-4">
                             {suggestions.map((s, i) => (
-                                <div key={i} className="group relative bg-[#F8F9FA] rounded-2xl p-5 border border-black/5 hover:bg-white hover:shadow-lg transition-all duration-300">
+                                <div key={i} className="group relative bg-[#F8F9FA] rounded-2xl p-5 border border-black/5 hover:bg-card hover:shadow-lg shadow-void/50 transition-all duration-300">
                                     <div className="flex gap-4">
                                         <div className="pt-1">
                                             {s.priority === 'HIGH' ? (

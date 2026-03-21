@@ -19,11 +19,11 @@ const rotatingWords = [
 ];
 
 const carouselCards = [
-  { image: product1, label: "Trending Products", gradient: "from-rose-500 to-orange-400" },
-  { image: influencer1, label: "Top Creators", gradient: "from-violet-500 to-indigo-500" },
-  { image: product2, label: "Best Sellers", gradient: "from-emerald-500 to-teal-400" },
-  { image: influencer2, label: "Rising Stars", gradient: "from-blue-500 to-cyan-400" },
-  { image: product3, label: "New Arrivals", gradient: "from-amber-500 to-yellow-400" },
+  { image: product1, label: "Trending Products", gradient: "from-rose to-gold" },
+  { image: influencer1, label: "Top Creators", gradient: "from-plum to-crimson" },
+  { image: product2, label: "Best Sellers", gradient: "from-crimson to-rose" },
+  { image: influencer2, label: "Rising Stars", gradient: "from-plum to-crimson" },
+  { image: product3, label: "New Arrivals", gradient: "from-gold to-gold/80" },
 ];
 
 export const HeroSection = () => {
@@ -46,15 +46,15 @@ export const HeroSection = () => {
   }, []);
 
   return (
-    <section className="relative pt-32 pb-20 overflow-hidden" style={{ backgroundColor: '#f1e194' }}>
+    <section className="relative pt-32 pb-20 overflow-hidden" style={{ background: 'linear-gradient(180deg, #F5F0FF 0%, #EDE5FF 40%, #E8DEFF 100%)' }}>
       {/* Floating decorative shapes */}
       <motion.div
-        className="absolute top-20 right-10 w-32 h-32 rounded-full bg-primary/20 blur-2xl"
+        className="absolute top-20 right-10 w-32 h-32 rounded-full bg-plum/10 blur-2xl"
         animate={{ scale: [1, 1.3, 1], x: [0, 20, 0] }}
         transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
       />
       <motion.div
-        className="absolute bottom-10 left-10 w-48 h-48 rounded-full bg-secondary/10 blur-3xl"
+        className="absolute bottom-10 left-10 w-48 h-48 rounded-full bg-gold/15 blur-3xl"
         animate={{ scale: [1, 1.2, 1], y: [0, -30, 0] }}
         transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
       />
@@ -69,7 +69,7 @@ export const HeroSection = () => {
             transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
           >
             <h1
-              className="font-bold text-secondary leading-[1.05] tracking-tight max-w-full break-words"
+              className="font-bold text-plum leading-[1.05] tracking-tight max-w-full break-words"
               style={{ fontSize: "clamp(2rem, 8vw, 5rem)" }}
             >
               Own your link.
@@ -77,7 +77,7 @@ export const HeroSection = () => {
               Own your audience.
             </h1>
 
-            <p className="text-secondary/70 text-lg leading-relaxed max-w-lg">
+            <p className="text-yellow-600 font-medium text-lg leading-relaxed max-w-lg">
               Transform a single URL into your personalized storefront to promote, monetize, and manage everything you create online.
             </p>
 
@@ -92,12 +92,12 @@ export const HeroSection = () => {
                   placeholder="yourname"
                   value={url}
                   onChange={(e) => setUrl(e.target.value)}
-                  className="w-full pl-[8.5rem] pr-4 py-4 rounded-pill bg-card border-none text-foreground text-sm font-medium placeholder:text-muted-foreground/50 outline-none focus:ring-2 focus:ring-secondary/30 transition-all duration-200"
+                  className="w-full pl-[8.5rem] pr-4 py-4 rounded-pill bg-white border border-plum/10 text-plum text-sm font-medium placeholder:text-plum/30 outline-none focus:ring-2 focus:ring-plum/20 transition-all duration-200"
                 />
               </div>
               <motion.a
-                href="/auth"
-                className="flex items-center justify-center gap-2 px-6 py-4 rounded-pill bg-secondary text-secondary-foreground font-semibold text-sm whitespace-nowrap w-full sm:w-auto"
+                href="/auth?mode=signup"
+                className="flex items-center justify-center gap-2 px-6 py-4 rounded-pill bg-gold text-void font-semibold text-sm whitespace-nowrap w-full sm:w-auto"
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.97 }}
               >
@@ -144,9 +144,9 @@ export const HeroSection = () => {
                         className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                       />
                       <div className={`absolute inset-0 bg-gradient-to-t ${card.gradient} opacity-30 mix-blend-multiply`} />
-                      <div className="absolute bottom-0 left-0 right-0 p-5 bg-gradient-to-t from-black/60 to-transparent">
+                      <div className="absolute bottom-0 left-0 right-0 p-5 bg-gradient-to-t from-void/80 to-transparent">
                         <motion.span
-                          className="text-white font-bold text-lg"
+                          className="text-blush font-bold text-lg"
                           initial={{ y: 10, opacity: 0 }}
                           animate={{ y: 0, opacity: 1 }}
                           transition={{ delay: 0.2 }}
@@ -192,7 +192,7 @@ export const HeroSection = () => {
           transition={{ duration: 0.7, delay: 0.5 }}
         >
           <h2
-            className="font-bold text-secondary tracking-tight leading-tight"
+            className="font-bold text-yellow-600 tracking-tight leading-tight"
             style={{ fontSize: "clamp(2rem, 4.5vw, 3.5rem)" }}
           >
             The only link in bio trusted by 70M+
@@ -200,7 +200,7 @@ export const HeroSection = () => {
             <AnimatePresence mode="wait">
               <motion.span
                 key={rotatingWords[wordIndex]}
-                className="text-blue-600 inline-block"
+                className="text-gold inline-block"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}

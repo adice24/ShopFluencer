@@ -29,75 +29,72 @@ async function fetchLinks(): Promise<LinkRow[]> {
     if (!user) throw new Error("Not logged in");
 
     const { data, error } = await supabase
-        .from("links")
-        .select("id, title, url, short_slug, click_count, created_at")
+        .from("short_links")
+        .select("id, title, original_url, short_code, clicks, created_at")
         .eq("user_id", user.id)
-        .eq("is_visible", true)
+        .eq("is_active", true)
         .order("created_at", { ascending: false });
 
     if (error) throw error;
-    return data ?? [];
+    return (data ?? []).map((row) => ({
+        id: row.id,
+        title: row.title,
+        url: row.original_url,
+        short_slug: row.short_code,
+        click_count: row.clicks ?? 0,
+        created_at: row.created_at,
+    }));
 }
 
 async function createLink(payload: { originalUrl: string; title: string }): Promise<LinkRow> {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) throw new Error("Not logged in");
 
-    // Get store id
-    const { data: store } = await supabase
-        .from("influencer_stores")
-        .select("id")
-        .eq("user_id", user.id)
-        .single();
-
-    if (!store) throw new Error("No store found — please set up your store first");
-
-    // Get next position
-    const { data: existing } = await supabase
-        .from("links")
-        .select("position")
-        .eq("user_id", user.id)
-        .order("position", { ascending: false })
-        .limit(1);
-
-    const nextPos = (existing?.[0]?.position ?? -1) + 1;
-
-    // Generate unique slug
     let short_slug = "";
-    for (let attempts = 0; attempts < 10; attempts++) {
+    for (let attempts = 0; attempts < 12; attempts++) {
         const candidate = generateSlug(8);
         const { data: clash } = await supabase
-            .from("links")
+            .from("short_links")
             .select("id")
-            .eq("short_slug", candidate)
+            .eq("short_code", candidate)
             .maybeSingle();
-        if (!clash) { short_slug = candidate; break; }
+        if (!clash) {
+            short_slug = candidate;
+            break;
+        }
     }
 
     if (!short_slug) throw new Error("Failed to generate unique slug");
 
+    const now = new Date().toISOString();
     const { data, error } = await supabase
-        .from("links")
+        .from("short_links")
         .insert({
+            id: crypto.randomUUID(),
             user_id: user.id,
-            store_id: store.id,
             title: payload.title,
-            url: payload.originalUrl,
-            short_slug,
-            position: nextPos,
-            is_visible: true,
-            is_featured: false,
-            click_count: 0,
+            original_url: payload.originalUrl,
+            short_code: short_slug,
+            clicks: 0,
+            is_active: true,
+            updated_at: now,
         })
-        .select("id, title, url, short_slug, click_count, created_at")
+        .select("id, title, original_url, short_code, clicks, created_at")
         .single();
 
     if (error) throw new Error(error.message);
-    return data!;
+    return {
+        id: data!.id,
+        title: data!.title,
+        url: data!.original_url,
+        short_slug: data!.short_code,
+        click_count: data!.clicks ?? 0,
+        created_at: data!.created_at,
+    };
 }
 
 async function deleteLink(id: string): Promise<void> {
-    const { error } = await supabase.from("links").delete().eq("id", id);
+    const { error } = await supabase.from("short_links").delete().eq("id", id);
     if (error) throw new Error(error.message);
 }
 
@@ -177,7 +174,7 @@ export default function LinkShortenerPage() {
             </div>
 
             {/* Creation Box */}
-            <div className="bg-white rounded-[24px] shadow-[0_8px_30px_rgba(0,0,0,0.06)] border border-border/40 p-6 mb-10 overflow-hidden relative">
+            <div className="bg-card rounded-[24px] shadow-[0_8px_30px_rgba(0,0,0,0.06)] border border-border/40 p-6 mb-10 overflow-hidden relative">
                 <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-violet-400 to-fuchsia-400" />
 
                 <h2 className="text-[16px] font-bold text-[#2F3E46] mb-5 flex items-center gap-2">
@@ -214,7 +211,7 @@ export default function LinkShortenerPage() {
                         <button
                             onClick={handleCreate}
                             disabled={createMutation.isPending}
-                            className="bg-[#2F3E46] hover:bg-black text-white font-bold py-3 px-8 rounded-full transition-colors flex items-center gap-2 disabled:opacity-50 text-[14px]"
+                            className="bg-[#2F3E46] hover:bg-black text-blush font-bold py-3 px-8 rounded-full transition-colors flex items-center gap-2 disabled:opacity-50 text-[14px]"
                         >
                             <Plus size={16} />
                             {createMutation.isPending ? "Generating..." : "Shorten Link"}
@@ -240,9 +237,9 @@ export default function LinkShortenerPage() {
                     ))}
                 </div>
             ) : isError ? (
-                <div className="bg-red-50 border border-red-100 rounded-[20px] p-6 text-center">
-                    <p className="text-[14px] font-bold text-red-600 mb-3">Could not load links</p>
-                    <button onClick={() => refetch()} className="text-[13px] font-bold underline text-red-500">
+                <div className="bg-rose/10 border border-red-100 rounded-[20px] p-6 text-center">
+                    <p className="text-[14px] font-bold text-rose mb-3">Could not load links</p>
+                    <button onClick={() => refetch()} className="text-[13px] font-bold underline text-rose">
                         Try again
                     </button>
                 </div>
@@ -271,7 +268,7 @@ export default function LinkShortenerPage() {
                                         exit={{ opacity: 0, scale: 0.96 }}
                                         transition={{ delay: i * 0.04 }}
                                         key={link.id}
-                                        className="bg-white rounded-[20px] shadow-[0_4px_15px_rgba(0,0,0,0.03)] border border-border/40 p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)] transition-all"
+                                        className="bg-card rounded-[20px] shadow-[0_4px_15px_rgba(0,0,0,0.03)] border border-border/40 p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)] transition-all"
                                     >
                                         <div className="flex-1 min-w-0">
                                             <h3 className="font-bold text-[15px] text-[#2F3E46] truncate">{link.title}</h3>
@@ -325,7 +322,7 @@ export default function LinkShortenerPage() {
                                             <button
                                                 onClick={() => deleteMutation.mutate(link.id)}
                                                 disabled={deleteMutation.isPending}
-                                                className="text-red-400 hover:text-red-600 p-2 transition-colors disabled:opacity-40"
+                                                className="text-red-400 hover:text-rose p-2 transition-colors disabled:opacity-40"
                                                 title="Delete link"
                                             >
                                                 <Trash2 size={17} />

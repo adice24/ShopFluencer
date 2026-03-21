@@ -9,23 +9,23 @@ import { CurrentUser } from '../../common/decorators/current-user.decorator';
 @UseGuards(AuthGuard('jwt'))
 @ApiBearerAuth()
 export class NotificationsController {
-    constructor(private readonly notificationsService: NotificationsService) { }
+  constructor(private readonly notificationsService: NotificationsService) {}
 
-    @Get()
-    @ApiOperation({ summary: 'Get unread notifications' })
-    async getNotifications(@CurrentUser('id') userId: string) {
-        return this.notificationsService.getNotifications(userId);
-    }
+  @Get()
+  @ApiOperation({ summary: 'Get unread notifications' })
+  async getNotifications(@CurrentUser('id') userId: string) {
+    return this.notificationsService.getNotifications(userId);
+  }
 
-    @Patch(':id/read')
-    @ApiOperation({ summary: 'Mark specific notification as read' })
-    async markAsRead(@CurrentUser('id') userId: string, @Param('id') id: string) {
-        return this.notificationsService.markAsRead(id, userId);
-    }
+  @Patch(':id/read')
+  @ApiOperation({ summary: 'Mark specific notification as read' })
+  async markAsRead(@CurrentUser('id') userId: string, @Param('id') id: string) {
+    return this.notificationsService.markAsRead(id, userId);
+  }
 
-    @Patch('read-all')
-    @ApiOperation({ summary: 'Mark all as read' })
-    async markAllAsRead(@CurrentUser('id') userId: string) {
-        return this.notificationsService.markAllAsRead(userId);
-    }
+  @Patch('read-all')
+  @ApiOperation({ summary: 'Mark all as read' })
+  async markAllAsRead(@CurrentUser('id') userId: string) {
+    return this.notificationsService.markAllAsRead(userId);
+  }
 }

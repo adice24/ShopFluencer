@@ -224,7 +224,7 @@ const PosterCard = ({ card }: PosterCardProps) => {
                         </motion.div>
                         <h3
                             style={{
-                                color: "#ffffff",
+                                color: "#E9BCB9",
                                 fontSize: "24px",
                                 fontWeight: 900,
                                 lineHeight: 1.08,
@@ -331,7 +331,7 @@ export const CreativeGalleryLoop = () => {
                 ref={sectionRef}
                 aria-label="Creative showcase gallery"
                 style={{
-                    background: "#060606",
+                    background: "linear-gradient(180deg, #F0E8FF 0%, #E8DEFF 50%, #F0E8FF 100%)",
                     padding: "88px 0 80px",
                     overflow: "hidden",
                     position: "relative",
@@ -349,7 +349,7 @@ export const CreativeGalleryLoop = () => {
                         height: "350px",
                         borderRadius: "50%",
                         background:
-                            "radial-gradient(ellipse, rgba(52,211,153,0.07) 0%, rgba(99,102,241,0.04) 50%, transparent 75%)",
+                            "radial-gradient(ellipse, rgba(237,158,89,0.07) 0%, rgba(163,64,84,0.04) 50%, transparent 75%)",
                         filter: "blur(80px)",
                         pointerEvents: "none",
                     }}
@@ -368,8 +368,8 @@ export const CreativeGalleryLoop = () => {
                             display: "inline-flex",
                             alignItems: "center",
                             gap: "8px",
-                            background: "rgba(52,211,153,0.09)",
-                            border: "1px solid rgba(52,211,153,0.22)",
+                            background: "rgba(237,158,89,0.09)",
+                            border: "1px solid rgba(237,158,89,0.22)",
                             borderRadius: "100px",
                             padding: "6px 18px",
                             marginBottom: "20px",
@@ -380,14 +380,14 @@ export const CreativeGalleryLoop = () => {
                                 width: "7px",
                                 height: "7px",
                                 borderRadius: "50%",
-                                background: "#34d399",
+                                background: "#ED9E59",
                                 display: "inline-block",
-                                boxShadow: "0 0 8px rgba(52,211,153,0.8)",
+                                boxShadow: "0 0 8px rgba(237,158,89,0.8)",
                             }}
                         />
                         <span
                             style={{
-                                color: "#34d399",
+                                color: "#ED9E59",
                                 fontSize: "11px",
                                 fontWeight: 700,
                                 letterSpacing: "0.12em",
@@ -402,7 +402,7 @@ export const CreativeGalleryLoop = () => {
                     {/* Heading */}
                     <h2
                         style={{
-                            color: "#f8fafc",
+                            color: "#2D1B4E",
                             fontSize: "clamp(2rem, 4.5vw, 3.2rem)",
                             fontWeight: 900,
                             letterSpacing: "-0.035em",
@@ -417,7 +417,7 @@ export const CreativeGalleryLoop = () => {
                         <span
                             style={{
                                 background:
-                                    "linear-gradient(90deg, #34d399 0%, #6ee7b7 50%, #a7f3d0 100%)",
+                                    "linear-gradient(90deg, #ED9E59 0%, #E9BCB9 50%, #A34054 100%)",
                                 WebkitBackgroundClip: "text",
                                 WebkitTextFillColor: "transparent",
                                 backgroundClip: "text",
@@ -430,7 +430,7 @@ export const CreativeGalleryLoop = () => {
                     {/* Subtext */}
                     <p
                         style={{
-                            color: "rgba(248,250,252,0.42)",
+                            color: "rgba(45,27,78,0.5)",
                             fontSize: "16px",
                             maxWidth: "440px",
                             margin: "0 auto",
@@ -460,7 +460,7 @@ export const CreativeGalleryLoop = () => {
                             bottom: 0,
                             width: "140px",
                             background:
-                                "linear-gradient(to right, #060606 0%, transparent 100%)",
+                                "linear-gradient(to right, #F0E8FF 0%, transparent 100%)",
                             zIndex: 10,
                             pointerEvents: "none",
                         }}
@@ -475,7 +475,7 @@ export const CreativeGalleryLoop = () => {
                             bottom: 0,
                             width: "140px",
                             background:
-                                "linear-gradient(to left, #060606 0%, transparent 100%)",
+                                "linear-gradient(to left, #F0E8FF 0%, transparent 100%)",
                             zIndex: 10,
                             pointerEvents: "none",
                         }}

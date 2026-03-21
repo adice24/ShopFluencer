@@ -48,36 +48,33 @@ export default function DashboardLayout() {
 
         <DashboardSidebar />
 
-        <main className="flex-1 flex flex-col min-h-screen relative z-10 w-full backdrop-blur-[60px] bg-white/20">
+        <main className="flex-1 flex flex-col min-h-screen relative z-10 w-full backdrop-blur-[60px] bg-card/20">
           {/* Top Navbar */}
           <header className="h-[76px] flex items-center justify-end px-6 md:px-8 bg-transparent sticky top-0 z-20 gap-3">
-            <SidebarTrigger className="md:hidden mr-auto text-foreground/70 bg-white/60 p-2 rounded-full shadow-sm backdrop-blur-md" />
+            <SidebarTrigger className="md:hidden mr-auto text-foreground/70 bg-card/60 p-2 rounded-full shadow-sm backdrop-blur-md" />
 
-            {/* Link Pill */}
-            <div className="hidden md:flex items-center bg-white/80 backdrop-blur-md border border-white rounded-full pl-5 pr-2 py-1.5 shadow-[0_2px_12px_rgba(0,0,0,0.03)] mr-2 group">
-              <span className="text-[13px] text-foreground font-bold mr-4">{baseUrl}/{username}</span>
-              <button className="bg-white hover:bg-black/5 text-foreground/70 p-1.5 rounded-full transition-colors flex items-center justify-center border border-border/40 shadow-sm">
-                <Palette size={14} className="text-muted-foreground" />
-              </button>
-            </div>
+            {/* Palette icon only */}
+            <button className="hidden md:flex mr-2 w-[42px] h-[42px] items-center justify-center bg-card/80 backdrop-blur-md border border-white rounded-full hover:bg-card transition-colors shadow-[0_2px_12px_rgba(0,0,0,0.03)]">
+              <Palette size={16} className="text-muted-foreground" />
+            </button>
 
             {/* Optimize Button */}
-            <button className="hidden md:flex items-center gap-2 px-5 py-2.5 bg-white/80 backdrop-blur-md border border-white rounded-full text-[13px] font-bold shadow-[0_2px_12px_rgba(0,0,0,0.03)] hover:bg-white transition-all text-[#D67151]">
+            <button className="hidden md:flex items-center gap-2 px-5 py-2.5 bg-card/80 backdrop-blur-md border border-white rounded-full text-[13px] font-bold shadow-[0_2px_12px_rgba(0,0,0,0.03)] hover:bg-card transition-all text-[#D67151]">
               <Wand2 size={16} /> Optimize
             </button>
 
             {/* Circular Actions */}
-            <button className="w-[42px] h-[42px] rounded-full bg-white/80 border border-white flex items-center justify-center hover:bg-white transition-colors shadow-[0_2px_12px_rgba(0,0,0,0.03)] backdrop-blur-md">
+            <button className="w-[42px] h-[42px] rounded-full bg-card/80 border border-white flex items-center justify-center hover:bg-card transition-colors shadow-[0_2px_12px_rgba(0,0,0,0.03)] backdrop-blur-md">
               <ArrowRight size={18} className="text-foreground/70" />
             </button>
 
             <button
               onClick={() => navigate('/dashboard/settings?tab=notifications')}
-              className="w-[42px] h-[42px] rounded-full bg-white/80 border border-white flex items-center justify-center hover:bg-white transition-colors relative shadow-[0_2px_12px_rgba(0,0,0,0.03)] backdrop-blur-md"
+              className="w-[42px] h-[42px] rounded-full bg-card/80 border border-white flex items-center justify-center hover:bg-card transition-colors relative shadow-[0_2px_12px_rgba(0,0,0,0.03)] backdrop-blur-md"
             >
               <Bell size={18} className="text-foreground/70" />
               {unreadCount > 0 && (
-                <span className="absolute top-0 right-0 w-3.5 h-3.5 bg-red-500 rounded-full border-2 border-white flex items-center justify-center text-[8px] font-bold text-white shadow-sm">
+                <span className="absolute top-0 right-0 w-3.5 h-3.5 bg-rose rounded-full border-2 border-white flex items-center justify-center text-[8px] font-bold text-blush shadow-sm">
                   {unreadCount > 9 ? '9+' : unreadCount}
                 </span>
               )}

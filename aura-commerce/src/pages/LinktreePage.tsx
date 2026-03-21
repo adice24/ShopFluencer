@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { ShoppingBag, ExternalLink, Share, Copy, Check, Link as LinkIcon } from "lucide-react";
@@ -12,15 +12,7 @@ export default function LinktreePage() {
     const navigate = useNavigate();
     const { store, theme, links, isStoreLoading, products } = usePublicStore(slug);
     const { track } = useTrackEvent(store?.id);
-    const ipRef = useRef<string | null>(null);
     const [copied, setCopied] = useState(false);
-
-    useEffect(() => {
-        fetch("https://api.ipify.org?format=json")
-            .then(res => res.json())
-            .then(data => ipRef.current = data.ip)
-            .catch(() => { });
-    }, []);
 
     // Track page view once store is loaded
     useEffect(() => {
@@ -30,11 +22,24 @@ export default function LinktreePage() {
     }, [store?.id, slug, track]);
 
     const handleLinkClick = async (linkId: string, url: string) => {
-        // Track the click before opening
-        await supabase.rpc("track_link_click", {
-            p_link_id: linkId,
-            p_user_agent: navigator.userAgent,
-            p_ip_address: ipRef.current || ""
+        const { data: row } = await supabase
+            .from("short_links")
+            .select("clicks")
+            .eq("id", linkId)
+            .maybeSingle();
+        const n = Number((row as { clicks?: number } | null)?.clicks ?? 0);
+        await supabase
+            .from("short_links")
+            .update({
+                clicks: n + 1,
+                updated_at: new Date().toISOString(),
+            })
+            .eq("id", linkId);
+        await supabase.from("link_clicks").insert({
+            id: crypto.randomUUID(),
+            short_link_id: linkId,
+            user_agent: navigator.userAgent,
+            referrer: document.referrer || null,
         });
         window.open(url, "_blank", "noopener,noreferrer");
     };
@@ -99,7 +104,7 @@ export default function LinktreePage() {
 
         switch (theme.button_style) {
             case 'flat': return "rounded-none";
-            case 'glass': return "rounded-xl backdrop-blur-md bg-white/20 border border-white/30 shadow-lg";
+            case 'glass': return "rounded-xl backdrop-blur-md bg-card/20 border border-white/30 shadow-lg shadow-void/50";
             case 'rounded': return "rounded-[24px] shadow-md";
             default: return "rounded-[24px] shadow-sm";
         }
@@ -135,7 +140,7 @@ export default function LinktreePage() {
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: 20 }}
-                            className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2 bg-[#111] text-white text-[13px] font-semibold px-4 py-2.5 rounded-full shadow-xl"
+                            className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2 bg-[#111] text-blush text-[13px] font-semibold px-4 py-2.5 rounded-full shadow-xl"
                         >
                             <Check size={14} className="text-emerald-400" />
                             Link copied — paste in Instagram bio!

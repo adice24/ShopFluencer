@@ -99,7 +99,7 @@ export default function SettingsPage() {
                 key={tab.id}
                 onClick={() => handleTabChange(tab.id)}
                 className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-[14px] font-bold transition-all ${isActive
-                  ? "bg-white shadow-[0_2px_10px_rgba(0,0,0,0.04)] text-[#8B5CF6] border border-border/40"
+                  ? "bg-card shadow-[0_2px_10px_rgba(0,0,0,0.04)] text-[#8B5CF6] border border-border/40"
                   : "text-muted-foreground hover:bg-black/5 hover:text-[#2F3E46]"
                   }`}
               >
@@ -111,7 +111,7 @@ export default function SettingsPage() {
         </div>
 
         {/* Content Area */}
-        <div className="flex-1 bg-white/80 backdrop-blur-md border border-white p-8 rounded-[32px] shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
+        <div className="flex-1 bg-card/80 backdrop-blur-md border border-white p-8 rounded-[32px] shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
           {activeTab === "profile" && (
             <div className="space-y-6">
               <h2 className="text-[22px] font-extrabold text-[#2F3E46] mb-6">Profile Information</h2>
@@ -121,7 +121,7 @@ export default function SettingsPage() {
                   {store?.avatar_url || user?.user_metadata?.avatar_url ? (
                     <img src={store?.avatar_url || user?.user_metadata?.avatar_url} className="w-full h-full object-cover" />
                   ) : (
-                    <span className="text-3xl font-bold text-white uppercase">{formData.displayName.charAt(0) || "U"}</span>
+                    <span className="text-3xl font-bold text-blush uppercase">{formData.displayName.charAt(0) || "U"}</span>
                   )}
                 </div>
                 <button className="px-5 py-2.5 bg-black/5 rounded-full text-[13px] font-bold hover:bg-black/10 transition-colors">
@@ -164,7 +164,7 @@ export default function SettingsPage() {
                 <button
                   onClick={handleSaveProfile}
                   disabled={isLoading}
-                  className="px-8 py-3 bg-[#8B5CF6] text-white font-bold text-[14px] rounded-full hover:bg-[#7C3AED] transition-colors disabled:opacity-50 shadow-sm"
+                  className="px-8 py-3 bg-[#8B5CF6] text-blush font-bold text-[14px] rounded-full hover:bg-[#7C3AED] transition-colors disabled:opacity-50 shadow-sm"
                 >
                   {isLoading ? "Saving..." : "Save Settings"}
                 </button>
@@ -197,7 +197,7 @@ export default function SettingsPage() {
                       disabled
                       className="rounded-xl px-4 py-3 h-auto font-medium bg-black/5 text-muted-foreground opacity-70 flex-1"
                     />
-                    <button className="px-5 py-2.5 bg-white border border-border/60 shadow-sm rounded-xl text-[13px] font-bold text-foreground hover:bg-black/5 transition-colors shrink-0">
+                    <button className="px-5 py-2.5 bg-card border border-border/60 shadow-sm rounded-xl text-[13px] font-bold text-foreground hover:bg-black/5 transition-colors shrink-0">
                       Reset Password
                     </button>
                   </div>
@@ -231,45 +231,45 @@ export default function SettingsPage() {
 
                   <ul className="space-y-3 mb-8">
                     <li className="flex items-center gap-3 text-[14px] text-[#4D606B] font-medium">
-                      <div className="w-5 h-5 rounded-full bg-green-100 flex items-center justify-center text-green-600 shrink-0">✓</div> Unlimited Links
+                      <div className="w-5 h-5 rounded-full bg-gold/15 flex items-center justify-center text-gold shrink-0">✓</div> Unlimited Links
                     </li>
                     <li className="flex items-center gap-3 text-[14px] text-[#4D606B] font-medium">
-                      <div className="w-5 h-5 rounded-full bg-green-100 flex items-center justify-center text-green-600 shrink-0">✓</div> Basic Catalog Access
+                      <div className="w-5 h-5 rounded-full bg-gold/15 flex items-center justify-center text-gold shrink-0">✓</div> Basic Catalog Access
                     </li>
                     <li className="flex items-center gap-3 text-[14px] text-muted-foreground opacity-50 font-medium">
-                      <div className="w-5 h-5 rounded-full bg-black/5 flex items-center justify-center text-black/40 shrink-0">✕</div> Custom Domain
+                      <div className="w-5 h-5 rounded-full bg-black/5 flex items-center justify-center text-void/40 shrink-0">✕</div> Custom Domain
                     </li>
                     <li className="flex items-center gap-3 text-[14px] text-muted-foreground opacity-50 font-medium">
-                      <div className="w-5 h-5 rounded-full bg-black/5 flex items-center justify-center text-black/40 shrink-0">✕</div> Zero Transaction Fees
+                      <div className="w-5 h-5 rounded-full bg-black/5 flex items-center justify-center text-void/40 shrink-0">✕</div> Zero Transaction Fees
                     </li>
                   </ul>
 
-                  <button disabled className="w-full py-3 px-6 rounded-full border border-border/60 bg-white text-[#2F3E46] font-bold text-[14px] opacity-70 cursor-not-allowed">
+                  <button disabled className="w-full py-3 px-6 rounded-full border border-border/60 bg-card text-[#2F3E46] font-bold text-[14px] opacity-70 cursor-not-allowed">
                     Active Plan
                   </button>
                 </div>
 
                 {/* Pro Plan */}
-                <div className="bg-gradient-to-tr from-violet-500 to-fuchsia-400 rounded-[24px] p-6 text-white shadow-[0_10px_40px_rgba(139,92,246,0.3)] relative overflow-hidden group">
-                  <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl -mr-10 -mt-10"></div>
-                  <h3 className="text-xl font-bold text-white mb-1 relative z-10">Creator Pro</h3>
+                <div className="bg-gradient-to-tr from-plum to-fuchsia-400 rounded-[24px] p-6 text-blush shadow-[0_10px_40px_rgba(139,92,246,0.3)] relative overflow-hidden group">
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-card/10 rounded-full blur-2xl -mr-10 -mt-10"></div>
+                  <h3 className="text-xl font-bold text-blush mb-1 relative z-10">Creator Pro</h3>
                   <div className="flex items-baseline gap-1 mb-6 relative z-10">
-                    <span className="text-3xl font-extrabold text-white">$29</span>
-                    <span className="text-[13px] text-white/80 font-medium">/month</span>
+                    <span className="text-3xl font-extrabold text-blush">$29</span>
+                    <span className="text-[13px] text-blush/80 font-medium">/month</span>
                   </div>
 
                   <ul className="space-y-3 mb-8 relative z-10">
-                    <li className="flex items-center gap-3 text-[14px] text-white/90 font-medium">
-                      <div className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center text-white shrink-0">✓</div> Custom Domain (yourname.com)
+                    <li className="flex items-center gap-3 text-[14px] text-blush/90 font-medium">
+                      <div className="w-5 h-5 rounded-full bg-card/20 flex items-center justify-center text-blush shrink-0">✓</div> Custom Domain (yourname.com)
                     </li>
-                    <li className="flex items-center gap-3 text-[14px] text-white/90 font-medium">
-                      <div className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center text-white shrink-0">✓</div> 0% Platform Transaction Fees
+                    <li className="flex items-center gap-3 text-[14px] text-blush/90 font-medium">
+                      <div className="w-5 h-5 rounded-full bg-card/20 flex items-center justify-center text-blush shrink-0">✓</div> 0% Platform Transaction Fees
                     </li>
-                    <li className="flex items-center gap-3 text-[14px] text-white/90 font-medium">
-                      <div className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center text-white shrink-0">✓</div> Advanced Analytics
+                    <li className="flex items-center gap-3 text-[14px] text-blush/90 font-medium">
+                      <div className="w-5 h-5 rounded-full bg-card/20 flex items-center justify-center text-blush shrink-0">✓</div> Advanced Analytics
                     </li>
-                    <li className="flex items-center gap-3 text-[14px] text-white/90 font-medium">
-                      <div className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center text-white shrink-0">✓</div> Premium Themes & UI
+                    <li className="flex items-center gap-3 text-[14px] text-blush/90 font-medium">
+                      <div className="w-5 h-5 rounded-full bg-card/20 flex items-center justify-center text-blush shrink-0">✓</div> Premium Themes & UI
                     </li>
                   </ul>
 
@@ -278,7 +278,7 @@ export default function SettingsPage() {
                       toast.loading('Redirecting to Stripe Checkout...', { duration: 2000 });
                       setTimeout(() => toast.success('Stripe session verified!'), 2000);
                     }}
-                    className="w-full py-3 px-6 rounded-full bg-white text-violet-600 hover:bg-white/90 font-extrabold text-[14px] shadow-sm relative z-10 transition-colors"
+                    className="w-full py-3 px-6 rounded-full bg-card text-violet-600 hover:bg-card/90 font-extrabold text-[14px] shadow-sm relative z-10 transition-colors"
                   >
                     Upgrade to Pro
                   </button>

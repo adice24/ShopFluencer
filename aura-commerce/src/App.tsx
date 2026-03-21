@@ -11,12 +11,14 @@ import RoleSelect from "./pages/RoleSelect";
 import StorefrontPage from "./pages/StorefrontPage";
 import DynamicRouteRenderer from "./pages/DynamicRouteRenderer";
 import MarketingPage from "./pages/MarketingPage";
+import AffiliateOnboarding from "./pages/onboarding/AffiliateOnboarding";
 
-import { InfluencerRoute, AdminRoute } from "./components/guards/RouteGuards";
+import { InfluencerRoute, AdminRoute, BrandRoute, AffiliateDashboardGate } from "./components/guards/RouteGuards";
 
 import DashboardLayout from "./pages/dashboard/DashboardLayout";
 import Overview from "./pages/dashboard/Overview";
 import MyStore from "./pages/dashboard/MyStore";
+import Marketplace from "./pages/dashboard/Marketplace";
 import Analytics from "./pages/dashboard/Analytics";
 
 import AppearancePage from "./pages/dashboard/AppearancePage";
@@ -36,8 +38,16 @@ import AdminProducts from "./pages/admin/AdminProducts";
 import AdminOrders from "./pages/admin/AdminOrders";
 import AdminAnalytics from "./pages/admin/AdminAnalytics";
 import AdminCategories from "./pages/admin/AdminCategories";
-
+import AdminBrands from "./pages/admin/AdminBrands";
+import AdminSettings from "./pages/admin/AdminSettings";
 import AdminLogin from "./pages/admin/AdminLogin";
+import { PLATFORM_ADMIN_LOGIN_PATH } from "./lib/platformAdminPaths";
+
+import BrandLayout from "./pages/brand/BrandLayout";
+import BrandDashboard from "./pages/brand/BrandDashboard";
+import RegisterBrand from "./pages/brand/RegisterBrand";
+import AddProduct from "./pages/brand/AddProduct";
+import BrandProducts from "./pages/brand/BrandProducts";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -60,24 +70,29 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/auth" element={<AuthPage />} />
             <Route path="/role-select" element={<RoleSelect />} />
-            <Route path="/admin/login" element={<AdminLogin />} />
+            {/* Platform admin login — not linked in the UI; path from platformAdminPaths.ts */}
+            <Route path={PLATFORM_ADMIN_LOGIN_PATH} element={<AdminLogin />} />
 
             {/* Influencer Dashboard */}
             <Route element={<InfluencerRoute />}>
-              <Route path="/dashboard" element={<DashboardLayout />}>
-                <Route index element={<Overview />} />
-                <Route path="store" element={<MyStore />} />
-                <Route path="products" element={<MyStore />} />
-                <Route path="orders" element={<Analytics />} />
-                <Route path="analytics" element={<Analytics />} />
-                <Route path="links" element={<LinksPage />} />
-                <Route path="appearance" element={<AppearancePage />} />
-                <Route path="settings" element={<SettingsPage />} />
-                <Route path="social-planner" element={<SocialPlannerPage />} />
-                <Route path="post-ideas" element={<PostIdeasPage />} />
-                <Route path="shortener" element={<LinkShortenerPage />} />
-                <Route path="faq" element={<FAQPage />} />
-                <Route path="help" element={<HelpTopicsPage />} />
+              <Route path="/onboarding/affiliate" element={<AffiliateOnboarding />} />
+              <Route element={<AffiliateDashboardGate />}>
+                <Route path="/dashboard" element={<DashboardLayout />}>
+                  <Route index element={<Overview />} />
+                  <Route path="marketplace" element={<Marketplace />} />
+                  <Route path="store" element={<MyStore />} />
+                  <Route path="products" element={<MyStore />} />
+                  <Route path="orders" element={<Analytics />} />
+                  <Route path="analytics" element={<Analytics />} />
+                  <Route path="links" element={<LinksPage />} />
+                  <Route path="appearance" element={<AppearancePage />} />
+                  <Route path="settings" element={<SettingsPage />} />
+                  <Route path="social-planner" element={<SocialPlannerPage />} />
+                  <Route path="post-ideas" element={<PostIdeasPage />} />
+                  <Route path="shortener" element={<LinkShortenerPage />} />
+                  <Route path="faq" element={<FAQPage />} />
+                  <Route path="help" element={<HelpTopicsPage />} />
+                </Route>
               </Route>
             </Route>
 
@@ -86,10 +101,25 @@ const App = () => (
               <Route path="/admin" element={<AdminLayout />}>
                 <Route index element={<AdminDashboard />} />
                 <Route path="influencers" element={<AdminInfluencers />} />
+                <Route path="brands" element={<AdminBrands />} />
                 <Route path="products" element={<AdminProducts />} />
                 <Route path="orders" element={<AdminOrders />} />
                 <Route path="analytics" element={<AdminAnalytics />} />
                 <Route path="categories" element={<AdminCategories />} />
+                <Route path="settings" element={<AdminSettings />} />
+              </Route>
+            </Route>
+
+            {/* Brand Dashboard */}
+            <Route element={<BrandRoute />}>
+              <Route path="/brand/register" element={<RegisterBrand />} />
+              <Route path="/brand" element={<BrandLayout />}>
+                <Route index element={<BrandDashboard />} />
+                <Route path="products" element={<BrandProducts />} />
+                <Route path="add-product" element={<AddProduct />} />
+                <Route path="affiliates" element={<BrandDashboard />} />
+                <Route path="analytics" element={<BrandDashboard />} />
+                <Route path="settings" element={<BrandDashboard />} />
               </Route>
             </Route>
 

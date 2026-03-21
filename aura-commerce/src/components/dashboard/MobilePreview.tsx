@@ -62,7 +62,7 @@ export default function MobilePreview({ store, theme, links }: MobilePreviewProp
 
         switch (theme.button_style) {
             case 'flat': return "rounded-none";
-            case 'glass': return "rounded-xl backdrop-blur-md bg-white/20 border border-white/30 shadow-lg";
+            case 'glass': return "rounded-xl backdrop-blur-md bg-card/20 border border-white/30 shadow-lg shadow-void/50";
             case 'rounded': return "rounded-[32px] shadow-sm";
             default: return "rounded-[32px] shadow-sm";
         }
@@ -84,15 +84,15 @@ export default function MobilePreview({ store, theme, links }: MobilePreviewProp
                 <div className="absolute right-[-2px] top-[160px] w-[3px] h-[60px] bg-neutral-700 rounded-r-md" /> {/* Power Button */}
 
                 {/* iPhone Screen Area */}
-                <div className="w-full h-full rounded-[42px] relative overflow-hidden bg-white" style={{ ...getBackgroundStyle(), fontFamily }}>
+                <div className="w-full h-full rounded-[42px] relative overflow-hidden bg-card" style={{ ...getBackgroundStyle(), fontFamily }}>
 
                     {/* Dynamic Island Notch */}
                     <div className="absolute top-3 left-1/2 -translate-x-1/2 w-[100px] h-[30px] bg-black rounded-full z-50 shadow-inner flex items-center justify-between px-3">
                         {/* Camera Lens Glare */}
                         <div className="w-2.5 h-2.5 rounded-full bg-[#111] shadow-[inset_-1px_-1px_2px_rgba(255,255,255,0.1)] relative overflow-hidden">
-                            <div className="absolute top-0.5 right-0.5 w-1 h-1 bg-blue-500/30 rounded-full blur-[1px]"></div>
+                            <div className="absolute top-0.5 right-0.5 w-1 h-1 bg-gold/30 rounded-full blur-[1px]"></div>
                         </div>
-                        <div className="w-1.5 h-1.5 rounded-full bg-green-500/80 mr-1" /> {/* Active cam dot */}
+                        <div className="w-1.5 h-1.5 rounded-full bg-gold/80 mr-1" /> {/* Active cam dot */}
                     </div>
 
                     {/* Scrollable Content Inside Screen */}
@@ -116,7 +116,7 @@ export default function MobilePreview({ store, theme, links }: MobilePreviewProp
                                 {store?.avatar_url ? (
                                     <img src={store.avatar_url} alt={store.display_name} className="w-full h-full object-cover" />
                                 ) : (
-                                    <div className="bg-[#EABAA0] w-full h-full flex items-center justify-center text-white shrink-0">
+                                    <div className="bg-[#EABAA0] w-full h-full flex items-center justify-center text-blush shrink-0">
                                         <span className="text-3xl font-bold">{store?.display_name?.charAt(0)?.toUpperCase() || "S"}</span>
                                     </div>
                                 )}

@@ -21,8 +21,8 @@ const plans = [
     description: "For growing creators",
     features: ["Everything in Free", "Advanced analytics", "Custom themes", "Priority support", "Remove ShopFluence logo"],
     bgColor: "bg-primary",
-    textColor: "text-secondary",
-    buttonStyle: "bg-secondary text-secondary-foreground",
+    textColor: "text-blush",
+    buttonStyle: "bg-gold text-void",
     popular: true,
   },
   {
@@ -92,15 +92,15 @@ export const InfluencerShowcase = () => {
                 </div>
               )}
               <h3 className={`text-lg font-bold ${plan.textColor} mb-1`}>{plan.name}</h3>
-              <p className={`text-sm ${plan.popular ? "text-secondary/60" : "text-muted-foreground"} mb-4`}>{plan.description}</p>
+              <p className={`text-sm ${plan.popular ? "text-blush/60" : "text-muted-foreground"} mb-4`}>{plan.description}</p>
               <div className={`flex items-baseline gap-1 mb-6 ${plan.textColor}`}>
                 <span className="text-4xl font-bold">{plan.price}</span>
-                <span className={`text-sm ${plan.popular ? "text-secondary/60" : "text-muted-foreground"}`}>{plan.period}</span>
+                <span className={`text-sm ${plan.popular ? "text-blush/60" : "text-muted-foreground"}`}>{plan.period}</span>
               </div>
               <ul className="space-y-2.5 mb-6">
                 {plan.features.map((f) => (
-                  <li key={f} className={`text-sm flex items-center gap-2 ${plan.popular ? "text-secondary/80" : "text-muted-foreground"}`}>
-                    <span className="text-green-500 font-bold">✓</span>
+                  <li key={f} className={`text-sm flex items-center gap-2 ${plan.popular ? "text-blush/80" : "text-muted-foreground"}`}>
+                    <span className="text-gold font-bold">✓</span>
                     {f}
                   </li>
                 ))}

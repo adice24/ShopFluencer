@@ -7,7 +7,7 @@ export default function HelpTopicsPage() {
             title: "Getting Started",
             description: "Learn how to set up your ShopFluence profile and basic details.",
             icon: BookOpen,
-            color: "bg-blue-100 text-blue-600"
+            color: "bg-plum text-gold"
         },
         {
             title: "Store & Products",
@@ -19,13 +19,13 @@ export default function HelpTopicsPage() {
             title: "Design & Appearance",
             description: "Customizing your theme, layout, backgrounds, and aesthetic.",
             icon: Palette,
-            color: "bg-pink-100 text-pink-600"
+            color: "bg-rose/15 text-rose"
         },
         {
             title: "Link Management",
             description: "Using the Link Shortener and managing your custom URLs.",
             icon: LinkIcon,
-            color: "bg-orange-100 text-orange-600"
+            color: "bg-gold/15 text-gold"
         },
         {
             title: "Audience & Analytics",
@@ -37,7 +37,7 @@ export default function HelpTopicsPage() {
             title: "Account Settings",
             description: "Managing payouts, billing, passwords, and security.",
             icon: Settings,
-            color: "bg-gray-200 text-gray-700"
+            color: "bg-muted text-blush"
         }
     ];
 
@@ -58,7 +58,7 @@ export default function HelpTopicsPage() {
                             initial={{ opacity: 0, y: 15 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: index * 0.05 }}
-                            className="bg-white rounded-[24px] shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-border/40 p-6 hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)] transition-all cursor-pointer group"
+                            className="bg-card rounded-[24px] shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-border/40 p-6 hover:shadow-[0_8px_30px_rgba(0,0,0,0.06)] transition-all cursor-pointer group"
                         >
                             <div className={`w-12 h-12 rounded-2xl flex items-center justify-center mb-5 ${topic.color}`}>
                                 <Icon size={24} />

@@ -199,7 +199,7 @@ function Band({ isMobile = false }: { isMobile?: boolean }) {
             <mesh geometry={nodes.card.geometry}>
               <meshPhysicalMaterial
                 map={cardTexture}
-                color="#ffffff"
+                color="#E9BCB9"
                 clearcoat={1}
                 clearcoatRoughness={0.15}
                 roughness={0.3}
@@ -208,11 +208,11 @@ function Band({ isMobile = false }: { isMobile?: boolean }) {
             </mesh>
 
             <mesh geometry={nodes.clip.geometry}>
-              <meshStandardMaterial color="#b5b5b5" metalness={1} roughness={0.3} />
+              <meshStandardMaterial color="#ED9E59" metalness={1} roughness={0.3} />
             </mesh>
 
             <mesh geometry={nodes.clamp.geometry}>
-              <meshStandardMaterial color="#b5b5b5" metalness={1} roughness={0.3} />
+              <meshStandardMaterial color="#ED9E59" metalness={1} roughness={0.3} />
             </mesh>
           </group>
         </RigidBody>
@@ -221,7 +221,7 @@ function Band({ isMobile = false }: { isMobile?: boolean }) {
       <mesh ref={band}>
         <meshLineGeometry />
         <meshLineMaterial
-          color="white"
+          color="#44174E"
           depthTest={false}
           resolution={[window.innerWidth, window.innerHeight]}
           useMap

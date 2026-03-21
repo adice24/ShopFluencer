@@ -14,42 +14,39 @@ export default function DynamicRouteRenderer() {
         }
 
         async function resolveSlug() {
-            // ── Check the `links` table (where short_slug = slug) ──────────
             const { data: link, error } = await supabase
-                .from("links")
-                .select("id, url, click_count, store_id, user_id")
-                .eq("short_slug", slug)
-                .eq("is_visible", true)
+                .from("short_links")
+                .select("id, original_url, clicks, is_active")
+                .eq("short_code", slug)
+                .eq("is_active", true)
                 .maybeSingle();
 
-            if (!error && link?.url) {
-                // Fire-and-forget click tracking (don't block the redirect)
+            if (!error && link?.original_url) {
+                const n = Number((link as { clicks?: number }).clicks ?? 0);
                 supabase
-                    .from("links")
-                    .update({ click_count: (link.click_count || 0) + 1 })
-                    .eq("id", link.id)
-                    .then(() => { });
+                    .from("short_links")
+                    .update({
+                        clicks: n + 1,
+                        updated_at: new Date().toISOString(),
+                    })
+                    .eq("id", (link as { id: string }).id)
+                    .then(() => {});
 
-                // Also record in link_clicks for analytics
                 supabase
                     .from("link_clicks")
                     .insert({
-                        link_id: link.id,
-                        store_id: link.store_id,
-                        user_id: link.user_id,
+                        id: crypto.randomUUID(),
+                        short_link_id: (link as { id: string }).id,
                         user_agent: navigator.userAgent,
-                        ip_address: "",
-                        referer: document.referrer || "",
-                        country: "",
+                        referrer: document.referrer || null,
                     })
-                    .then(() => { });
+                    .then(() => {});
 
                 setStatus("redirect");
-                window.location.replace(link.url);
+                window.location.replace(String((link as { original_url: string }).original_url));
                 return;
             }
 
-            // ── Not a short link → try as an influencer store slug ─────────
             setStatus("store");
         }
 

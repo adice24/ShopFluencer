@@ -2,15 +2,14 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { Search, CheckCircle2, Ban, Eye } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { fetchApi } from "../../lib/api";
-import { supabase } from "../../lib/supabase";
+import { fetchAdminApi } from "../../lib/api";
 import { toast } from "sonner";
 import { Profile } from "../../lib/types";
 
 const statusBadge: Record<string, string> = {
-  active: "bg-green-100 text-green-700",
-  pending_approval: "bg-yellow-100 text-yellow-700",
-  suspended: "bg-red-100 text-red-600",
+  active: "bg-gold/15 text-gold",
+  pending_approval: "bg-gold/15 text-gold",
+  suspended: "bg-rose/15 text-rose",
 };
 
 export default function AdminInfluencers() {
@@ -20,22 +19,26 @@ export default function AdminInfluencers() {
   const { data: influencers = [], isLoading } = useQuery({
     queryKey: ["admin-influencers"],
     queryFn: async () => {
-      // In a full production setup with the backend, we would call fetchApi('/admin/influencers')
-      // For now, we will fetch directly since we require RLS enforcement
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('role', 'influencer')
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      return data;
+      const users = await fetchAdminApi("/admin/users/AFFILIATE");
+      const list = Array.isArray(users) ? users : [];
+      return list.map((u: any) => ({
+        id: u.id,
+        full_name: `${u.firstName} ${u.lastName}`,
+        email: u.email,
+        status: u.status.toLowerCase(),
+        avatar_url: u.avatarUrl,
+        created_at: u.createdAt,
+        follower_count: u.influencerProfile?.followerCount,
+        product_count: u.influencerProfile?.productCount || 0,
+        order_count: u.influencerProfile?.orderCount || 0,
+        total_revenue: u.influencerProfile?.totalRevenue || 0,
+      }));
     }
   });
 
   const approveMutation = useMutation({
     mutationFn: async (userId: string) => {
-      return fetchApi(`/admin/influencers/${userId}/approve`, { method: 'POST' });
+      return fetchAdminApi(`/admin/affiliates/${userId}/approve`, { method: "POST" });
     },
     onSuccess: () => {
       toast.success("Influencer approved. They can now access their store.");
@@ -48,7 +51,7 @@ export default function AdminInfluencers() {
 
   const suspendMutation = useMutation({
     mutationFn: async (userId: string) => {
-      return fetchApi(`/admin/influencers/${userId}/suspend`, { method: 'POST' });
+      return fetchAdminApi(`/admin/users/${userId}/suspend`, { method: "POST" });
     },
     onSuccess: () => {
       toast.success("Influencer suspended. Store locked.");
@@ -124,18 +127,18 @@ export default function AdminInfluencers() {
                           <button
                             onClick={() => approveMutation.mutate(inf.id)}
                             disabled={approveMutation.isPending}
-                            className="p-1.5 hover:bg-green-100 rounded-lg" title="Approve Influencer"
+                            className="p-1.5 hover:bg-gold/15 rounded-lg" title="Approve Influencer"
                           >
-                            <CheckCircle2 size={14} className="text-green-600" />
+                            <CheckCircle2 size={14} className="text-gold" />
                           </button>
                         )}
                         {inf.status === "active" && (
                           <button
                             onClick={() => suspendMutation.mutate(inf.id)}
                             disabled={suspendMutation.isPending}
-                            className="p-1.5 hover:bg-red-100 rounded-lg" title="Suspend Influencer"
+                            className="p-1.5 hover:bg-rose/15 rounded-lg" title="Suspend Influencer"
                           >
-                            <Ban size={14} className="text-red-500" />
+                            <Ban size={14} className="text-rose" />
                           </button>
                         )}
                       </div>

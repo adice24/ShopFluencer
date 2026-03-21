@@ -16,18 +16,18 @@ export const CTASection = () => {
           className="bg-secondary rounded-4xl p-12 md:p-20 text-center"
         >
           <h2
-            className="font-bold text-white tracking-tight leading-tight mb-4"
+            className="font-bold text-blush tracking-tight leading-tight mb-4"
             style={{ fontSize: "clamp(2rem, 4.5vw, 3rem)" }}
           >
             Ready to get started?
           </h2>
-          <p className="text-white/60 text-lg max-w-lg mx-auto mb-8">
+          <p className="text-blush/60 text-lg max-w-lg mx-auto mb-8">
             Join 70M+ people and create your free ShopFluence today. It takes less than a minute.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <motion.a
-              href="/auth"
-              className="flex items-center justify-center gap-2 px-8 py-4 rounded-pill bg-primary text-primary-foreground font-semibold text-base w-full sm:w-auto"
+              href="/auth?mode=signup"
+              className="flex items-center justify-center gap-2 px-8 py-4 rounded-pill bg-gold text-void font-semibold text-base w-full sm:w-auto"
               whileHover={{ scale: 1.04 }}
               whileTap={{ scale: 0.97 }}
             >
@@ -36,7 +36,7 @@ export const CTASection = () => {
             </motion.a>
             <motion.a
               href="#learn"
-              className="flex items-center justify-center gap-2 px-8 py-4 rounded-pill border border-white/20 text-white font-semibold text-base hover:bg-white/10 transition-colors duration-200 w-full sm:w-auto"
+              className="flex items-center justify-center gap-2 px-8 py-4 rounded-pill border border-white/20 text-blush font-semibold text-base hover:bg-card/10 transition-colors duration-200 w-full sm:w-auto"
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.97 }}
             >

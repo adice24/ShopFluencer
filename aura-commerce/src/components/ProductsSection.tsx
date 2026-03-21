@@ -7,37 +7,37 @@ const tools = [
     icon: Link,
     title: "Link in bio",
     description: "One link to share all your content, social profiles, and more.",
-    color: "bg-lime-100 text-lime-700",
+    color: "bg-gold/15 text-gold",
   },
   {
     icon: ShoppingCart,
     title: "Commerce",
     description: "Sell products, collect payments, and manage orders seamlessly.",
-    color: "bg-blue-100 text-blue-700",
+    color: "bg-plum text-gold",
   },
   {
     icon: BarChart3,
     title: "Analytics",
     description: "Track clicks, views, and revenue with real-time dashboards.",
-    color: "bg-purple-100 text-purple-700",
+    color: "bg-plum/30 text-blush",
   },
   {
     icon: QrCode,
     title: "QR codes",
     description: "Bridge offline and online with custom branded QR codes.",
-    color: "bg-orange-100 text-orange-700",
+    color: "bg-gold/15 text-gold",
   },
   {
     icon: Palette,
     title: "Themes",
     description: "Choose from hundreds of themes or build your own custom look.",
-    color: "bg-pink-100 text-pink-700",
+    color: "bg-rose/15 text-rose",
   },
   {
     icon: Globe,
     title: "Social commerce",
     description: "Turn followers into customers with integrated storefronts.",
-    color: "bg-emerald-100 text-emerald-700",
+    color: "bg-crimson/20 text-gold",
   },
 ];
 
@@ -76,7 +76,7 @@ export const ProductsSection = () => {
               animate={inView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.6, delay: i * 0.08 }}
               whileHover={{ y: -4, transition: { duration: 0.3 } }}
-              className="bg-background rounded-3xl p-6 border border-border hover:shadow-lg transition-shadow duration-300 cursor-pointer group"
+              className="bg-background rounded-3xl p-6 border border-border hover:shadow-lg shadow-void/50 transition-shadow duration-300 cursor-pointer group"
             >
               <div className={`w-12 h-12 rounded-2xl ${tool.color} flex items-center justify-center mb-4`}>
                 <tool.icon className="w-6 h-6" />

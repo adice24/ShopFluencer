@@ -1,4 +1,6 @@
 import { useState, useRef } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Search, Plus, Eye, EyeOff, Copy, Trash2, Edit, X, Upload, Package, Globe, DollarSign, Tag as TagIcon, Hash, Share, Check, ExternalLink } from "lucide-react";
 import { useMyStore, useProducts } from "../../hooks/useInfluencerStore";
@@ -10,12 +12,20 @@ import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "../../contexts/AuthContext";
 import { supabase } from "../../lib/supabase";
 import { Loader2 } from "lucide-react";
+import {
+  createInfluencerListing,
+  updateInfluencerListing,
+  formatSupabaseError,
+} from "../../lib/influencerProductSave";
 
 export default function MyStore() {
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const { user } = useAuth();
-  const { store } = useMyStore();
-  const { products = [], toggleVisibility, reorderProducts, addProduct, deleteProduct, updateProduct, isLoading } = useProducts(store?.id);
+  const { store, createStore, isLoading: storeLoading } = useMyStore();
+  const { products = [], toggleVisibility, reorderProducts, deleteProduct, isLoading } = useProducts(store?.id);
   const [search, setSearch] = useState("");
+  const [savingProduct, setSavingProduct] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [copiedProductId, setCopiedProductId] = useState<string | null>(null);
 
@@ -79,48 +89,97 @@ export default function MyStore() {
     setIsAddingMode(true);
   };
 
-  const handleSave = async () => {
-    if (!formData.name || !formData.price) {
-      toast.error("Name and Price are required.");
-      return;
+  const ensureStorefront = async (): Promise<string | null> => {
+    if (store?.id) return store.id;
+    if (storeLoading) {
+      toast.error("Loading your storefront… try again in a moment.");
+      return null;
     }
-
-    // Check if store exists first... wait, user might not have a store yet and they're here!
-    // But since they are ON the Store page, the UI should guide them. 
-    // We assume store?.id exists via the previously generated placeholder or they must create it.
-    if (!store?.id) {
-      toast.error("Please ensure your Store Profile is generated first.");
-      return;
+    if (!user) {
+      toast.error("Sign in to add products.");
+      return null;
     }
-
-    const payload: Partial<Product> = {
-      name: formData.name,
-      description: formData.description,
-      price: parseFloat(formData.price) || 0,
-      compare_at_price: formData.compare_at_price ? parseFloat(formData.compare_at_price) : null,
-      image_url: formData.image_url,
-      stock_count: formData.stock_count ? parseInt(formData.stock_count) : -1,
-      status: formData.status as 'active' | 'draft',
-      is_visible: formData.status === 'active',
-      sku: formData.sku || null,
-      category: formData.category || null,
-      tags: formData.tags ? formData.tags.split(",").map(t => t.trim()).filter(Boolean) : [],
-      weight: formData.weight ? parseFloat(formData.weight) : null,
-      is_digital: formData.is_digital,
-      external_url: formData.external_url || "",
-    };
-
     try {
+      const base = (user.email?.split("@")[0] || "store")
+        .toLowerCase()
+        .replace(/[^a-z0-9_-]/g, "")
+        .slice(0, 24) || "store";
+      const slug = `${base}-${Date.now().toString(36)}`;
+      const label =
+        (user.user_metadata?.full_name as string | undefined) || base;
+      const created = await createStore.mutateAsync({
+        slug,
+        title: label,
+        display_name: label,
+      });
+      return created.id;
+    } catch (e) {
+      console.error(e);
+      toast.error(
+        "Could not create your storefront. Finish affiliate onboarding or try again."
+      );
+      return null;
+    }
+  };
+
+  const handleSave = async () => {
+    if (!formData.name.trim() || formData.price === "") {
+      toast.error("Product name and price are required.");
+      return;
+    }
+    const priceNum = parseFloat(formData.price);
+    if (Number.isNaN(priceNum) || priceNum < 0) {
+      toast.error("Enter a valid price.");
+      return;
+    }
+
+    setSavingProduct(true);
+    try {
+      const storefrontId = await ensureStorefront();
+      if (!storefrontId) return;
+
+      const payload = {
+        name: formData.name,
+        description: formData.description,
+        price: formData.price,
+        compare_at_price: formData.compare_at_price,
+        image_url: formData.image_url,
+        stock_count: formData.stock_count,
+        status: formData.status,
+        sku: formData.sku,
+        category: formData.category,
+        tags: formData.tags,
+        is_digital: formData.is_digital,
+      };
+
       if (editingProduct) {
-        await updateProduct.mutateAsync({ id: editingProduct.id, ...payload });
-        toast.success("Product updated!");
+        await updateInfluencerListing(editingProduct.id, payload);
+        toast.success("Product updated.");
       } else {
-        await addProduct.mutateAsync(payload);
-        toast.success("Product created!");
+        await createInfluencerListing(
+          storefrontId,
+          payload,
+          store?.id === storefrontId ? products.length : 0
+        );
+        toast.success(
+          "Product added. It appears in Discover (Marketplace) when status is Active — trending follows sales."
+        );
       }
+      queryClient.invalidateQueries({ queryKey: ["products", storefrontId] });
+      queryClient.invalidateQueries({ queryKey: ["marketplace-products"] });
+      queryClient.invalidateQueries({ queryKey: ["my-store-products", storefrontId] });
+      queryClient.invalidateQueries({ queryKey: ["public-store"] });
       resetForm();
-    } catch (e: any) {
-      toast.error(e.message || "Failed to save product");
+    } catch (err: unknown) {
+      const msg =
+        err instanceof Error
+          ? err.message
+          : typeof err === "object" && err !== null && "message" in err
+            ? formatSupabaseError(err as { message?: string; code?: string; details?: string; hint?: string })
+            : "Could not save product.";
+      toast.error(msg);
+    } finally {
+      setSavingProduct(false);
     }
   };
 
@@ -170,7 +229,7 @@ export default function MyStore() {
   };
 
   const currentProducts = products;
-  const filtered = currentProducts.filter(p => p.name.toLowerCase().includes(search.toLowerCase()));
+  const filtered = currentProducts.filter(p => (p.name || "").toLowerCase().includes(search.toLowerCase()));
 
   if (isLoading) {
     return (
@@ -193,7 +252,7 @@ export default function MyStore() {
           </button>
         </div>
 
-        <div className="bg-white/80 backdrop-blur-md border border-white p-8 rounded-[24px] shadow-[0_8px_30px_rgba(0,0,0,0.04)] space-y-8">
+        <div className="bg-card/80 backdrop-blur-md border border-white p-8 rounded-[24px] shadow-[0_8px_30px_rgba(0,0,0,0.04)] space-y-8">
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {/* Left Column - Essentials */}
@@ -333,8 +392,22 @@ export default function MyStore() {
             <button onClick={resetForm} className="px-6 py-2.5 text-[#4D606B] font-medium hover:bg-black/5 rounded-full transition-colors">
               Cancel
             </button>
-            <button onClick={handleSave} className="px-8 py-2.5 bg-[#D67151] hover:bg-[#c46142] text-white font-bold rounded-full transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5">
-              {editingProduct ? "Update Product" : "Save Product"}
+            <button
+              type="button"
+              disabled={savingProduct}
+              onClick={handleSave}
+              className="inline-flex items-center justify-center gap-2 px-8 py-2.5 bg-[#D67151] hover:bg-[#c46142] text-blush font-bold rounded-full transition-all shadow-md hover:shadow-lg shadow-void/50 hover:-translate-y-0.5 disabled:opacity-60"
+            >
+              {savingProduct ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Saving…
+                </>
+              ) : editingProduct ? (
+                "Update Product"
+              ) : (
+                "Save Product"
+              )}
             </button>
           </div>
         </div>
@@ -351,15 +424,28 @@ export default function MyStore() {
           <p className="text-[#4D606B]">Manage your store inventory and affiliate links.</p>
         </div>
 
-        <button
-          onClick={() => setIsAddingMode(true)}
-          className="flex items-center gap-2 px-6 py-3 bg-[#D67151] hover:bg-[#c46142] text-white rounded-full font-bold shadow-[0_4px_14px_rgba(214,113,81,0.3)] hover:shadow-[0_6px_20px_rgba(214,113,81,0.4)] transition-all hover:-translate-y-0.5"
-        >
-          <Plus size={18} /> Add Product
-        </button>
+        <div className="flex flex-col items-end gap-2">
+          <button
+            type="button"
+            onClick={() => {
+              setEditingProduct(null);
+              setIsAddingMode(true);
+            }}
+            className="flex items-center gap-2 px-6 py-3 bg-[#D67151] hover:bg-[#c46142] text-blush rounded-full font-bold shadow-[0_4px_14px_rgba(214,113,81,0.3)] hover:shadow-[0_6px_20px_rgba(214,113,81,0.4)] transition-all hover:-translate-y-0.5"
+          >
+            <Plus size={18} /> ADD PRODUCT
+          </button>
+          <button
+            type="button"
+            onClick={() => navigate("/dashboard/marketplace")}
+            className="text-sm font-semibold text-[#4D606B] hover:text-[#D67151] underline-offset-2 hover:underline"
+          >
+            Browse Discover (Marketplace)
+          </button>
+        </div>
       </div>
 
-      <div className="bg-white/60 backdrop-blur-md rounded-[24px] p-6 border border-white/60 shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
+      <div className="bg-card/60 backdrop-blur-md rounded-[24px] p-6 border border-white/60 shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
         <div className="flex items-center gap-4 mb-6 relative">
           <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" />
           <input
@@ -367,16 +453,16 @@ export default function MyStore() {
             placeholder="Search products..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-11 pr-4 py-3 bg-white border border-black/5 rounded-2xl outline-none focus:ring-2 focus:ring-[#D67151]/20 focus:border-[#D67151]/50 transition-all font-medium text-[#2F3E46] placeholder:font-normal placeholder:text-muted-foreground/70 shadow-sm"
+            className="w-full pl-11 pr-4 py-3 bg-card border border-black/5 rounded-2xl outline-none focus:ring-2 focus:ring-[#D67151]/20 focus:border-[#D67151]/50 transition-all font-medium text-[#2F3E46] placeholder:font-normal placeholder:text-muted-foreground/70 shadow-sm"
           />
         </div>
 
         {filtered.length === 0 ? (
-          <div className="text-center py-16 bg-white/50 rounded-[20px] border border-dashed border-black/10">
+          <div className="text-center py-16 bg-card/50 rounded-[20px] border border-dashed border-black/10">
             <Package size={48} className="mx-auto text-muted-foreground/30 mb-4" />
             <h3 className="text-lg font-bold text-[#2F3E46] mb-2">No products found</h3>
             <p className="text-muted-foreground text-sm max-w-sm mx-auto">
-              You haven't added any products yet. Click the "Add Product" button above to get started.
+              Add your own listing for sale, or browse Discover to curate from brands. Active listings show in Discover; turn on &quot;Trending&quot; there to sort by sales.
             </p>
           </div>
         ) : (
@@ -389,13 +475,13 @@ export default function MyStore() {
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.95 }}
-                  className="bg-white border rounded-[20px] p-5 shadow-sm hover:shadow-md transition-all group relative overflow-hidden flex flex-col"
+                  className="bg-card border rounded-[20px] p-5 shadow-sm hover:shadow-md transition-all group relative overflow-hidden flex flex-col"
                 >
                   <div className="absolute top-4 right-4 z-10">
                     <button
                       onClick={() => toggleVisibility(product.id)}
                       className={`p-1.5 rounded-full backdrop-blur-md transition-colors shadow-sm
-                        ${product.is_visible ? 'bg-white text-[#4D606B] hover:text-black' : 'bg-black/80 text-white'}`}
+                        ${product.is_visible ? 'bg-card text-[#4D606B] hover:text-void' : 'bg-black/80 text-blush'}`}
                       title={product.is_visible ? "Visible" : "Hidden"}
                     >
                       {product.is_visible ? <Eye size={14} /> : <EyeOff size={14} />}
@@ -409,8 +495,8 @@ export default function MyStore() {
                       <span className="text-5xl">{product.image_emoji || "📦"}</span>
                     )}
                     {product.status === 'draft' && (
-                      <div className="absolute inset-0 bg-white/60 backdrop-blur-[2px] flex items-center justify-center">
-                        <span className="px-3 py-1 bg-black/80 text-white text-[11px] font-bold rounded-full">DRAFT</span>
+                      <div className="absolute inset-0 bg-card/60 backdrop-blur-[2px] flex items-center justify-center">
+                        <span className="px-3 py-1 bg-black/80 text-blush text-[11px] font-bold rounded-full">DRAFT</span>
                       </div>
                     )}
                   </div>
@@ -466,7 +552,7 @@ export default function MyStore() {
                           className="p-1.5 text-muted-foreground hover:bg-black/5 hover:text-[#E28362] rounded-lg transition-colors"
                           title="Copy Product Link"
                         >
-                          {copiedProductId === product.id ? <Check size={14} className="text-green-500" /> : <Copy size={14} />}
+                          {copiedProductId === product.id ? <Check size={14} className="text-gold" /> : <Copy size={14} />}
                         </button>
                         {/* Share */}
                         <button
@@ -517,7 +603,7 @@ export default function MyStore() {
                           onClick={() => {
                             if (window.confirm('Delete this product?')) deleteProduct.mutate(product.id);
                           }}
-                          className="p-1.5 text-muted-foreground hover:bg-red-50 hover:text-red-500 rounded-lg transition-colors"
+                          className="p-1.5 text-muted-foreground hover:bg-rose/10 hover:text-rose rounded-lg transition-colors"
                           title="Delete"
                         >
                           <Trash2 size={14} />

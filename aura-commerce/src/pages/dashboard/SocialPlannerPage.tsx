@@ -17,7 +17,7 @@ export default function SocialPlannerPage() {
                 </p>
             </motion.div>
 
-            <motion.div {...fadeUp(1)} className="bg-white/80 backdrop-blur-md border border-white rounded-[24px] p-12 text-center shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
+            <motion.div {...fadeUp(1)} className="bg-card/80 backdrop-blur-md border border-white rounded-[24px] p-12 text-center shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
                 <div className="mx-auto w-16 h-16 bg-[#D67151]/10 text-[#D67151] rounded-full flex items-center justify-center mb-6">
                     <CalendarDays size={32} />
                 </div>
@@ -25,7 +25,7 @@ export default function SocialPlannerPage() {
                 <p className="text-[#4D606B] max-w-md mx-auto mb-8">
                     We're building an intelligent social planner to help you auto-post products, reels, and stories directly to your linked accounts.
                 </p>
-                <button className="px-6 py-3 bg-[#D67151] text-white font-bold rounded-full hover:bg-[#c46142] transition-colors">
+                <button className="px-6 py-3 bg-[#D67151] text-blush font-bold rounded-full hover:bg-[#c46142] transition-colors">
                     Notify Me When Live
                 </button>
             </motion.div>

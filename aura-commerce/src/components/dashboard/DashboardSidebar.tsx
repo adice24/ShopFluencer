@@ -63,12 +63,12 @@ export default function DashboardSidebar() {
   return (
     <Sidebar className="border-none bg-transparent pt-4 w-[280px]">
       <SidebarHeader className="px-6 py-4">
-        <div className="flex items-center gap-3 w-full hover:bg-white/40 p-2.5 rounded-[20px] cursor-pointer transition-colors group backdrop-blur-md">
+        <div className="flex items-center gap-3 w-full hover:bg-card/40 p-2.5 rounded-[20px] cursor-pointer transition-colors group backdrop-blur-md">
           <div className="w-11 h-11 rounded-full bg-gradient-to-tr from-[#99D8D0] to-[#FFD8B5] shadow-sm flex items-center justify-center overflow-hidden shrink-0 border border-white/40">
             {displayAvatar ? (
               <img src={displayAvatar} className="w-full h-full object-cover" />
             ) : (
-              <span className="text-[16px] font-bold text-white mb-0.5">{displayUsername.charAt(0).toUpperCase()}</span>
+              <span className="text-[16px] font-bold text-blush mb-0.5">{displayUsername.charAt(0).toUpperCase()}</span>
             )}
           </div>
           <div className="flex-1 overflow-hidden">
@@ -90,7 +90,7 @@ export default function DashboardSidebar() {
                 <SidebarMenuButton
                   asChild
                   isActive={isCurrent("/dashboard") && location.pathname === "/dashboard"}
-                  className="rounded-full font-bold transition-all data-[active=true]:bg-white/80 data-[active=true]:text-[#8B645A] data-[active=true]:shadow-sm data-[active=true]:border data-[active=true]:border-white/60 text-[#4D606B] hover:text-[#2F3E46] hover:bg-white/40 py-5 px-4 h-11"
+                  className="rounded-full font-bold transition-all data-[active=true]:bg-card/80 data-[active=true]:text-[#8B645A] data-[active=true]:shadow-sm data-[active=true]:border data-[active=true]:border-white/60 text-[#4D606B] hover:text-[#2F3E46] hover:bg-card/40 py-5 px-4 h-11"
                 >
                   <Link to="/dashboard" className="text-[14px] flex items-center gap-3">
                     <LayoutGrid size={18} />
@@ -105,7 +105,7 @@ export default function DashboardSidebar() {
                 <SidebarMenuButton
                   asChild
                   isActive={isCurrent("/dashboard/links")}
-                  className="rounded-full font-bold transition-all data-[active=true]:bg-white/80 data-[active=true]:text-[#8B645A] data-[active=true]:shadow-sm data-[active=true]:border data-[active=true]:border-white/60 text-[#4D606B] hover:text-[#2F3E46] hover:bg-white/40 py-5 px-4 h-11"
+                  className="rounded-full font-bold transition-all data-[active=true]:bg-card/80 data-[active=true]:text-[#8B645A] data-[active=true]:shadow-sm data-[active=true]:border data-[active=true]:border-white/60 text-[#4D606B] hover:text-[#2F3E46] hover:bg-card/40 py-5 px-4 h-11"
                 >
                   <Link to="/dashboard/links" className="text-[14px] flex items-center gap-3 relative">
                     <div className="absolute left-[-26px] h-4 w-1 bg-[#2F3E46] rounded-full" style={{ opacity: isCurrent("/dashboard/links") ? 1 : 0 }} />
@@ -118,15 +118,29 @@ export default function DashboardSidebar() {
               <SidebarMenuItem>
                 <SidebarMenuButton
                   asChild
-                  isActive={isCurrent("/dashboard/products")}
-                  className="rounded-full font-bold transition-all data-[active=true]:bg-white/80 data-[active=true]:text-[#8B645A] data-[active=true]:shadow-sm data-[active=true]:border data-[active=true]:border-white/60 text-[#4D606B] hover:text-[#2F3E46] hover:bg-white/40 py-5 px-4 h-11 justify-between"
+                  isActive={isCurrent("/dashboard/marketplace")}
+                  className="rounded-full font-bold transition-all data-[active=true]:bg-card/80 data-[active=true]:text-[#8B645A] data-[active=true]:shadow-sm data-[active=true]:border data-[active=true]:border-white/60 text-[#4D606B] hover:text-[#2F3E46] hover:bg-card/40 py-5 px-4 h-11 justify-between"
                 >
-                  <Link to="/dashboard/products" className="text-[14px] flex w-full items-center justify-between">
+                  <Link to="/dashboard/marketplace" className="text-[14px] flex w-full items-center justify-between">
                     <div className="flex items-center gap-3">
                       <ShoppingBag size={18} />
-                      Shop
+                      Discover Products
                     </div>
-                    <span className="text-[10px]">&gt;</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  asChild
+                  isActive={isCurrent("/dashboard/store") || isCurrent("/dashboard/products")}
+                  className="rounded-full font-bold transition-all data-[active=true]:bg-card/80 data-[active=true]:text-[#8B645A] data-[active=true]:shadow-sm data-[active=true]:border data-[active=true]:border-white/60 text-[#4D606B] hover:text-[#2F3E46] hover:bg-card/40 py-5 px-4 h-11 justify-between"
+                >
+                  <Link to="/dashboard/store" className="text-[14px] flex w-full items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <LayoutGrid size={18} />
+                      My Store
+                    </div>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -135,7 +149,7 @@ export default function DashboardSidebar() {
                 <SidebarMenuButton
                   asChild
                   isActive={isCurrent("/dashboard/appearance")}
-                  className="rounded-full font-bold transition-all data-[active=true]:bg-white/80 data-[active=true]:text-[#8B645A] data-[active=true]:shadow-sm data-[active=true]:border data-[active=true]:border-white/60 text-[#4D606B] hover:text-[#2F3E46] hover:bg-white/40 py-5 px-4 h-11"
+                  className="rounded-full font-bold transition-all data-[active=true]:bg-card/80 data-[active=true]:text-[#8B645A] data-[active=true]:shadow-sm data-[active=true]:border data-[active=true]:border-white/60 text-[#4D606B] hover:text-[#2F3E46] hover:bg-card/40 py-5 px-4 h-11"
                 >
                   <Link to="/dashboard/appearance" className="text-[14px] flex items-center gap-3">
                     <Palette size={18} />
@@ -148,7 +162,7 @@ export default function DashboardSidebar() {
                 <SidebarMenuButton
                   asChild
                   isActive={isCurrent("/dashboard/orders")}
-                  className="rounded-full font-bold transition-all data-[active=true]:bg-white/80 data-[active=true]:text-[#8B645A] data-[active=true]:shadow-sm data-[active=true]:border data-[active=true]:border-white/60 text-[#4D606B] hover:text-[#2F3E46] hover:bg-white/40 py-5 px-4 h-11 justify-between"
+                  className="rounded-full font-bold transition-all data-[active=true]:bg-card/80 data-[active=true]:text-[#8B645A] data-[active=true]:shadow-sm data-[active=true]:border data-[active=true]:border-white/60 text-[#4D606B] hover:text-[#2F3E46] hover:bg-card/40 py-5 px-4 h-11 justify-between"
                 >
                   <Link to="/dashboard/orders" className="text-[14px] flex w-full items-center justify-between">
                     <div className="flex items-center gap-3">
@@ -164,7 +178,7 @@ export default function DashboardSidebar() {
                 <SidebarMenuButton
                   asChild
                   isActive={isCurrent("/dashboard/analytics")}
-                  className="rounded-full font-bold transition-all data-[active=true]:bg-white/80 data-[active=true]:text-[#8B645A] data-[active=true]:shadow-sm data-[active=true]:border data-[active=true]:border-white/60 text-[#4D606B] hover:text-[#2F3E46] hover:bg-white/40 py-5 px-4 h-11"
+                  className="rounded-full font-bold transition-all data-[active=true]:bg-card/80 data-[active=true]:text-[#8B645A] data-[active=true]:shadow-sm data-[active=true]:border data-[active=true]:border-white/60 text-[#4D606B] hover:text-[#2F3E46] hover:bg-card/40 py-5 px-4 h-11"
                 >
                   <Link to="/dashboard/analytics" className="text-[14px] flex items-center gap-3">
                     <Users size={18} />
@@ -177,7 +191,7 @@ export default function DashboardSidebar() {
                 <SidebarMenuButton
                   asChild
                   isActive={isCurrent("/dashboard/settings")}
-                  className="rounded-full font-bold transition-all data-[active=true]:bg-white/80 data-[active=true]:text-[#8B645A] data-[active=true]:shadow-sm data-[active=true]:border data-[active=true]:border-white/60 text-[#4D606B] hover:text-[#2F3E46] hover:bg-white/40 py-5 px-4 h-11"
+                  className="rounded-full font-bold transition-all data-[active=true]:bg-card/80 data-[active=true]:text-[#8B645A] data-[active=true]:shadow-sm data-[active=true]:border data-[active=true]:border-white/60 text-[#4D606B] hover:text-[#2F3E46] hover:bg-card/40 py-5 px-4 h-11"
                 >
                   <Link to="/dashboard/settings" className="text-[14px] flex items-center gap-3">
                     <Settings size={18} />
@@ -205,7 +219,7 @@ export default function DashboardSidebar() {
                 <SidebarMenuButton
                   asChild
                   isActive={isCurrent("/dashboard/social-planner")}
-                  className="rounded-full font-bold transition-all data-[active=true]:bg-violet-50 data-[active=true]:text-violet-700 text-[#4D606B] hover:text-[#2F3E46] hover:bg-white/40 py-2.5 px-4 h-auto"
+                  className="rounded-full font-bold transition-all data-[active=true]:bg-violet-50 data-[active=true]:text-violet-700 text-[#4D606B] hover:text-[#2F3E46] hover:bg-card/40 py-2.5 px-4 h-auto"
                 >
                   <Link to="/dashboard/social-planner" className="text-[13px] flex items-center gap-3">
                     <CalendarDays size={16} className="text-muted-foreground" />
@@ -216,7 +230,7 @@ export default function DashboardSidebar() {
               <SidebarMenuItem>
                 <SidebarMenuButton
                   asChild
-                  className="rounded-full font-bold transition-all text-[#4D606B] hover:text-[#2F3E46] hover:bg-white/40 py-2.5 px-4 h-auto"
+                  className="rounded-full font-bold transition-all text-[#4D606B] hover:text-[#2F3E46] hover:bg-card/40 py-2.5 px-4 h-auto"
                 >
                   <Link to="/dashboard" className="text-[13px] flex items-center gap-3">
                     <MessageCircle size={16} className="text-muted-foreground" />
@@ -228,7 +242,7 @@ export default function DashboardSidebar() {
                 <SidebarMenuButton
                   asChild
                   isActive={isCurrent("/dashboard/shortener")}
-                  className="rounded-full font-bold transition-all data-[active=true]:bg-violet-50 data-[active=true]:text-violet-700 text-[#4D606B] hover:text-[#2F3E46] hover:bg-white/40 py-2.5 px-4 h-auto"
+                  className="rounded-full font-bold transition-all data-[active=true]:bg-violet-50 data-[active=true]:text-violet-700 text-[#4D606B] hover:text-[#2F3E46] hover:bg-card/40 py-2.5 px-4 h-auto"
                 >
                   <Link to="/dashboard/shortener" className="text-[13px] flex items-center gap-3">
                     <Scissors size={16} className="text-violet-500" />
@@ -240,7 +254,7 @@ export default function DashboardSidebar() {
                 <SidebarMenuButton
                   asChild
                   isActive={isCurrent("/dashboard/post-ideas")}
-                  className="rounded-full font-bold transition-all data-[active=true]:bg-violet-50 data-[active=true]:text-violet-700 text-[#4D606B] hover:text-[#2F3E46] hover:bg-white/40 py-2.5 px-4 h-auto"
+                  className="rounded-full font-bold transition-all data-[active=true]:bg-violet-50 data-[active=true]:text-violet-700 text-[#4D606B] hover:text-[#2F3E46] hover:bg-card/40 py-2.5 px-4 h-auto"
                 >
                   <Link to="/dashboard/post-ideas" className="text-[13px] flex items-center gap-3">
                     <Sparkles size={16} className={isCurrent("/dashboard/post-ideas") ? "text-violet-500" : "text-muted-foreground"} />
@@ -255,12 +269,12 @@ export default function DashboardSidebar() {
 
       <SidebarFooter className="p-5 pb-10">
         {/* Setup checklist card — hidden once all steps are done */}
-        {!isAllDone ? (
-          <div className="bg-white/70 backdrop-blur-md rounded-[24px] p-6 shadow-[0_8px_30px_rgba(0,0,0,0.04)] border border-white/80 relative overflow-hidden group">
+        {!isAllDone && (
+          <div className="bg-card/70 backdrop-blur-md rounded-[24px] p-6 shadow-[0_8px_30px_rgba(0,0,0,0.04)] border border-white/80 relative overflow-hidden group">
             <div className="flex items-center gap-3 mb-4">
               <div className="relative">
                 <svg className="w-12 h-12 transform -rotate-90">
-                  <circle cx="24" cy="24" r="20" stroke="currentColor" strokeWidth="3" fill="transparent" className="text-black/5" />
+                  <circle cx="24" cy="24" r="20" stroke="currentColor" strokeWidth="3" fill="transparent" className="text-void/5" />
                   <circle
                     cx="24" cy="24" r="20"
                     stroke="url(#gradient)"
@@ -288,20 +302,10 @@ export default function DashboardSidebar() {
             <p className="text-[13px] text-muted-foreground mb-6 font-medium">{completedCount} of {totalSteps} complete</p>
             <button
               onClick={() => setIsChecklistOpen(true)}
-              className="w-full bg-[#E5976D] hover:bg-[#D4855C] text-white font-bold text-[14px] py-[12px] rounded-full transition-colors shadow-md shadow-[#E5976D]/20 cursor-pointer border border-white/20"
+              className="w-full bg-[#E5976D] hover:bg-[#D4855C] text-blush font-bold text-[14px] py-[12px] rounded-full transition-colors shadow-md shadow-[#E5976D]/20 cursor-pointer border border-white/20"
             >
               Finish setup
             </button>
-          </div>
-        ) : (
-          <div className="bg-gradient-to-br from-[#E8F8F5] to-[#F0FFF4] rounded-[24px] p-5 border border-[#10B981]/20 shadow-[0_4px_16px_rgba(16,185,129,0.08)]">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-[#10B981]/10 flex items-center justify-center text-xl shrink-0">🎉</div>
-              <div>
-                <p className="font-extrabold text-[#065F46] text-[14px]">Setup complete!</p>
-                <p className="text-[12px] text-[#10B981] font-semibold">All {totalSteps} steps done ✓</p>
-              </div>
-            </div>
           </div>
         )}
 
@@ -314,7 +318,7 @@ export default function DashboardSidebar() {
               <span className="text-[14px] font-medium">Settings</span>
             </div>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" side="top" sideOffset={10} className="w-[260px] rounded-[16px] shadow-[0_10px_40px_rgba(0,0,0,0.08)] bg-white/95 backdrop-blur-md border-border/40 p-2 z-50">
+          <DropdownMenuContent align="end" side="top" sideOffset={10} className="w-[260px] rounded-[16px] shadow-[0_10px_40px_rgba(0,0,0,0.08)] bg-card/95 backdrop-blur-md border-border/40 p-2 z-50">
             <DropdownMenuItem asChild className="p-3 cursor-pointer rounded-xl hover:bg-black/5 focus:bg-black/5 outline-none transition-colors">
               <Link to="/dashboard/settings?tab=profile" className="flex items-center gap-3">
                 <User size={18} strokeWidth={2.5} className="text-foreground/70" />
@@ -351,7 +355,7 @@ export default function DashboardSidebar() {
 
             <div className="h-[1px] bg-black/5 my-1.5 mx-2" />
 
-            <DropdownMenuItem onClick={signOut} className="p-3 cursor-pointer rounded-xl hover:bg-red-50 focus:bg-red-50 outline-none transition-colors flex items-center gap-3 text-red-600 focus:text-red-700">
+            <DropdownMenuItem onClick={signOut} className="p-3 cursor-pointer rounded-xl hover:bg-rose/10 focus:bg-rose/10 outline-none transition-colors flex items-center gap-3 text-rose focus:text-rose">
               <LogOut size={18} strokeWidth={2.5} />
               <span className="font-semibold text-[14.5px]">Log out</span>
             </DropdownMenuItem>

@@ -31,6 +31,7 @@ import { PaymentsModule } from './modules/payments/payments.module';
 import { AffiliatesModule } from './modules/affiliates/affiliates.module';
 import { AnalyticsModule } from './modules/analytics/analytics.module';
 import { AdminModule } from './modules/admin/admin.module';
+import { AdminRealtimeModule } from './modules/admin/admin-realtime.module';
 import { HealthModule } from './modules/health/health.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
 import { ContentIdeasModule } from './modules/content-ideas/content-ideas.module';
@@ -68,6 +69,7 @@ import { LinksModule } from './modules/links/links.module';
     PaymentsModule,
     AffiliatesModule,
     AnalyticsModule,
+    AdminRealtimeModule,
     AdminModule,
     NotificationsModule,
     ContentIdeasModule,
@@ -82,4 +84,4 @@ import { LinksModule } from './modules/links/links.module';
     { provide: APP_INTERCEPTOR, useClass: TransformInterceptor },
   ],
 })
-export class AppModule { }
+export class AppModule {}

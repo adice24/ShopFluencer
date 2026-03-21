@@ -1,11 +1,12 @@
 import {
-    Controller,
-    Get,
-    Param,
-    Query,
-    UseGuards,
-    Patch,
-    Body,
+  Controller,
+  Get,
+  Param,
+  Query,
+  UseGuards,
+  Patch,
+  Body,
+  NotFoundException,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
@@ -20,39 +21,46 @@ import { UpdateProfileDto } from './dto/update-profile.dto';
 @ApiTags('Users')
 @Controller('users')
 export class UsersController {
-    constructor(private readonly usersService: UsersService) { }
+  constructor(private readonly usersService: UsersService) {}
 
-    @Get('me')
-    @UseGuards(AuthGuard('jwt'))
-    @ApiBearerAuth()
-    @ApiOperation({ summary: 'Get current user profile' })
-    async getMe(@CurrentUser('id') userId: string) {
-        return this.usersService.getProfile(userId);
+  @Get('me')
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get current user profile' })
+  async getMe(@CurrentUser('id') userId: string) {
+    const profile = await this.usersService.getProfile(userId);
+    if (!profile) {
+      throw new NotFoundException('User not found');
     }
+    return profile;
+  }
 
-    @Patch('me')
-    @UseGuards(AuthGuard('jwt'))
-    @ApiBearerAuth()
-    @ApiOperation({ summary: 'Update current user profile' })
-    async updateMe(@CurrentUser('id') userId: string, @Body() dto: UpdateProfileDto) {
-        return this.usersService.updateProfile(userId, dto);
-    }
+  @Patch('me')
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Update current user profile' })
+  async updateMe(
+    @CurrentUser('id') userId: string,
+    @Body() dto: UpdateProfileDto,
+  ) {
+    return this.usersService.updateProfile(userId, dto);
+  }
 
-    @Get()
-    @UseGuards(AuthGuard('jwt'), RolesGuard)
-    @Roles(UserRole.ADMIN)
-    @ApiBearerAuth()
-    @ApiOperation({ summary: 'List all users (Admin)' })
-    async findAll(@Query() query: PaginationDto) {
-        return this.usersService.findAll(query);
-    }
+  @Get()
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles(UserRole.ADMIN)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'List all users (Admin)' })
+  async findAll(@Query() query: PaginationDto) {
+    return this.usersService.findAll(query);
+  }
 
-    @Get(':id')
-    @UseGuards(AuthGuard('jwt'), RolesGuard)
-    @Roles(UserRole.ADMIN)
-    @ApiBearerAuth()
-    @ApiOperation({ summary: 'Get user by ID (Admin)' })
-    async findOne(@Param('id') id: string) {
-        return this.usersService.findById(id);
-    }
+  @Get(':id')
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles(UserRole.ADMIN)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get user by ID (Admin)' })
+  async findOne(@Param('id') id: string) {
+    return this.usersService.findById(id);
+  }
 }

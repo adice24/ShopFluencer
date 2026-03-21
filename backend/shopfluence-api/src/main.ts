@@ -15,7 +15,10 @@ async function bootstrap() {
   const config = app.get(ConfigService);
   const port = config.get<number>('app.port', 3000);
   const apiPrefix = config.get<string>('app.apiPrefix', 'api/v1');
-  const frontendUrl = config.get<string>('app.frontendUrl', 'http://localhost:5173');
+  const frontendUrl = config.get<string>(
+    'app.frontendUrl',
+    'http://localhost:5173',
+  );
 
   // ── Global Prefix ────────────────────────────
   app.setGlobalPrefix(apiPrefix);
@@ -27,21 +30,28 @@ async function bootstrap() {
   // ── CORS ─────────────────────────────────────
   const allowedOrigins = [
     'http://localhost:5173',
+    'http://localhost:8080',
+    'http://localhost:8081',
     'https://shop-fluence.vercel.app',
-    'https://shopflu.to'
+    'https://shopflu.to',
   ];
   if (frontendUrl) {
-    frontendUrl.split(',').forEach(url => allowedOrigins.push(url.trim()));
+    frontendUrl.split(',').forEach((url) => allowedOrigins.push(url.trim()));
   }
 
   app.enableCors({
-    origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
+    origin: (
+      origin: string | undefined,
+      callback: (err: Error | null, allow?: boolean) => void,
+    ) => {
       if (!origin) {
         callback(null, true);
         return;
       }
       if (
-        allowedOrigins.some((allowed) => origin === allowed || origin.startsWith(allowed)) ||
+        allowedOrigins.some(
+          (allowed) => origin === allowed || origin.startsWith(allowed),
+        ) ||
         origin.endsWith('.vercel.app')
       ) {
         callback(null, true);
@@ -51,7 +61,13 @@ async function bootstrap() {
     },
     credentials: true,
     methods: ['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Accept', 'Authorization', 'X-Requested-With', 'X-Idempotency-Key'],
+    allowedHeaders: [
+      'Content-Type',
+      'Accept',
+      'Authorization',
+      'X-Requested-With',
+      'X-Idempotency-Key',
+    ],
     preflightContinue: false,
     optionsSuccessStatus: 204,
   });
@@ -59,9 +75,9 @@ async function bootstrap() {
   // ── Validation ───────────────────────────────
   app.useGlobalPipes(
     new ValidationPipe({
-      whitelist: true,            // Strip unknown properties
+      whitelist: true, // Strip unknown properties
       forbidNonWhitelisted: true, // Throw on unknown properties
-      transform: true,            // Auto-transform payloads to DTO types
+      transform: true, // Auto-transform payloads to DTO types
       transformOptions: {
         enableImplicitConversion: true,
       },
@@ -72,14 +88,14 @@ async function bootstrap() {
   if (config.get<string>('app.nodeEnv') !== 'production') {
     const swaggerConfig = new DocumentBuilder()
       .setTitle('ShopFluence API')
-      .setDescription('Influencer E-Commerce & Branding Platform API')
+      .setDescription('Affiliate E-Commerce & Branding Platform API')
       .setVersion('1.0')
       .addBearerAuth()
       .addTag('Health', 'Health check endpoints')
       .addTag('Authentication', 'JWT auth with access + refresh tokens')
       .addTag('Users', 'User management')
       .addTag('Catalog', 'Products, categories, brands')
-      .addTag('Storefront', 'Influencer storefront engine')
+      .addTag('Storefront', 'Affiliate storefront engine')
       .addTag('Orders', 'Order lifecycle management')
       .addTag('Payments', 'Payment processing')
       .addTag('Affiliates', 'Affiliate tracking & commissions')
@@ -103,8 +119,14 @@ async function bootstrap() {
   // ── Start Server ─────────────────────────────
   await app.listen(port);
 
-  Logger.log(`🚀 ShopFluence API running on http://localhost:${port}/${apiPrefix}`, 'Bootstrap');
-  Logger.log(`📦 Environment: ${config.get<string>('app.nodeEnv')}`, 'Bootstrap');
+  Logger.log(
+    `🚀 ShopFluence API running on http://localhost:${port}/${apiPrefix}`,
+    'Bootstrap',
+  );
+  Logger.log(
+    `📦 Environment: ${config.get<string>('app.nodeEnv')}`,
+    'Bootstrap',
+  );
 }
 
 bootstrap();

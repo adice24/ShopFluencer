@@ -1,32 +1,107 @@
 -- Migration 007: Decouple Links from Stores (Hybrid Model)
 
--- 1. Add user_id to links table
-ALTER TABLE public.links 
-ADD COLUMN IF NOT EXISTS user_id UUID REFERENCES auth.users(id);
+-- 1. Add user_id to links table (Supabase `public.links` from 004; skip if table absent)
+DO $$
+BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.tables
+    WHERE table_schema = 'public' AND table_name = 'links'
+  ) THEN
+    ALTER TABLE public.links
+    ADD COLUMN IF NOT EXISTS user_id UUID REFERENCES auth.users(id);
+  END IF;
+END $$;
 
--- Update existing links to have the user_id from their store
-UPDATE public.links l
-SET user_id = s.user_id
-FROM public.influencer_stores s
-WHERE l.store_id = s.id AND l.user_id IS NULL;
+-- Update existing links to have the user_id from their store (requires 002: influencer_stores)
+DO $$
+BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.tables
+    WHERE table_schema = 'public' AND table_name = 'influencer_stores'
+  ) AND EXISTS (
+    SELECT 1 FROM information_schema.tables
+    WHERE table_schema = 'public' AND table_name = 'links'
+  ) THEN
+    UPDATE public.links l
+    SET user_id = s.user_id
+    FROM public.influencer_stores s
+    WHERE l.store_id = s.id AND l.user_id IS NULL;
+  END IF;
+END $$;
 
--- Make user_id NOT NULL and store_id optional
-ALTER TABLE public.links 
-ALTER COLUMN user_id SET NOT NULL,
-ALTER COLUMN store_id DROP NOT NULL;
+-- Make user_id NOT NULL and store_id optional (Supabase `links` only; skip if column missing)
+DO $$
+BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema = 'public' AND table_name = 'links' AND column_name = 'user_id'
+  ) THEN
+    BEGIN
+      ALTER TABLE public.links ALTER COLUMN user_id SET NOT NULL;
+    EXCEPTION WHEN OTHERS THEN
+      RAISE NOTICE '007: links.user_id not set NOT NULL (nulls may remain): %', SQLERRM;
+    END;
+  END IF;
+
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema = 'public' AND table_name = 'links' AND column_name = 'store_id'
+  ) THEN
+    ALTER TABLE public.links ALTER COLUMN store_id DROP NOT NULL;
+  END IF;
+END $$;
 
 -- 2. Add user_id to link_clicks for decoupled analytics tracking
 ALTER TABLE public.link_clicks
 ADD COLUMN IF NOT EXISTS user_id UUID REFERENCES auth.users(id);
 
--- Update existing clicks
-UPDATE public.link_clicks c
-SET user_id = l.user_id
-FROM public.links l
-WHERE c.link_id = l.id AND c.user_id IS NULL;
+-- Backfill user_id:
+-- • Supabase schema (004): link_clicks.link_id → public.links.user_id
+-- • Prisma schema: link_clicks.short_link_id → public.short_links.user_id (varchar → uuid)
+DO $$
+BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema = 'public' AND table_name = 'link_clicks' AND column_name = 'link_id'
+  ) AND EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema = 'public' AND table_name = 'links' AND column_name = 'user_id'
+  ) THEN
+    UPDATE public.link_clicks c
+    SET user_id = l.user_id
+    FROM public.links l
+    WHERE c.link_id = l.id AND c.user_id IS NULL;
+  END IF;
 
-ALTER TABLE public.link_clicks 
-ALTER COLUMN store_id DROP NOT NULL;
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema = 'public' AND table_name = 'link_clicks' AND column_name = 'short_link_id'
+  ) AND EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema = 'public' AND table_name = 'short_links' AND column_name = 'user_id'
+  ) THEN
+    BEGIN
+      UPDATE public.link_clicks c
+      SET user_id = TRIM(sl.user_id)::uuid
+      FROM public.short_links sl
+      WHERE c.short_link_id = sl.id
+        AND c.user_id IS NULL
+        AND TRIM(sl.user_id) ~ '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$';
+    EXCEPTION WHEN OTHERS THEN
+      RAISE NOTICE '007: link_clicks user_id backfill from short_links skipped: %', SQLERRM;
+    END;
+  END IF;
+END $$;
+
+DO $$
+BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema = 'public' AND table_name = 'link_clicks' AND column_name = 'store_id'
+  ) THEN
+    ALTER TABLE public.link_clicks ALTER COLUMN store_id DROP NOT NULL;
+  END IF;
+END $$;
 
 -- 3. Update RLS Policies for links
 DROP POLICY IF EXISTS "links_select_own" ON public.links;

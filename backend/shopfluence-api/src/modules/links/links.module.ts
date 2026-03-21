@@ -4,9 +4,9 @@ import { LinksService } from './links.service';
 import { LinksController, PublicRedirectController } from './links.controller';
 
 @Module({
-    imports: [DatabaseModule],
-    controllers: [LinksController, PublicRedirectController],
-    providers: [LinksService],
-    exports: [LinksService],
+  imports: [DatabaseModule],
+  controllers: [LinksController, PublicRedirectController],
+  providers: [LinksService],
+  exports: [LinksService],
 })
-export class LinksModule { }
+export class LinksModule {}

@@ -17,7 +17,12 @@ export default function ProfileSection() {
         queryKey: ["profile", user?.id],
         queryFn: async () => {
             if (!user) return null;
-            const { data } = await supabase.from("profiles").select("*").eq("id", user.id).single();
+            const { data, error } = await supabase
+                .from("profiles")
+                .select("*")
+                .eq("id", user.id)
+                .maybeSingle();
+            if (error) throw error;
             return data;
         },
         enabled: !!user,
@@ -33,10 +38,13 @@ export default function ProfileSection() {
                 .select();
             if (error) throw error;
             if (!data || data.length === 0) {
-                // Upsert if not found. Explicitly pass email to satisfy DB constraints.
+                // Upsert if not found (onConflict avoids 409 when row exists or unique clash)
                 const { data: upsertData, error: upsertError } = await supabase
                     .from("profiles")
-                    .upsert({ id: user.id, email: user.email, ...updates })
+                    .upsert(
+                        { id: user.id, email: user.email ?? "", ...updates },
+                        { onConflict: "id" }
+                    )
                     .select();
                 if (upsertError) throw upsertError;
                 return upsertData?.[0];
@@ -89,8 +97,8 @@ export default function ProfileSection() {
                 const genericSlug = rawName.toLowerCase().replace(/[^a-z0-9]+/g, "-") + "-" + Math.floor(Math.random() * 10000);
                 await createStore.mutateAsync({
                     slug: genericSlug,
-                    display_name: rawName,
-                    ...storeData
+                    title: rawName,
+                    ...storeData,
                 });
             }
 
@@ -110,7 +118,7 @@ export default function ProfileSection() {
 
     if (isProfileLoading) {
         return (
-            <div className="flex items-center justify-center p-8 bg-white rounded-[24px] border border-border/60 shadow-[0_2px_12px_rgba(0,0,0,0.03)] mb-8">
+            <div className="flex items-center justify-center p-8 bg-card rounded-[24px] border border-border/60 shadow-[0_2px_12px_rgba(0,0,0,0.03)] mb-8">
                 <Loader2 className="w-6 h-6 animate-spin" />
             </div>
         );
@@ -121,16 +129,16 @@ export default function ProfileSection() {
             <h2 className="text-[22px] font-bold text-foreground pl-1">Profile & Socials</h2>
 
             {/* Profile Information Block */}
-            <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} className="bg-white border border-border/60 rounded-[24px] p-6 shadow-[0_2px_12px_rgba(0,0,0,0.03)] space-y-6">
+            <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} className="bg-card border border-border/60 rounded-[24px] p-6 shadow-[0_2px_12px_rgba(0,0,0,0.03)] space-y-6">
 
                 {/* Avatar Section */}
                 <div className="flex items-start gap-6">
                     <div className="relative group">
-                        <div className="w-[100px] h-[100px] rounded-full overflow-hidden bg-gray-100 border border-gray-200 shadow-sm shrink-0">
+                        <div className="w-[100px] h-[100px] rounded-full overflow-hidden bg-muted border border-blush/12 shadow-sm shrink-0">
                             {avatarInput ? (
                                 <img src={avatarInput} alt="Avatar" className="w-full h-full object-cover" />
                             ) : (
-                                <div className="w-full h-full bg-gradient-to-tr from-[#99D8D0] to-[#FFD8B5] text-white flex items-center justify-center text-3xl font-bold uppercase">
+                                <div className="w-full h-full bg-gradient-to-tr from-[#99D8D0] to-[#FFD8B5] text-blush flex items-center justify-center text-3xl font-bold uppercase">
                                     {(name || "U").charAt(0)}
                                 </div>
                             )}
@@ -151,7 +159,7 @@ export default function ProfileSection() {
                 </div>
 
                 {/* Name & Bio */}
-                <div className="space-y-4 pt-4 border-t border-gray-100">
+                <div className="space-y-4 pt-4 border-t border-blush/08">
                     <div>
                         <label className="text-[13px] font-bold text-foreground/70 mb-2 block">Profile Title (Name)</label>
                         <input
@@ -174,29 +182,41 @@ export default function ProfileSection() {
                         <p className="text-[12px] text-right text-muted-foreground mt-1 font-medium">{bio.length} / 80</p>
                     </div>
                 </div>
+
+                <div className="flex flex-col sm:flex-row sm:justify-end gap-3 pt-4 border-t border-blush/08">
+                    <button
+                        type="button"
+                        onClick={handleSaveProfile}
+                        disabled={isSaving}
+                        className="bg-[#8B5CF6] hover:bg-[#7C3AED] text-blush font-bold py-3 px-8 rounded-full transition-colors flex items-center justify-center gap-2 shadow-sm disabled:opacity-50 w-full sm:w-auto"
+                    >
+                        {isSaving && <Loader2 size={16} className="animate-spin" />}
+                        Save profile
+                    </button>
+                </div>
             </motion.div>
 
             {/* Socials Block */}
-            <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="bg-white border border-border/60 rounded-[24px] p-6 shadow-[0_2px_12px_rgba(0,0,0,0.03)] space-y-4">
+            <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="bg-card border border-border/60 rounded-[24px] p-6 shadow-[0_2px_12px_rgba(0,0,0,0.03)] space-y-4">
                 <h3 className="font-semibold text-foreground mb-6">Social Icons</h3>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-4">
                         <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-full bg-pink-100 flex items-center justify-center shrink-0">
-                                <Instagram size={18} className="text-pink-600" />
+                            <div className="w-10 h-10 rounded-full bg-rose/15 flex items-center justify-center shrink-0">
+                                <Instagram size={18} className="text-rose" />
                             </div>
                             <input type="text" value={socials.instagram} onChange={(e) => handleSocialChange("instagram", e.target.value)} placeholder="Instagram Username or URL" className="w-full px-4 py-2.5 bg-[#FAFAFA] border border-border/60 text-[14px] font-medium rounded-xl" />
                         </div>
                         <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center shrink-0">
-                                <Twitter size={18} className="text-blue-500" />
+                            <div className="w-10 h-10 rounded-full bg-plum flex items-center justify-center shrink-0">
+                                <Twitter size={18} className="text-gold" />
                             </div>
                             <input type="text" value={socials.twitter} onChange={(e) => handleSocialChange("twitter", e.target.value)} placeholder="Twitter / X Handle" className="w-full px-4 py-2.5 bg-[#FAFAFA] border border-border/60 text-[14px] font-medium rounded-xl" />
                         </div>
                         <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center shrink-0">
-                                <Youtube size={18} className="text-red-500" />
+                            <div className="w-10 h-10 rounded-full bg-rose/15 flex items-center justify-center shrink-0">
+                                <Youtube size={18} className="text-rose" />
                             </div>
                             <input type="text" value={socials.youtube} onChange={(e) => handleSocialChange("youtube", e.target.value)} placeholder="YouTube Channel URL" className="w-full px-4 py-2.5 bg-[#FAFAFA] border border-border/60 text-[14px] font-medium rounded-xl" />
                         </div>
@@ -211,14 +231,14 @@ export default function ProfileSection() {
                             <input type="text" value={socials.tiktok} onChange={(e) => handleSocialChange("tiktok", e.target.value)} placeholder="TikTok Username" className="w-full px-4 py-2.5 bg-[#FAFAFA] border border-border/60 text-[14px] font-medium rounded-xl" />
                         </div>
                         <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center shrink-0">
-                                <Facebook size={18} className="text-white" />
+                            <div className="w-10 h-10 rounded-full bg-gold flex items-center justify-center shrink-0">
+                                <Facebook size={18} className="text-blush" />
                             </div>
                             <input type="text" value={socials.facebook} onChange={(e) => handleSocialChange("facebook", e.target.value)} placeholder="Facebook Page URL" className="w-full px-4 py-2.5 bg-[#FAFAFA] border border-border/60 text-[14px] font-medium rounded-xl" />
                         </div>
                         <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-full bg-purple-500 flex items-center justify-center shrink-0">
-                                <Twitch size={18} className="text-white" />
+                            <div className="w-10 h-10 rounded-full bg-plum flex items-center justify-center shrink-0">
+                                <Twitch size={18} className="text-blush" />
                             </div>
                             <input type="text" value={socials.twitch} onChange={(e) => handleSocialChange("twitch", e.target.value)} placeholder="Twitch Channel" className="w-full px-4 py-2.5 bg-[#FAFAFA] border border-border/60 text-[14px] font-medium rounded-xl" />
                         </div>
@@ -229,7 +249,7 @@ export default function ProfileSection() {
                     <button
                         onClick={handleSaveProfile}
                         disabled={isSaving}
-                        className="bg-[#8B5CF6] hover:bg-[#7C3AED] text-white font-bold py-3 px-8 rounded-full transition-colors flex items-center gap-2 shadow-sm disabled:opacity-50"
+                        className="bg-[#8B5CF6] hover:bg-[#7C3AED] text-blush font-bold py-3 px-8 rounded-full transition-colors flex items-center gap-2 shadow-sm disabled:opacity-50"
                     >
                         {isSaving && <Loader2 size={16} className="animate-spin" />}
                         Save Profile & Socials

@@ -33,7 +33,7 @@ async function main() {
             passwordHash: influencerHash,
             firstName: 'Alex',
             lastName: 'Chen',
-            role: UserRole.INFLUENCER,
+            role: UserRole.AFFILIATE,
             status: UserStatus.ACTIVE,
             emailVerified: true,
         },
@@ -55,7 +55,24 @@ async function main() {
             approvedAt: new Date(),
         },
     });
-    console.log(`✅ Influencer: ${influencer.email}`);
+    console.log(`✅ Affiliate: ${influencer.email}`);
+
+    // ── Sample Brand User ───────────────────────
+    const brandHash = await bcrypt.hash('Brand@2026!', 12);
+    const brandUser = await prisma.user.upsert({
+        where: { email: 'brand@shopfluence.com' },
+        update: {},
+        create: {
+            email: 'brand@shopfluence.com',
+            passwordHash: brandHash,
+            firstName: 'Glow',
+            lastName: 'Owner',
+            role: UserRole.BRAND,
+            status: UserStatus.ACTIVE,
+            emailVerified: true,
+        },
+    });
+    console.log(`✅ Brand: ${brandUser.email}`);
 
     // ── Categories ──────────────────────────────
     const categories = await Promise.all([
@@ -92,7 +109,7 @@ async function main() {
         prisma.brand.upsert({
             where: { slug: 'glow-naturals' },
             update: {},
-            create: { name: 'Glow Naturals', slug: 'glow-naturals', description: 'Premium organic skincare', contactEmail: 'brand@glownaturals.com', commissionRate: 15 },
+            create: { name: 'Glow Naturals', slug: 'glow-naturals', description: 'Premium organic skincare', contactEmail: 'brand@glownaturals.com', commissionRate: 15, ownerId: brandUser.id },
         }),
         prisma.brand.upsert({
             where: { slug: 'peak-performance' },
@@ -115,7 +132,7 @@ async function main() {
             create: { influencerId: influencerProfile.id, brandId: brand.id },
         });
     }
-    console.log('✅ Brands assigned to influencer');
+    console.log('✅ Brands assigned to affiliate');
 
     // ── Products ────────────────────────────────
     const products = await Promise.all([
@@ -266,7 +283,7 @@ async function main() {
     console.log('\n🎉 Database seeded successfully!');
     console.log('\n📋 Login Credentials:');
     console.log('   Admin:      admin@shopfluence.com / Admin@2026!');
-    console.log('   Influencer: alex@shopfluence.com / Influencer@2026!');
+    console.log('   Affiliate:  alex@shopfluence.com / Influencer@2026!');
 }
 
 main()

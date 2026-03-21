@@ -4,9 +4,9 @@ import { ContentIdeasController } from './content-ideas.controller';
 import { DatabaseModule } from '../../database/database.module';
 
 @Module({
-    imports: [DatabaseModule],
-    controllers: [ContentIdeasController],
-    providers: [ContentIdeasService],
-    exports: [ContentIdeasService],
+  imports: [DatabaseModule],
+  controllers: [ContentIdeasController],
+  providers: [ContentIdeasService],
+  exports: [ContentIdeasService],
 })
-export class ContentIdeasModule { }
+export class ContentIdeasModule {}

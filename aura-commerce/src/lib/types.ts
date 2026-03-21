@@ -12,7 +12,7 @@ export interface Profile {
     email: string;
     full_name: string;
     avatar_url: string;
-    role: "customer" | "influencer" | "admin";
+    role: "affiliate" | "brand" | "admin" | "influencer" | "customer";
     status: "active" | "suspended" | "pending_approval" | "deleted";
     bio: string;
     phone: string;
@@ -63,6 +63,8 @@ export interface Product {
     metadata: Record<string, unknown>;
     created_at: string;
     updated_at: string;
+    /** Join row id from `storefront_products` when loaded via storefront */
+    storefront_item_id?: string;
 }
 
 export type OrderStatus = "pending" | "confirmed" | "processing" | "shipped" | "delivered" | "cancelled" | "refunded";

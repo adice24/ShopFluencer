@@ -52,31 +52,50 @@ ListItem.displayName = "ListItem";
 export const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [hidden, setHidden] = useState(false);
 
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 40);
+    let lastScrollY = window.scrollY;
+
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      setScrolled(currentScrollY > 40);
+
+      if (currentScrollY > lastScrollY && currentScrollY > 100 && !menuOpen) {
+        setHidden(true);
+      } else if (currentScrollY < lastScrollY || currentScrollY <= 100) {
+        setHidden(false); // scrolling up or at top
+      }
+      
+      lastScrollY = currentScrollY;
+    };
+
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [menuOpen]);
 
   return (
     <motion.nav
       className="fixed top-0 left-0 right-0 z-50"
       initial={{ y: -80, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
+      animate={{ y: hidden ? -120 : 0, opacity: 1 }}
       transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
     >
       <div
         className={`mx-4 md:mx-6 mt-4 rounded-3xl transition-all duration-300 ${scrolled
-          ? "bg-card/95 backdrop-blur-xl shadow-lg border border-border py-2"
-          : "bg-card/80 backdrop-blur-md border border-border/50 py-3"
+          ? "backdrop-blur-xl shadow-lg shadow-gold/20 border border-gold/30 py-2"
+          : "backdrop-blur-md border border-gold/20 py-3"
           }`}
+        style={{ background: scrolled
+          ? 'linear-gradient(135deg, #FEF5CA 0%, #FDE047 100%)'
+          : 'linear-gradient(135deg, rgba(254,245,202,0.95) 0%, rgba(253,224,71,0.95) 100%)'
+        }}
       >
         <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-1.5">
-            <span className="text-foreground font-bold text-2xl tracking-tight">ShopFluence</span>
-            <span className="text-foreground text-2xl">◆</span>
+            <span className="text-plum font-bold text-2xl tracking-tight">ShopFluence</span>
+            <span className="text-plum text-2xl">◆</span>
           </Link>
 
           {/* Desktop Nav — NavigationMenu with dropdowns */}
@@ -85,7 +104,7 @@ export const Navbar = () => {
               <NavigationMenuList className="gap-1">
                 {/* Products dropdown */}
                 <NavigationMenuItem>
-                  <NavigationMenuTrigger className="rounded-2xl bg-transparent text-foreground/70 hover:text-foreground hover:bg-muted text-sm font-medium">
+                  <NavigationMenuTrigger className="rounded-2xl bg-transparent text-plum/70 hover:text-plum hover:bg-white/40 text-sm font-medium">
                     Products
                   </NavigationMenuTrigger>
                   <NavigationMenuContent>
@@ -120,7 +139,7 @@ export const Navbar = () => {
 
                 {/* Templates dropdown */}
                 <NavigationMenuItem>
-                  <NavigationMenuTrigger className="rounded-2xl bg-transparent text-foreground/70 hover:text-foreground hover:bg-muted text-sm font-medium">
+                  <NavigationMenuTrigger className="rounded-2xl bg-transparent text-plum/70 hover:text-plum hover:bg-white/40 text-sm font-medium">
                     Templates
                   </NavigationMenuTrigger>
                   <NavigationMenuContent>
@@ -146,7 +165,7 @@ export const Navbar = () => {
                   <NavigationMenuLink asChild>
                     <Link
                       to="/marketplace"
-                      className="inline-flex h-10 w-max items-center justify-center rounded-2xl bg-transparent px-4 py-2 text-sm font-medium text-foreground/70 hover:text-foreground hover:bg-muted transition-colors"
+                      className="inline-flex h-10 w-max items-center justify-center rounded-2xl bg-transparent px-4 py-2 text-sm font-medium text-plum/70 hover:text-plum hover:bg-white/40 transition-colors"
                     >
                       Marketplace
                     </Link>
@@ -156,7 +175,7 @@ export const Navbar = () => {
                   <NavigationMenuLink asChild>
                     <Link
                       to="/learn"
-                      className="inline-flex h-10 w-max items-center justify-center rounded-2xl bg-transparent px-4 py-2 text-sm font-medium text-foreground/70 hover:text-foreground hover:bg-muted transition-colors"
+                      className="inline-flex h-10 w-max items-center justify-center rounded-2xl bg-transparent px-4 py-2 text-sm font-medium text-plum/70 hover:text-plum hover:bg-white/40 transition-colors"
                     >
                       Learn
                     </Link>
@@ -166,7 +185,7 @@ export const Navbar = () => {
                   <NavigationMenuLink asChild>
                     <Link
                       to="/pricing"
-                      className="inline-flex h-10 w-max items-center justify-center rounded-2xl bg-transparent px-4 py-2 text-sm font-medium text-foreground/70 hover:text-foreground hover:bg-muted transition-colors"
+                      className="inline-flex h-10 w-max items-center justify-center rounded-2xl bg-transparent px-4 py-2 text-sm font-medium text-void/70 hover:text-void hover:bg-gold/10 transition-colors"
                     >
                       Pricing
                     </Link>
@@ -178,23 +197,23 @@ export const Navbar = () => {
 
           {/* Right Actions */}
           <div className="flex items-center gap-3">
-            <div className="hidden md:flex items-center gap-2 px-3 py-2 rounded-2xl border border-border bg-muted/50">
-              <Search className="w-4 h-4 text-muted-foreground" />
+            <div className="hidden md:flex items-center gap-2 px-3 py-2 rounded-2xl border border-plum/10 bg-white/40">
+              <Search className="w-4 h-4 text-plum/50" />
               <input
                 type="text"
                 placeholder="Search..."
-                className="bg-transparent text-sm text-foreground placeholder:text-muted-foreground outline-none w-24"
+                className="bg-transparent text-sm text-plum placeholder:text-plum/50 outline-none w-24"
               />
             </div>
             <Link
-              to="/auth"
-              className="hidden md:flex items-center px-5 py-2.5 rounded-2xl border border-foreground/20 text-foreground text-sm font-semibold hover:bg-foreground/5 transition-colors duration-200"
+              to="/auth?mode=login"
+              className="hidden md:flex items-center px-5 py-2.5 rounded-2xl border border-plum/20 text-plum text-sm font-semibold hover:bg-white/40 transition-colors duration-200"
             >
               Log in
             </Link>
             <Link
-              to="/auth"
-              className="hidden md:flex items-center px-5 py-2.5 rounded-2xl bg-foreground text-card text-sm font-semibold hover:bg-foreground/90 transition-colors duration-200"
+              to="/auth?mode=signup"
+              className="hidden md:flex items-center px-5 py-2.5 rounded-2xl bg-gold text-void text-sm font-semibold hover:bg-gold/90 transition-colors duration-200"
             >
               Sign up free
             </Link>
@@ -213,7 +232,8 @@ export const Navbar = () => {
       <AnimatePresence>
         {menuOpen && (
           <motion.div
-            className="md:hidden mx-4 mt-2 rounded-3xl bg-card border border-border overflow-hidden shadow-lg"
+            className="md:hidden mx-4 mt-2 rounded-3xl border border-gold/30 overflow-hidden shadow-lg shadow-gold/20"
+            style={{ background: 'linear-gradient(135deg, #FEF5CA 0%, #FDE047 100%)' }}
             initial={{ opacity: 0, y: -20, height: 0 }}
             animate={{ opacity: 1, y: 0, height: "auto" }}
             exit={{ opacity: 0, y: -20, height: 0 }}
@@ -224,7 +244,7 @@ export const Navbar = () => {
                 <Link
                   key={link.label}
                   to={link.href}
-                  className="px-4 py-3 rounded-2xl text-foreground/70 hover:text-foreground hover:bg-muted font-medium transition-all duration-200"
+                  className="px-4 py-3 rounded-2xl text-plum/70 hover:text-plum hover:bg-white/40 font-medium transition-all duration-200"
                   onClick={() => setMenuOpen(false)}
                 >
                   <motion.div
@@ -238,14 +258,14 @@ export const Navbar = () => {
               ))}
               <div className="flex flex-col gap-2 mt-2">
                 <Link
-                  to="/auth"
-                  className="px-4 py-3 rounded-2xl border border-foreground/20 text-foreground text-center font-semibold"
+                  to="/auth?mode=login"
+                  className="px-4 py-3 rounded-2xl border border-plum/20 text-plum text-center font-semibold"
                 >
                   Log in
                 </Link>
                 <Link
-                  to="/auth"
-                  className="px-4 py-3 rounded-2xl bg-foreground text-card text-center font-semibold"
+                  to="/auth?mode=signup"
+                  className="px-4 py-3 rounded-2xl bg-gold text-void text-center font-semibold"
                 >
                   Sign up free
                 </Link>

@@ -13,7 +13,7 @@ const pageContent: Record<string, any> = {
             { icon: BarChart3, title: "Advanced Analytics", desc: "Track every click, view, and sale in real-time." },
             { icon: Globe, title: "Custom Domains", desc: "Use your own domain for a professional look." }
         ],
-        previewColor: "bg-blue-500/10",
+        previewColor: "bg-gold/10",
         previewImage: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=2070&auto=format&fit=crop"
     },
     templates: {
@@ -24,7 +24,7 @@ const pageContent: Record<string, any> = {
             { icon: Zap, title: "Lightning Fast", desc: "Optimized for speed and mobile responsiveness out of the box." },
             { icon: Shield, title: "SEO Optimized", desc: "Built-in structured data and meta tags for search engines." }
         ],
-        previewColor: "bg-purple-500/10",
+        previewColor: "bg-plum/10",
         previewImage: "https://images.unsplash.com/photo-1542744094-24638ea0b35a?q=80&w=2070&auto=format&fit=crop"
     },
     marketplace: {
@@ -46,7 +46,7 @@ const pageContent: Record<string, any> = {
             { icon: Globe, title: "Free hosting", desc: "We host your store for free, forever." },
             { icon: Shield, title: "Bank-grade security", desc: "Your money and data are completely protected." }
         ],
-        previewColor: "bg-orange-500/10",
+        previewColor: "bg-gold/10",
         previewImage: "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?q=80&w=2070&auto=format&fit=crop"
     },
     learn: {
@@ -57,7 +57,7 @@ const pageContent: Record<string, any> = {
             { icon: BarChart3, title: "Growth Guides", desc: "Actionable strategies to increase your sales." },
             { icon: Users, title: "Creator Stories", desc: "Learn from the top earners on ShopFluence." }
         ],
-        previewColor: "bg-indigo-500/10",
+        previewColor: "bg-plum/10",
         previewImage: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=2070&auto=format&fit=crop"
     },
     about: {
@@ -156,7 +156,7 @@ const pageContent: Record<string, any> = {
             { icon: Globe, title: "Live Events", desc: "Attend our virtual meetups and webinars." },
             { icon: CheckCircle2, title: "Expert Forums", desc: "Get advice from top sellers." }
         ],
-        previewColor: "bg-yellow-500/10",
+        previewColor: "bg-gold/10",
         previewImage: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=2070&auto=format&fit=crop"
     },
     status: {
@@ -167,7 +167,7 @@ const pageContent: Record<string, any> = {
             { icon: CheckCircle2, title: "API Status", desc: "Developer APIs are responding normally." },
             { icon: Globe, title: "Global CDN", desc: "Worldwide content delivery running smoothly." }
         ],
-        previewColor: "bg-green-500/10",
+        previewColor: "bg-gold/10",
         previewImage: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=2070&auto=format&fit=crop"
     },
     'what\'s-new': {
@@ -178,7 +178,7 @@ const pageContent: Record<string, any> = {
             { icon: Layout, title: "Beta Features", desc: "Opt-in to test experimental tools." },
             { icon: CheckCircle2, title: "Roadmap", desc: "See what we're building next." }
         ],
-        previewColor: "bg-blue-500/10",
+        previewColor: "bg-gold/10",
         previewImage: "https://images.unsplash.com/photo-1542744094-24638ea0b35a?q=80&w=2070&auto=format&fit=crop"
     },
     developers: {
@@ -189,7 +189,7 @@ const pageContent: Record<string, any> = {
             { icon: Layout, title: "Webhooks", desc: "Real-time event subscriptions." },
             { icon: Shield, title: "OAuth 2.0", desc: "Secure authentication for custom apps." }
         ],
-        previewColor: "bg-indigo-500/10",
+        previewColor: "bg-plum/10",
         previewImage: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=2070&auto=format&fit=crop"
     },
     privacy: {
@@ -211,7 +211,7 @@ const pageContent: Record<string, any> = {
             { icon: ShoppingBag, title: "Seller Terms", desc: "Rules for processing transactions." },
             { icon: CheckCircle2, title: "Acceptable Use", desc: "Guidelines for appropriate content." }
         ],
-        previewColor: "bg-gray-500/10",
+        previewColor: "bg-muted/10",
         previewImage: "https://images.unsplash.com/photo-1499750310107-5fef28a66643?q=80&w=2070&auto=format&fit=crop"
     },
     cookies: {
@@ -243,7 +243,7 @@ const pageContent: Record<string, any> = {
         features: [
             { icon: Shield, title: "Stay Tuned", desc: "Check back later for updates." }
         ],
-        previewColor: "bg-gray-500/10",
+        previewColor: "bg-muted/10",
         previewImage: "https://images.unsplash.com/photo-1499750310107-5fef28a66643?q=80&w=2070&auto=format&fit=crop"
     }
 };
@@ -302,7 +302,7 @@ export default function MarketingPage() {
                 <div className={`w-full rounded-2xl md:rounded-[40px] p-2 md:p-4 border border-border/50 shadow-2xl ${content.previewColor} backdrop-blur-sm`}>
                     <div className="w-full aspect-[16/9] md:aspect-[21/9] rounded-xl md:rounded-[32px] overflow-hidden relative bg-card shadow-inner border border-border/20">
                         <img src={content.previewImage} alt={content.title} className="w-full h-full object-cover opacity-90" />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-void/20 to-transparent" />
                     </div>
                 </div>
             </motion.section>

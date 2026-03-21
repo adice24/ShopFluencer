@@ -130,7 +130,7 @@ export default function StorefrontPage() {
       {/* Profile */}
       <div className="max-w-lg mx-auto px-4 -mt-16 relative z-10">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col items-center text-center">
-          <div className="w-24 h-24 rounded-full bg-card border-4 border-background flex items-center justify-center text-4xl shadow-lg truncate overflow-hidden">
+          <div className="w-24 h-24 rounded-full bg-card border-4 border-background flex items-center justify-center text-4xl shadow-lg shadow-void/50 truncate overflow-hidden">
             {store.avatar_url ? <img src={store.avatar_url} className="w-full h-full object-cover" /> : store.display_name.charAt(0).toUpperCase()}
           </div>
           <h1 className="text-xl font-bold text-foreground mt-3">{store.display_name}</h1>

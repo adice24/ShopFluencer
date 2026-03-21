@@ -3,8 +3,8 @@ import { AffiliatesService } from './affiliates.service';
 import { AffiliatesController } from './affiliates.controller';
 
 @Module({
-    controllers: [AffiliatesController],
-    providers: [AffiliatesService],
-    exports: [AffiliatesService],
+  controllers: [AffiliatesController],
+  providers: [AffiliatesService],
+  exports: [AffiliatesService],
 })
-export class AffiliatesModule { }
+export class AffiliatesModule {}
