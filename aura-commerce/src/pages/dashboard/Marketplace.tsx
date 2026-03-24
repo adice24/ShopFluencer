@@ -257,10 +257,10 @@ export default function Marketplace() {
                  initial={{ opacity: 0, scale: 0.95 }}
                  animate={{ opacity: 1, scale: 1 }}
                  transition={{ delay: idx * 0.05 }}
-                 className="w-full max-w-[320px] bg-white rounded-[24px] border border-[#5DCAA5]/40 shadow-[0_4px_20px_rgba(29,158,117,0.04)] hover:shadow-[0_8px_30px_rgba(29,158,117,0.08)] transition-all group overflow-hidden flex flex-col"
+                 className="w-full max-w-[240px] bg-white rounded-[20px] border border-[#5DCAA5]/40 shadow-sm hover:shadow-md transition-all group overflow-hidden flex flex-col"
                >
                  {/* Thumbnail area with Wishlist Icon */}
-                 <div className="relative aspect-[4/5] overflow-hidden bg-[#E1F5EE]/20">
+                 <div className="relative aspect-square overflow-hidden bg-[#E1F5EE]/20">
                    <img 
                      src={image} 
                      alt={product.name} 
@@ -268,54 +268,54 @@ export default function Marketplace() {
                    />
                    
                    {/* Wishlist Icon */}
-                   <button className="absolute top-4 right-4 w-10 h-10 bg-white rounded-full flex items-center justify-center text-[#1D9E75] shadow-sm hover:scale-110 transition-transform">
-                     <Heart size={20} />
+                   <button className="absolute top-3 right-3 w-8 h-8 bg-white rounded-full flex items-center justify-center text-[#1D9E75] shadow-sm hover:scale-110 transition-transform">
+                     <Heart size={16} />
                    </button>
                    
                    {/* Margin Badge (Pill shape bottom-left) */}
-                   <div className="absolute bottom-4 left-4 bg-[#1D9E75] text-white px-4 py-1.5 rounded-full text-[12px] font-bold shadow-md">
+                   <div className="absolute bottom-3 left-3 bg-[#1D9E75] text-white px-3 py-1 rounded-full text-[10px] font-bold shadow-md">
                      {product.margin_type === 'PERCENT' ? `${product.affiliate_margin}%` : `₹${product.affiliate_margin}`} Margin
                    </div>
                  </div>
 
-                 <div className="p-6 flex-1 flex flex-col gap-3">
+                 <div className="p-4 flex-1 flex flex-col gap-2.5">
                    {/* Brand Badge (CREATOR LISTINGS) */}
-                   <div className="flex items-center gap-2">
-                     <div className="w-6 h-6 rounded-full bg-[#E1F5EE] flex items-center justify-center text-[#1D9E75]">
-                       <Building2 size={12} />
+                   <div className="flex items-center gap-1.5">
+                     <div className="w-5 h-5 rounded-full bg-[#E1F5EE] flex items-center justify-center text-[#1D9E75]">
+                       <Building2 size={10} />
                      </div>
-                     <span className="text-[11px] font-bold text-[#1D9E75] uppercase tracking-widest">Creator Listings</span>
+                     <span className="text-[10px] font-bold text-[#1D9E75] uppercase tracking-widest">Creator Listings</span>
                    </div>
 
-                   <div className="space-y-1">
-                     <h3 className="font-extrabold text-[#111827] text-[18px] leading-tight line-clamp-2">{product.name}</h3>
-                     <p className="text-[14px] text-[#6B7280] font-medium">{product.category?.name || "General"}</p>
+                   <div className="space-y-0.5">
+                     <h3 className="font-bold text-[#111827] text-[14px] leading-tight line-clamp-2">{product.name}</h3>
+                     <p className="text-[12px] text-[#6B7280] font-medium">{product.category?.name || "General"}</p>
                    </div>
                    
-                   <p className="font-bold text-[#111827] text-[22px] mt-1">₹{product.base_price}</p>
+                   <p className="font-bold text-[#111827] text-[18px] mt-1">₹{product.base_price}</p>
 
-                   <div className="flex flex-col gap-3 mt-2">
+                   <div className="flex flex-col gap-2.5 mt-2">
                      {/* Row 1: Add to My Store (Full Width) */}
                      <button
                        onClick={() => !isAdded && addToStoreMutation.mutate(product.id)}
                        disabled={isAdded || addToStoreMutation.isPending || !storefrontId}
-                       className={`w-full h-[46px] rounded-[12px] font-bold flex items-center justify-center gap-2 transition-all text-[15px] whitespace-nowrap px-6 ${
+                       className={`w-full h-[38px] rounded-[10px] font-bold flex items-center justify-center gap-1.5 transition-all text-[13px] whitespace-nowrap px-4 ${
                          isAdded 
                           ? 'bg-[#E1F5EE] text-[#1D9E75] border border-[#5DCAA5] cursor-default' 
                           : 'bg-[#1D9E75] text-white hover:bg-[#1D9E75]/90 active:scale-[0.98]'
                        }`}
                      >
                        {isAdded ? (
-                         <><CheckCircle2 size={18} /> In My Store</>
+                         <><CheckCircle2 size={16} /> In Store</>
                        ) : addToStoreMutation.isPending ? (
-                         <Loader2 size={18} className="animate-spin" />
+                         <Loader2 size={16} className="animate-spin" />
                        ) : (
-                         <><ShoppingCart size={18} /> Add to my store</>
+                         <><ShoppingCart size={16} /> Add to my store</>
                        )}
                      </button>
 
                      {/* Row 2: Enquire Brand + Eye Icon */}
-                     <div className="flex items-center gap-3">
+                     <div className="flex items-center gap-2">
                        <button
                          onClick={() => {
                            if (product.brand?.website_url) {
@@ -324,17 +324,17 @@ export default function Marketplace() {
                              toast.error("Brand website not available.");
                            }
                          }}
-                         className="flex-1 h-[46px] border border-[#1D9E75] text-[#1D9E75] rounded-[12px] font-bold flex items-center justify-center gap-2 hover:bg-[#E1F5EE]/30 transition-all text-[15px] whitespace-nowrap overflow-hidden px-4 active:scale-[0.98]"
+                         className="flex-1 h-[38px] border border-[#1D9E75] text-[#1D9E75] rounded-[10px] font-bold flex items-center justify-center gap-1.5 hover:bg-[#E1F5EE]/30 transition-all text-[13px] whitespace-nowrap overflow-hidden px-3 active:scale-[0.98]"
                        >
-                         <MessageSquare size={18} />
-                         <span className="truncate">Enquire Brand</span>
+                         <MessageSquare size={16} />
+                         <span className="truncate">Enquire</span>
                        </button>
 
                        <button
                          onClick={() => toast.info("Opening product details...")}
-                         className="w-[46px] h-[46px] shrink-0 bg-[#E1F5EE] text-[#1D9E75] rounded-[12px] flex items-center justify-center hover:bg-[#5DCAA5]/20 transition-all border border-[#5DCAA5]/10 active:scale-[0.98]"
+                         className="w-[38px] h-[38px] shrink-0 bg-[#E1F5EE] text-[#1D9E75] rounded-[10px] flex items-center justify-center hover:bg-[#5DCAA5]/20 transition-all border border-[#5DCAA5]/10 active:scale-[0.98]"
                        >
-                         <Eye size={20} />
+                         <Eye size={18} />
                        </button>
                      </div>
                    </div>
