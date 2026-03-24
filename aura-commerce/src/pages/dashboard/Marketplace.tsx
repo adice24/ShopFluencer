@@ -256,53 +256,57 @@ export default function Marketplace() {
                  key={product.id}
                  initial={{ opacity: 0, scale: 0.95 }}
                  animate={{ opacity: 1, scale: 1 }}
+                 whileHover={{ y: -4 }}
                  transition={{ delay: idx * 0.05 }}
-                 className="w-[200px] bg-white rounded-[14px] border border-[#5DCAA5]/40 shadow-sm hover:shadow-md transition-all group overflow-hidden flex flex-col"
+                 className="w-[215px] bg-gradient-to-b from-white to-[#F9FAFB] rounded-[18px] border border-[#E5E7EB] hover:border-[#1D9E75]/30 shadow-[0_2px_8px_rgba(0,0,0,0.04)] transition-all group overflow-hidden flex flex-col"
                >
                  {/* Thumbnail area with Wishlist Icon */}
-                 <div className="relative aspect-square overflow-hidden bg-[#E1F5EE]/20">
+                 <div className="relative aspect-square overflow-hidden bg-slate-100/50">
                    <img 
                      src={image} 
                      alt={product.name} 
                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
                    />
                    
-                   {/* Wishlist Icon */}
-                   <button className="absolute top-2 right-2 w-7 h-7 bg-white rounded-full flex items-center justify-center text-[#1D9E75] shadow-sm hover:scale-110 transition-transform">
-                     <Heart size={14} />
+                   {/* Wishlist Icon - Glassmorphism */}
+                   <button className="absolute top-2.5 right-2.5 w-8 h-8 backdrop-blur-md bg-white/80 rounded-full flex items-center justify-center text-[#1D9E75] shadow-sm hover:scale-110 active:scale-90 transition-all border border-white/50">
+                     <Heart size={15} />
                    </button>
                    
-                   {/* Margin Badge (Pill shape bottom-left) */}
-                   <div className="absolute bottom-2 left-2 bg-[#1D9E75] text-white px-2 py-0.5 rounded-full text-[9px] font-bold shadow-sm">
-                     {product.margin_type === 'PERCENT' ? `${product.affiliate_margin}%` : `₹${product.affiliate_margin}`} Margin
+                   {/* Margin Badge - Gradient Glass */}
+                   <div className="absolute bottom-2.5 left-2.5 backdrop-blur-md bg-[#1D9E75]/90 text-white px-2.5 py-1 rounded-lg text-[10px] font-black shadow-lg border border-white/20">
+                     {product.margin_type === 'PERCENT' ? `${product.affiliate_margin}%` : `₹${product.affiliate_margin}`} MARGIN
                    </div>
                  </div>
 
-                 <div className="p-2.5 flex-1 flex flex-col gap-2">
-                   {/* Brand Badge (CREATOR LISTINGS) */}
-                   <div className="flex items-center gap-1">
-                     <div className="w-4 h-4 rounded-full bg-[#E1F5EE] flex items-center justify-center text-[#1D9E75]">
+                 <div className="p-3.5 flex-1 flex flex-col gap-3">
+                   {/* Brand Badge */}
+                   <div className="flex items-center gap-1.5 opacity-80">
+                     <div className="w-4 h-4 rounded-full bg-[#E1F5EE] flex items-center justify-center text-[#1D9E75] border border-[#5DCAA5]/20">
                        <Building2 size={10} />
                      </div>
-                     <span className="text-[9px] font-bold text-[#1D9E75] uppercase tracking-widest">Creator Listings</span>
+                     <span className="text-[10px] font-bold text-[#1D9E75] uppercase tracking-tighter">Verified Creator</span>
                    </div>
 
-                   <div className="space-y-0">
-                     <h3 className="font-bold text-[#111827] text-[13px] leading-tight line-clamp-2">{product.name}</h3>
-                     <p className="text-[11px] text-[#6B7280] font-medium truncate">{product.category?.name || "General"}</p>
+                   <div className="space-y-0.5">
+                     <h3 className="font-bold text-[#111827] text-[14px] leading-tight line-clamp-2 group-hover:text-[#1D9E75] transition-colors">{product.name}</h3>
+                     <p className="text-[11px] text-[#9CA3AF] font-semibold tracking-tight uppercase truncate">{product.category?.name || "General"}</p>
                    </div>
                    
-                   <p className="font-bold text-[#111827] text-[15px]">₹{product.base_price}</p>
+                   <div className="flex items-baseline gap-1">
+                     <span className="text-[11px] font-bold text-[#9CA3AF]">₹</span>
+                     <span className="font-black text-[#111827] text-[18px] tracking-tight">{product.base_price}</span>
+                   </div>
 
                    <div className="flex flex-col gap-2 mt-auto">
                      {/* Row 1: Add to My Store (Full Width) */}
                      <button
                        onClick={() => !isAdded && addToStoreMutation.mutate(product.id)}
                        disabled={isAdded || addToStoreMutation.isPending || !storefrontId}
-                       className={`w-full h-[32px] rounded-[8px] font-bold flex items-center justify-center gap-1.5 transition-all text-[12px] whitespace-nowrap px-3 ${
+                       className={`w-full h-[36px] rounded-xl font-bold flex items-center justify-center gap-2 transition-all text-[12px] shadow-sm ${
                          isAdded 
                           ? 'bg-[#E1F5EE] text-[#1D9E75] border border-[#5DCAA5] cursor-default' 
-                          : 'bg-[#1D9E75] text-white hover:bg-[#1D9E75]/90'
+                          : 'bg-[#1D9E75] text-white hover:bg-[#15805d] hover:shadow-md active:scale-95'
                        }`}
                      >
                        {isAdded ? (
@@ -310,7 +314,7 @@ export default function Marketplace() {
                        ) : addToStoreMutation.isPending ? (
                          <Loader2 size={14} className="animate-spin" />
                        ) : (
-                         <><ShoppingCart size={14} /> Add to store</>
+                         <><ShoppingCart size={14} /> Add to Store</>
                        )}
                      </button>
 
@@ -324,15 +328,15 @@ export default function Marketplace() {
                              toast.error("Brand website not available.");
                            }
                          }}
-                         className="flex-1 h-[32px] border border-[#1D9E75] text-[#1D9E75] rounded-[8px] font-bold flex items-center justify-center gap-1.5 hover:bg-[#E1F5EE]/30 transition-all text-[12px] whitespace-nowrap overflow-hidden px-2"
+                         className="flex-1 h-[36px] bg-white border border-[#E5E7EB] text-[#4B5563] rounded-xl font-bold flex items-center justify-center gap-1.5 hover:bg-gray-50 active:scale-95 transition-all text-[12px] overflow-hidden px-2 shadow-sm"
                        >
-                         <MessageSquare size={14} />
+                         <MessageSquare size={14} className="text-[#1D9E75]" />
                          <span className="truncate">Enquire</span>
                        </button>
 
                        <button
-                         onClick={() => toast.info("Opening product details...")}
-                         className="w-[32px] h-[32px] shrink-0 bg-[#E1F5EE] text-[#1D9E75] rounded-[8px] flex items-center justify-center hover:bg-[#5DCAA5]/20 transition-all border border-[#5DCAA5]/10 active:scale-[0.98]"
+                         onClick={() => toast.info("Opening details...")}
+                         className="w-[36px] h-[36px] shrink-0 bg-[#E1F5EE]/50 text-[#1D9E75] rounded-xl flex items-center justify-center hover:bg-[#E1F5EE] border border-[#5DCAA5]/20 active:scale-90 transition-all shadow-sm"
                        >
                          <Eye size={16} />
                        </button>
