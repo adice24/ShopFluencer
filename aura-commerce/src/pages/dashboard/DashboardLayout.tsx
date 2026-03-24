@@ -7,9 +7,13 @@ import { useAuth } from "../../contexts/AuthContext";
 import { useNotifications } from "../../hooks/useNotifications";
 import { toast } from "sonner";
 import { ShoppingCart, Bell, Palette, ArrowRight, Wand2 } from "lucide-react";
+import OptimizeStorefrontModal from "../../components/dashboard/OptimizeStorefrontModal";
+import { useMyStore } from "../../hooks/useInfluencerStore";
 
 export default function DashboardLayout() {
   const { user } = useAuth();
+  const { store } = useMyStore();
+  const [isOptimizeOpen, setIsOptimizeOpen] = React.useState(false);
   const username = user?.user_metadata?.username || user?.email?.split('@')[0] || "creator";
   const navigate = useNavigate();
   const { unreadCount } = useNotifications();
@@ -54,17 +58,32 @@ export default function DashboardLayout() {
             <SidebarTrigger className="md:hidden mr-auto text-foreground/70 bg-card/60 p-2 rounded-full shadow-sm backdrop-blur-md" />
 
             {/* Palette icon only */}
-            <button className="hidden md:flex mr-2 w-[42px] h-[42px] items-center justify-center bg-card/80 backdrop-blur-md border border-white rounded-full hover:bg-card transition-colors shadow-[0_2px_12px_rgba(0,0,0,0.03)]">
+            <button
+              onClick={() => navigate('/dashboard/appearance')}
+              className="hidden md:flex mr-2 w-[42px] h-[42px] items-center justify-center bg-card/80 backdrop-blur-md border border-white rounded-full hover:bg-card transition-colors shadow-[0_2px_12px_rgba(0,0,0,0.03)]"
+            >
               <Palette size={16} className="text-muted-foreground" />
             </button>
 
             {/* Optimize Button */}
-            <button className="hidden md:flex items-center gap-2 px-5 py-2.5 bg-card/80 backdrop-blur-md border border-white rounded-full text-[13px] font-bold shadow-[0_2px_12px_rgba(0,0,0,0.03)] hover:bg-card transition-all text-[#D67151]">
+            <button
+              onClick={() => setIsOptimizeOpen(true)}
+              className="hidden md:flex items-center gap-2 px-5 py-2.5 bg-card/80 backdrop-blur-md border border-white rounded-full text-[13px] font-bold shadow-[0_2px_12px_rgba(0,0,0,0.03)] hover:bg-card transition-all text-[#D67151]"
+            >
               <Wand2 size={16} /> Optimize
             </button>
 
             {/* Circular Actions */}
-            <button className="w-[42px] h-[42px] rounded-full bg-card/80 border border-white flex items-center justify-center hover:bg-card transition-colors shadow-[0_2px_12px_rgba(0,0,0,0.03)] backdrop-blur-md">
+            <button
+              onClick={() => {
+                if (store?.slug) {
+                  window.open(`/${store.slug}`, '_blank');
+                } else {
+                  toast.error("Set up your store first!");
+                }
+              }}
+              className="w-[42px] h-[42px] rounded-full bg-card/80 border border-white flex items-center justify-center hover:bg-card transition-colors shadow-[0_2px_12px_rgba(0,0,0,0.03)] backdrop-blur-md"
+            >
               <ArrowRight size={18} className="text-foreground/70" />
             </button>
 
@@ -88,6 +107,7 @@ export default function DashboardLayout() {
           </div>
         </main>
 
+        <OptimizeStorefrontModal open={isOptimizeOpen} onOpenChange={setIsOptimizeOpen} />
       </div>
     </SidebarProvider>
   );

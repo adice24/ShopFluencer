@@ -9,7 +9,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import OptimizeStorefrontModal from "../../components/dashboard/OptimizeStorefrontModal";
 import { useAuth } from "../../contexts/AuthContext";
-import { Sparkles } from "lucide-react";
+import { Wand2 } from "lucide-react";
 import { supabase } from "../../lib/supabase";
 
 const fadeUp = (i: number) => ({
@@ -412,7 +412,7 @@ export default function Overview() {
             { label: "Add Product", icon: Plus, href: "/dashboard/products" },
             { label: "Edit Appearance", icon: Palette, href: "/dashboard/appearance" },
             { label: "View Analytics", icon: BarChart3, href: "/dashboard/analytics" },
-            { label: "Optimize", icon: Sparkles, action: "optimize" },
+            { label: "Optimize", icon: Wand2, action: "optimize" },
             { label: "Share Store", icon: Share2, action: "share" },
           ].map((action) => (
             <button

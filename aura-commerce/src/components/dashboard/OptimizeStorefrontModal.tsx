@@ -6,7 +6,7 @@ import {
     DialogTitle,
     DialogDescription,
 } from "@/components/ui/dialog";
-import { Sparkles, ArrowRight, CheckCircle2, AlertCircle } from 'lucide-react';
+import { Wand2, ArrowRight, CheckCircle2, AlertCircle } from 'lucide-react';
 import { fetchApi } from '@/lib/api';
 import { useNavigate } from 'react-router-dom';
 
@@ -33,7 +33,7 @@ export default function OptimizeStorefrontModal({ open, onOpenChange }: { open: 
     const loadSuggestions = async () => {
         setIsLoading(true);
         try {
-            const data = await fetchApi('/analytics/suggestions');
+            const data = await fetchApi('/analytics/suggestions') as Suggestion[];
             setSuggestions(data);
         } catch (error) {
             console.error('Failed to load suggestions:', error);
@@ -56,7 +56,7 @@ export default function OptimizeStorefrontModal({ open, onOpenChange }: { open: 
                     <DialogHeader className="relative z-10 text-left">
                         <div className="flex items-center gap-3 mb-2">
                             <div className="p-2 bg-card/30 rounded-xl">
-                                <Sparkles className="text-blush w-6 h-6" />
+                                <Wand2 className="text-blush w-6 h-6" />
                             </div>
                             <DialogTitle className="text-2xl font-black text-[#2F3E46]">Optimize Your Store</DialogTitle>
                         </div>
@@ -88,7 +88,7 @@ export default function OptimizeStorefrontModal({ open, onOpenChange }: { open: 
                                             {s.priority === 'HIGH' ? (
                                                 <AlertCircle className="w-5 h-5 text-[#E5976D]" />
                                             ) : (
-                                                <Sparkles className="w-5 h-5 text-[#80DADA]" />
+                                                <Wand2 className="w-5 h-5 text-[#80DADA]" />
                                             )}
                                         </div>
                                         <div className="flex-1">

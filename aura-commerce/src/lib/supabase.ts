@@ -48,6 +48,12 @@ export const supabase = hasSupabase
             autoRefreshToken: true,
             detectSessionInUrl: true,
             persistSession: true,
+            // Bypass Navigator LockManager to prevent "Acquiring an exclusive Navigator LockManager lock" timeouts
+            lock: {
+                acquire: async () => ({
+                    release: () => { }
+                })
+            }
         },
         global: {
             headers: {

@@ -33,6 +33,7 @@ async function bootstrap() {
     'http://localhost:8080',
     'http://localhost:8081',
     'https://shop-fluence.vercel.app',
+    'https://shop-fluencer.vercel.app',
     'https://shopflu.to',
   ];
   if (frontendUrl) {
