@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { User, Bell, CreditCard, Shield } from "lucide-react";
+import { User, Bell, Shield } from "lucide-react";
 
 export default function SettingsPage() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -70,7 +70,6 @@ export default function SettingsPage() {
     { id: "profile", label: "Profile", icon: User },
     { id: "account", label: "Account", icon: Shield },
     { id: "notifications", label: "Notifications", icon: Bell },
-    { id: "billing", label: "Billing", icon: CreditCard },
   ];
 
   if (isFetching) {
@@ -211,79 +210,6 @@ export default function SettingsPage() {
               <h2 className="text-xl font-bold text-[#2F3E46]">Notification Preferences</h2>
               <p className="text-muted-foreground">Choose what updates you want to receive.</p>
               {/* Placeholder for future implementation */}
-            </div>
-          )}
-
-          {activeTab === "billing" && (
-            <div className="space-y-6">
-              <h2 className="text-[22px] font-extrabold text-[#2F3E46] mb-2">Upgrade & Billing</h2>
-              <p className="text-[13px] font-medium text-muted-foreground border-b border-border/40 pb-6">Manage your subscription, custom domains, and payouts.</p>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-                {/* Free Plan */}
-                <div className="bg-[#FAFAFA] border border-border/60 rounded-[24px] p-6 relative">
-                  <div className="absolute top-4 right-4 bg-black/10 text-[#2F3E46] text-[11px] font-extrabold uppercase px-3 py-1 rounded-full">Current</div>
-                  <h3 className="text-xl font-bold text-[#2F3E46] mb-1">Starter</h3>
-                  <div className="flex items-baseline gap-1 mb-6">
-                    <span className="text-3xl font-extrabold text-[#2F3E46]">$0</span>
-                    <span className="text-[13px] text-muted-foreground font-medium">/month</span>
-                  </div>
-
-                  <ul className="space-y-3 mb-8">
-                    <li className="flex items-center gap-3 text-[14px] text-[#4D606B] font-medium">
-                      <div className="w-5 h-5 rounded-full bg-gold/15 flex items-center justify-center text-gold shrink-0">✓</div> Unlimited Links
-                    </li>
-                    <li className="flex items-center gap-3 text-[14px] text-[#4D606B] font-medium">
-                      <div className="w-5 h-5 rounded-full bg-gold/15 flex items-center justify-center text-gold shrink-0">✓</div> Basic Catalog Access
-                    </li>
-                    <li className="flex items-center gap-3 text-[14px] text-muted-foreground opacity-50 font-medium">
-                      <div className="w-5 h-5 rounded-full bg-black/5 flex items-center justify-center text-void/40 shrink-0">✕</div> Custom Domain
-                    </li>
-                    <li className="flex items-center gap-3 text-[14px] text-muted-foreground opacity-50 font-medium">
-                      <div className="w-5 h-5 rounded-full bg-black/5 flex items-center justify-center text-void/40 shrink-0">✕</div> Zero Transaction Fees
-                    </li>
-                  </ul>
-
-                  <button disabled className="w-full py-3 px-6 rounded-full border border-border/60 bg-card text-[#2F3E46] font-bold text-[14px] opacity-70 cursor-not-allowed">
-                    Active Plan
-                  </button>
-                </div>
-
-                {/* Pro Plan */}
-                <div className="bg-gradient-to-tr from-plum to-fuchsia-400 rounded-[24px] p-6 text-blush shadow-[0_10px_40px_rgba(139,92,246,0.3)] relative overflow-hidden group">
-                  <div className="absolute top-0 right-0 w-32 h-32 bg-card/10 rounded-full blur-2xl -mr-10 -mt-10"></div>
-                  <h3 className="text-xl font-bold text-blush mb-1 relative z-10">Creator Pro</h3>
-                  <div className="flex items-baseline gap-1 mb-6 relative z-10">
-                    <span className="text-3xl font-extrabold text-blush">$29</span>
-                    <span className="text-[13px] text-blush/80 font-medium">/month</span>
-                  </div>
-
-                  <ul className="space-y-3 mb-8 relative z-10">
-                    <li className="flex items-center gap-3 text-[14px] text-blush/90 font-medium">
-                      <div className="w-5 h-5 rounded-full bg-card/20 flex items-center justify-center text-blush shrink-0">✓</div> Custom Domain (yourname.com)
-                    </li>
-                    <li className="flex items-center gap-3 text-[14px] text-blush/90 font-medium">
-                      <div className="w-5 h-5 rounded-full bg-card/20 flex items-center justify-center text-blush shrink-0">✓</div> 0% Platform Transaction Fees
-                    </li>
-                    <li className="flex items-center gap-3 text-[14px] text-blush/90 font-medium">
-                      <div className="w-5 h-5 rounded-full bg-card/20 flex items-center justify-center text-blush shrink-0">✓</div> Advanced Analytics
-                    </li>
-                    <li className="flex items-center gap-3 text-[14px] text-blush/90 font-medium">
-                      <div className="w-5 h-5 rounded-full bg-card/20 flex items-center justify-center text-blush shrink-0">✓</div> Premium Themes & UI
-                    </li>
-                  </ul>
-
-                  <button
-                    onClick={() => {
-                      toast.loading('Redirecting to Stripe Checkout...', { duration: 2000 });
-                      setTimeout(() => toast.success('Stripe session verified!'), 2000);
-                    }}
-                    className="w-full py-3 px-6 rounded-full bg-card text-violet-600 hover:bg-card/90 font-extrabold text-[14px] shadow-sm relative z-10 transition-colors"
-                  >
-                    Upgrade to Pro
-                  </button>
-                </div>
-              </div>
             </div>
           )}
         </div>

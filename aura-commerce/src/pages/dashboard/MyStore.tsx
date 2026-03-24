@@ -425,16 +425,7 @@ export default function MyStore() {
         </div>
 
         <div className="flex flex-col items-end gap-2">
-          <button
-            type="button"
-            onClick={() => {
-              setEditingProduct(null);
-              setIsAddingMode(true);
-            }}
-            className="flex items-center gap-2 px-6 py-3 bg-[#D67151] hover:bg-[#c46142] text-blush rounded-full font-bold shadow-[0_4px_14px_rgba(214,113,81,0.3)] hover:shadow-[0_6px_20px_rgba(214,113,81,0.4)] transition-all hover:-translate-y-0.5"
-          >
-            <Plus size={18} /> ADD PRODUCT
-          </button>
+
           <button
             type="button"
             onClick={() => navigate("/dashboard/marketplace")}

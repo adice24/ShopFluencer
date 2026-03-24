@@ -409,7 +409,6 @@ export default function Overview() {
         <h2 className="text-lg font-bold mb-4">Quick Actions</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           {[
-            { label: "Add Product", icon: Plus, href: "/dashboard/products" },
             { label: "Edit Appearance", icon: Palette, href: "/dashboard/appearance" },
             { label: "View Analytics", icon: BarChart3, href: "/dashboard/analytics" },
             { label: "Optimize", icon: Wand2, action: "optimize" },

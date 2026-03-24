@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, Filter, Plus, TrendingUp, IndianRupee, Package, Building2, Loader2, Star, CheckCircle2, Calculator, Link2, Eye, Heart, X } from "lucide-react";
+import { Search, Filter, Plus, TrendingUp, IndianRupee, Package, Building2, Loader2, Star, CheckCircle2, Calculator, Link2, Eye, Heart, X, ExternalLink } from "lucide-react";
 import { supabase } from "../../lib/supabase";
 import { toast } from "sonner";
 import { useAuth } from "../../contexts/AuthContext";
@@ -100,7 +100,7 @@ export default function Marketplace() {
         .select(`
           *,
           category:categories(name),
-          brand:brands(name),
+          brand:brands(name, website_url),
           images:product_images(url)
         `)
         .eq('status', 'ACTIVE');
@@ -286,12 +286,18 @@ export default function Marketplace() {
                    <p className="text-[15px] font-bold text-[#4B5563] mb-4">₹{product.base_price}</p>
 
                    <div className="grid grid-cols-5 gap-2 mt-auto pt-2">
-                     <button
-                       onClick={() => toast.success("Link copied to clipboard!")}
-                       className="col-span-2 h-[42px] bg-indigo-50 text-indigo-600 rounded-xl font-bold flex items-center justify-center gap-1.5 hover:bg-indigo-100 transition-colors shadow-sm text-[13px]"
-                     >
-                       <Link2 size={15} /> Gen Link
-                     </button>
+                      <button
+                        onClick={() => {
+                          if (product.brand?.website_url) {
+                            window.open(product.brand.website_url.startsWith('http') ? product.brand.website_url : `https://${product.brand.website_url}`, '_blank');
+                          } else {
+                            toast.error("Brand website not available.");
+                          }
+                        }}
+                        className="col-span-2 h-[42px] bg-indigo-50 text-indigo-600 rounded-xl font-bold flex items-center justify-center gap-1.5 hover:bg-indigo-100 transition-colors shadow-sm text-[11px]"
+                      >
+                        <ExternalLink size={15} /> Enquire Brand
+                      </button>
                      <button
                        onClick={() => toast.info("Opening product details...")}
                        className="col-span-1 h-[42px] bg-gray-50 border border-gray-200 text-gray-600 rounded-xl flex items-center justify-center hover:bg-gray-100 transition-colors shadow-sm"

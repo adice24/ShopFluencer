@@ -326,15 +326,6 @@ export default function DashboardSidebar() {
               </Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild className="p-3 cursor-pointer rounded-xl hover:bg-black/5 focus:bg-black/5 outline-none transition-colors">
-              <Link to="/dashboard/settings?tab=billing" className="flex items-center gap-3">
-                <Zap size={18} strokeWidth={2.5} className="text-foreground/70" />
-                <span className="font-semibold text-[14.5px] text-foreground">Upgrade</span>
-              </Link>
-            </DropdownMenuItem>
-
-            <div className="h-[1px] bg-black/5 my-1.5 mx-2" />
-
-            <DropdownMenuItem asChild className="p-3 cursor-pointer rounded-xl hover:bg-black/5 focus:bg-black/5 outline-none transition-colors">
               <Link to="/dashboard/faq" className="flex items-center gap-3 w-full">
                 <HelpCircle size={18} strokeWidth={2.5} className="text-foreground/70" />
                 <span className="font-semibold text-[14.5px] text-foreground">Ask a question</span>
