@@ -307,7 +307,7 @@ export default function Overview() {
       value: topProduct,
       prefix: "",
       suffix: "",
-      icon: Sparkles,
+      icon: Wand2,
       color: "text-amber-600",
       bgColor: "bg-amber-100",
       isString: true

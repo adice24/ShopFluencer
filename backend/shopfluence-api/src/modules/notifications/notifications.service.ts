@@ -30,11 +30,17 @@ export class NotificationsService {
   }
 
   async getNotifications(userId: string) {
-    return this.prisma.notification.findMany({
-      where: { userId },
-      orderBy: { createdAt: 'desc' },
-      take: 50,
-    });
+    try {
+      if (!this.prisma || !userId) return [];
+      return await this.prisma.notification.findMany({
+        where: { userId },
+        orderBy: { createdAt: 'desc' },
+        take: 50,
+      });
+    } catch (error) {
+      console.warn('Could not fetch notifications (DB offline):', error.message);
+      return [];
+    }
   }
 
   async markAsRead(id: string, userId: string) {
