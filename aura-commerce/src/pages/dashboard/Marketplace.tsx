@@ -256,65 +256,65 @@ export default function Marketplace() {
                  key={product.id}
                  initial={{ opacity: 0, scale: 0.95 }}
                  animate={{ opacity: 1, scale: 1 }}
-                 whileHover={{ y: -4 }}
-                 transition={{ delay: idx * 0.05 }}
-                 className="w-[215px] bg-gradient-to-b from-white to-[#F9FAFB] rounded-[18px] border border-[#E5E7EB] hover:border-[#1D9E75]/30 shadow-[0_2px_8px_rgba(0,0,0,0.04)] transition-all group overflow-hidden flex flex-col"
+                 whileHover={{ y: -5 }}
+                 transition={{ delay: idx * 0.05, type: "spring", stiffness: 300, damping: 20 }}
+                 className="w-[210px] bg-white rounded-[20px] border border-[#F3F4F6] hover:border-[#1D9E75]/40 shadow-[0_8px_20px_-12px_rgba(0,0,0,0.1)] hover:shadow-[0_20px_30px_-10px_rgba(29,158,117,0.12)] transition-all group overflow-hidden flex flex-col"
                >
                  {/* Thumbnail area with Wishlist Icon */}
-                 <div className="relative aspect-square overflow-hidden bg-slate-100/50">
+                 <div className="relative aspect-square overflow-hidden bg-slate-50">
                    <img 
                      src={image} 
                      alt={product.name} 
-                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
+                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out" 
                    />
                    
-                   {/* Wishlist Icon - Glassmorphism */}
-                   <button className="absolute top-2.5 right-2.5 w-8 h-8 backdrop-blur-md bg-white/80 rounded-full flex items-center justify-center text-[#1D9E75] shadow-sm hover:scale-110 active:scale-90 transition-all border border-white/50">
+                   {/* Wishlist Icon - Minimalist Glass */}
+                   <button className="absolute top-2.5 right-2.5 w-8 h-8 backdrop-blur-md bg-white/70 rounded-full flex items-center justify-center text-[#1D9E75] shadow-sm hover:bg-white hover:scale-110 active:scale-90 transition-all border border-white/50">
                      <Heart size={15} />
                    </button>
                    
-                   {/* Margin Badge - Gradient Glass */}
-                   <div className="absolute bottom-2.5 left-2.5 backdrop-blur-md bg-[#1D9E75]/90 text-white px-2.5 py-1 rounded-lg text-[10px] font-black shadow-lg border border-white/20">
-                     {product.margin_type === 'PERCENT' ? `${product.affiliate_margin}%` : `₹${product.affiliate_margin}`} MARGIN
+                   {/* Margin Badge - Premium Gradient */}
+                   <div className="absolute bottom-2.5 left-2.5 bg-gradient-to-r from-[#1D9E75] to-[#14B8A6] text-white px-3 py-1 rounded-full text-[10px] font-black shadow-lg">
+                     {product.margin_type === 'PERCENT' ? `${product.affiliate_margin}%` : `₹${product.affiliate_margin}`} Margin
                    </div>
                  </div>
 
-                 <div className="p-3.5 flex-1 flex flex-col gap-3">
+                 <div className="p-4 flex-1 flex flex-col gap-3">
                    {/* Brand Badge */}
-                   <div className="flex items-center gap-1.5 opacity-80">
-                     <div className="w-4 h-4 rounded-full bg-[#E1F5EE] flex items-center justify-center text-[#1D9E75] border border-[#5DCAA5]/20">
-                       <Building2 size={10} />
+                   <div className="flex items-center gap-1.5 grayscale group-hover:grayscale-0 transition-all duration-500">
+                     <div className="w-5 h-5 rounded-full bg-[#E1F5EE] flex items-center justify-center text-[#1D9E75] border border-[#5DCAA5]/20">
+                       <Building2 size={11} />
                      </div>
-                     <span className="text-[10px] font-bold text-[#1D9E75] uppercase tracking-tighter">Verified Creator</span>
+                     <span className="text-[10px] font-bold text-[#6B7280] group-hover:text-[#1D9E75] uppercase tracking-wider transition-colors">Verified Brand</span>
                    </div>
 
                    <div className="space-y-0.5">
-                     <h3 className="font-bold text-[#111827] text-[14px] leading-tight line-clamp-2 group-hover:text-[#1D9E75] transition-colors">{product.name}</h3>
-                     <p className="text-[11px] text-[#9CA3AF] font-semibold tracking-tight uppercase truncate">{product.category?.name || "General"}</p>
+                     <h3 className="font-bold text-[#1F2937] text-[14.5px] leading-tight line-clamp-2 group-hover:text-[#1D9E75] transition-colors duration-300">{product.name}</h3>
+                     <p className="text-[11px] text-[#9CA3AF] font-medium tracking-tight uppercase truncate">{product.category?.name || "General"}</p>
                    </div>
                    
-                   <div className="flex items-baseline gap-1">
-                     <span className="text-[11px] font-bold text-[#9CA3AF]">₹</span>
-                     <span className="font-black text-[#111827] text-[18px] tracking-tight">{product.base_price}</span>
+                   <div className="flex items-baseline gap-1 mt-1">
+                     <span className="text-[12px] font-bold text-[#1D9E75]">₹</span>
+                     <span className="font-black text-[#111827] text-[19px] tracking-tight">{product.base_price}</span>
                    </div>
 
-                   <div className="flex flex-col gap-2 mt-auto">
-                     {/* Row 1: Add to My Store (Full Width) */}
+                   <div className="flex flex-col gap-2.5 mt-auto">
+                     {/* Row 1: Add to My Store */}
                      <button
                        onClick={() => !isAdded && addToStoreMutation.mutate(product.id)}
                        disabled={isAdded || addToStoreMutation.isPending || !storefrontId}
-                       className={`w-full h-[36px] rounded-xl font-bold flex items-center justify-center gap-2 transition-all text-[12px] shadow-sm ${
+                       className={`w-full h-[38px] rounded-xl font-bold flex items-center justify-center gap-2 transition-all text-[12.5px] ${
                          isAdded 
-                          ? 'bg-[#E1F5EE] text-[#1D9E75] border border-[#5DCAA5] cursor-default' 
-                          : 'bg-[#1D9E75] text-white hover:bg-[#15805d] hover:shadow-md active:scale-95'
+                          ? 'bg-[#E1F5EE] text-[#1D9E75] border border-[#5DCAA5]/30 cursor-default' 
+                          : 'bg-[#1D9E75] text-white hover:bg-[#15805d] shadow-[0_4px_12px_rgba(29,158,117,0.2)] hover:shadow-[0_6px_20px_rgba(29,158,117,0.3)] active:scale-[0.97]'
                        }`}
                      >
                        {isAdded ? (
-                         <><CheckCircle2 size={14} /> In Store</>
+                         <><CheckCircle2 size={16} /> In Store</>
                        ) : addToStoreMutation.isPending ? (
-                         <Loader2 size={14} className="animate-spin" />
+                         <Loader2 size={16} className="animate-spin" />
                        ) : (
-                         <><ShoppingCart size={14} /> Add to Store</>
+                         <><ShoppingCart size={16} /> Add to Store</>
                        )}
                      </button>
 
@@ -328,17 +328,17 @@ export default function Marketplace() {
                              toast.error("Brand website not available.");
                            }
                          }}
-                         className="flex-1 h-[36px] bg-white border border-[#E5E7EB] text-[#4B5563] rounded-xl font-bold flex items-center justify-center gap-1.5 hover:bg-gray-50 active:scale-95 transition-all text-[12px] overflow-hidden px-2 shadow-sm"
+                         className="flex-1 h-[38px] bg-white border border-[#F3F4F6] text-[#4B5563] rounded-xl font-bold flex items-center justify-center gap-1.5 hover:bg-slate-50 hover:border-[#E5E7EB] active:scale-[0.97] transition-all text-[12.5px] overflow-hidden px-2"
                        >
-                         <MessageSquare size={14} className="text-[#1D9E75]" />
+                         <MessageSquare size={16} className="text-[#1D9E75]" />
                          <span className="truncate">Enquire</span>
                        </button>
 
                        <button
                          onClick={() => toast.info("Opening details...")}
-                         className="w-[36px] h-[36px] shrink-0 bg-[#E1F5EE]/50 text-[#1D9E75] rounded-xl flex items-center justify-center hover:bg-[#E1F5EE] border border-[#5DCAA5]/20 active:scale-90 transition-all shadow-sm"
+                         className="w-[38px] h-[38px] shrink-0 bg-slate-50 text-[#6B7280] hover:text-[#1D9E75] hover:bg-[#E1F5EE] rounded-xl flex items-center justify-center border border-[#F3F4F6] hover:border-[#5DCAA5]/30 active:scale-90 transition-all"
                        >
-                         <Eye size={16} />
+                         <Eye size={18} />
                        </button>
                      </div>
                    </div>

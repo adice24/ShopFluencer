@@ -27,39 +27,8 @@ async function bootstrap() {
   app.use(helmet());
   app.use(cookieParser());
 
-  // ── CORS ─────────────────────────────────────
-  const allowedOrigins = [
-    'http://localhost:5173',
-    'http://localhost:8080',
-    'http://localhost:8081',
-    'https://shop-fluence.vercel.app',
-    'https://shop-fluencer.vercel.app',
-    'https://shopflu.to',
-  ];
-  if (frontendUrl) {
-    frontendUrl.split(',').forEach((url) => allowedOrigins.push(url.trim()));
-  }
-
   app.enableCors({
-    origin: (
-      origin: string | undefined,
-      callback: (err: Error | null, allow?: boolean) => void,
-    ) => {
-      if (!origin) {
-        callback(null, true);
-        return;
-      }
-      if (
-        allowedOrigins.some(
-          (allowed) => origin === allowed || origin.startsWith(allowed),
-        ) ||
-        origin.endsWith('.vercel.app')
-      ) {
-        callback(null, true);
-      } else {
-        callback(new Error(`Origin ${origin} not allowed by CORS`));
-      }
-    },
+    origin: true,
     credentials: true,
     methods: ['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: [
