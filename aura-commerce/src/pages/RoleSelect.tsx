@@ -101,7 +101,8 @@ export default function RoleSelect() {
       }
     } catch (err) {
       console.error("Role transition failed:", err);
-      toast.error("Something went wrong. Please try again.");
+      const errorMessage = err instanceof Error ? err.message : String(err);
+      toast.error(`Error: ${errorMessage}`);
     } finally {
       setLoading(false);
     }
