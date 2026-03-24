@@ -285,7 +285,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 // 7. Audit log: successful signup
                 logAuditEvent({
                     action: "auth.sign_up",
-                    user_id: data.user?.id,
+                    user_id: data?.user?.id,
                     email_hash: cleanEmail,
                     success: true,
                     metadata: { method: "email_password" },
@@ -295,7 +295,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 setRemainingAttempts(RateLimiter.MAX_ATTEMPTS);
 
                 // Check if email confirmation is required
-                const needsConfirmation = !data.session;
+                const needsConfirmation = !data?.session;
 
                 return { error: null, requiresEmailConfirmation: needsConfirmation };
             } catch {
@@ -387,14 +387,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 // 8. Audit log: successful login
                 logAuditEvent({
                     action: "auth.sign_in",
-                    user_id: data.user?.id,
+                    user_id: data?.user?.id,
                     email_hash: cleanEmail,
                     success: true,
                     metadata: { method: "email_password" },
                 });
 
                 // 9. Check MFA requirement
-                const hasMFA = data.user?.factors && data.user.factors.length > 0;
+                const hasMFA = data?.user?.factors && data.user.factors.length > 0;
                 if (hasMFA) {
                     // Check AAL via the proper MFA API
                     const { data: aalData } = await supabase!.auth.mfa.getAuthenticatorAssuranceLevel();
