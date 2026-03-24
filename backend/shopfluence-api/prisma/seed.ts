@@ -6,7 +6,7 @@ const prisma = new PrismaClient();
 async function main() {
     console.log('🌱 Seeding database...\n');
 
-    // ── Admin User ──────────────────────────────
+    // ── Admin User (General) ──────────────────────
     const adminHash = await bcrypt.hash('Admin@2026!', 12);
     const admin = await prisma.user.upsert({
         where: { email: 'admin@shopfluence.com' },
@@ -19,6 +19,18 @@ async function main() {
             role: UserRole.ADMIN,
             status: UserStatus.ACTIVE,
             emailVerified: true,
+        },
+    });
+
+    // ── Platform Operator Credential (Admin Login) ──
+    await prisma.platformOperatorCredential.upsert({
+        where: { email: 'admin@shopfluence.com' },
+        update: { passwordHash: adminHash, isActive: true },
+        create: {
+            email: 'admin@shopfluence.com',
+            passwordHash: adminHash,
+            label: 'Master Admin',
+            isActive: true,
         },
     });
     console.log(`✅ Admin: ${admin.email}`);

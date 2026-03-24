@@ -15,18 +15,11 @@ async function bootstrap() {
   const config = app.get(ConfigService);
   const port = config.get<number>('app.port', 3000);
   const apiPrefix = config.get<string>('app.apiPrefix', 'api/v1');
-  const frontendUrl = config.get<string>(
-    'app.frontendUrl',
-    'http://localhost:5173',
-  );
 
   // ── Global Prefix ────────────────────────────
   app.setGlobalPrefix(apiPrefix);
 
-  // ── Security ─────────────────────────────────
-  app.use(helmet());
-  app.use(cookieParser());
-
+  // ── CORS (Must be before other middleware) ──
   app.enableCors({
     origin: true,
     credentials: true,
@@ -41,6 +34,13 @@ async function bootstrap() {
     preflightContinue: false,
     optionsSuccessStatus: 204,
   });
+
+  // ── Security & Middleware ────────────────────
+  app.use(helmet({
+    crossOriginResourcePolicy: false,
+    contentSecurityPolicy: false, // Disable for easier dev/preview, enable in strict prod
+  }));
+  app.use(cookieParser());
 
   // ── Validation ───────────────────────────────
   app.useGlobalPipes(
