@@ -9,7 +9,7 @@ const faqs = [
     },
     {
         question: "When and how do I get paid?",
-        answer: "Payouts are processed automatically at the end of every month for transactions that have cleared the return window. Ensure your banking information is up-to-date in the Settings > Billing tab."
+        answer: "Payouts are processed automatically at the end of every month for transactions that have cleared the return window. Ensure your banking information is up-to-date in the Settings page."
     },
     {
         question: "Can I use my own custom domain?",

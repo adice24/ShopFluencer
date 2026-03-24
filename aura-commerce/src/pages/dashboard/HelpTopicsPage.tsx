@@ -35,7 +35,7 @@ export default function HelpTopicsPage() {
         },
         {
             title: "Account Settings",
-            description: "Managing payouts, billing, passwords, and security.",
+            description: "Managing payouts, profile, passwords, and security.",
             icon: Settings,
             color: "bg-muted text-blush"
         }
