@@ -127,7 +127,8 @@ export default function AuthPage() {
                     toast.success("Welcome back!");
 
                     // Use user_metadata for role-based routing (no DB query needed)
-                    const { data: { user: authUser } } = await import("../lib/supabase").then(m => m.supabase.auth.getUser());
+                    const { data } = await import("../lib/supabase").then(m => m.supabase.auth.getUser());
+                    const authUser = data?.user;
                     if (authUser) {
                         const userRole = (authUser.user_metadata?.role || "").toUpperCase();
                         if (userRole === "ADMIN") {
