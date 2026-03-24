@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, Filter, Plus, TrendingUp, IndianRupee, Package, Building2, Loader2, Star, CheckCircle2, Calculator, Link2, Eye, Heart, X, ExternalLink } from "lucide-react";
+import { Search, Filter, Plus, TrendingUp, IndianRupee, Package, Building2, Loader2, Star, CheckCircle2, Calculator, Link2, Eye, Heart, X, ExternalLink, ShoppingCart, MessageSquare } from "lucide-react";
 import { supabase } from "../../lib/supabase";
 import { toast } from "sonner";
 import { useAuth } from "../../contexts/AuthContext";
@@ -48,19 +48,19 @@ function EarningsCalculatorModal({ isOpen, onClose }: { isOpen: boolean, onClose
           </div>
         </div>
 
-        <div className="bg-gradient-to-br from-indigo-50 to-emerald-50 rounded-2xl p-6 border border-indigo-100/50">
+        <div className="bg-gradient-to-br from-[#E1F5EE] to-emerald-50 rounded-2xl p-6 border border-[#5DCAA5]/30">
            <div className="flex justify-between items-center mb-4">
               <span className="font-bold text-gray-600">Daily Earnings:</span>
-              <span className="font-black text-lg text-emerald-600">₹{daily.toLocaleString()}</span>
+              <span className="font-black text-lg text-[#1D9E75]">₹{daily.toLocaleString()}</span>
            </div>
            <div className="flex justify-between items-center mb-4">
               <span className="font-bold text-gray-600">Monthly Earnings:</span>
-              <span className="font-black text-lg text-emerald-600">₹{monthly.toLocaleString()}</span>
+              <span className="font-black text-lg text-[#1D9E75]">₹{monthly.toLocaleString()}</span>
            </div>
-           <div className="h-px w-full bg-gray-200/60 my-4" />
+           <div className="h-px w-full bg-[#5DCAA5]/20 my-4" />
            <div className="flex justify-between items-center">
               <span className="font-black text-gray-900">Yearly Earnings:</span>
-              <span className="font-black text-2xl text-indigo-600">₹{yearly.toLocaleString()}</span>
+              <span className="font-black text-2xl text-[#1D9E75]">₹{yearly.toLocaleString()}</span>
            </div>
         </div>
       </motion.div>
@@ -241,7 +241,7 @@ export default function Marketplace() {
       </div>
 
       {/* Product Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      <div className="flex flex-wrap justify-center gap-6">
         {isLoading ? (
            <div className="col-span-full py-20 flex justify-center"><Loader2 className="animate-spin text-indigo-500" size={32} /></div>
         ) : filteredProducts.length === 0 ? (
@@ -257,70 +257,84 @@ export default function Marketplace() {
                  initial={{ opacity: 0, scale: 0.95 }}
                  animate={{ opacity: 1, scale: 1 }}
                  transition={{ delay: idx * 0.05 }}
-                 className="bg-white rounded-3xl p-4 border border-[#F3F4F6] shadow-[0_8px_30px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_40px_rgba(0,0,0,0.08)] transition-all group flex flex-col"
+                 className="w-[200px] h-fit bg-white rounded-[12px] border-[0.5px] border-[#5DCAA5] shadow-sm hover:shadow-md transition-all group overflow-hidden flex flex-col"
                >
-                 <div className="aspect-[4/3] rounded-2xl bg-gray-100 mb-4 overflow-hidden relative">
-                   <img src={image} alt={product.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                 {/* Thumbnail area with Wishlist Icon */}
+                 <div className="relative aspect-square overflow-hidden bg-[#E1F5EE]/30">
+                   <img 
+                     src={image} 
+                     alt={product.name} 
+                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
+                   />
+                   <button className="absolute top-2 right-2 p-1.5 bg-white/80 backdrop-blur-sm rounded-full text-[#1D9E75] hover:bg-white transition-colors">
+                     <Heart size={14} />
+                   </button>
                    
-                   <div className="absolute top-3 right-3 bg-white/95 backdrop-blur-md px-3 py-1.5 rounded-xl shadow-sm border border-white/20 flex flex-col items-center">
-                     <span className="text-[10px] uppercase font-black tracking-wider text-[#6B7280]">Margin ({product.margin_type === 'PERCENT' ? '%' : '₹'})</span>
-                     <span className="text-[14px] font-black text-emerald-600">{product.margin_type === 'PERCENT' ? `${product.affiliate_margin}%` : `₹${product.affiliate_margin}`}</span>
+                   {/* Margin Badge (Optional, kept for info) */}
+                   <div className="absolute bottom-2 left-2 bg-[#1D9E75] text-white px-2 py-0.5 rounded-full text-[9px] font-bold">
+                     {product.margin_type === 'PERCENT' ? `${product.affiliate_margin}%` : `₹${product.affiliate_margin}`} Margin
                    </div>
-
-                   {sortTrending && idx < 3 && (
-                     <div className="absolute top-3 left-3 bg-rose-500 text-white px-2.5 py-1 rounded-lg text-[10px] font-black tracking-wider uppercase shadow-md flex items-center gap-1">
-                       <Star size={12} className="fill-white" /> Hot
-                     </div>
-                   )}
                  </div>
 
-                 <div className="flex-1 flex flex-col">
-                   <div className="flex items-center gap-2 mb-2">
-                     <div className="w-5 h-5 rounded-full bg-indigo-50 flex items-center justify-center text-indigo-500">
+                 <div className="p-3 flex-1 flex flex-col gap-1.5">
+                   {/* Brand Badge */}
+                   <div className="flex items-center gap-1.5">
+                     <div className="w-4 h-4 rounded-full bg-[#E1F5EE] flex items-center justify-center text-[#1D9E75]">
                        <Building2 size={10} />
                      </div>
-                     <span className="text-[11px] font-bold text-[#6B7280] uppercase tracking-wider">{product.brand?.name}</span>
+                     <span className="text-[10px] font-medium text-[#1D9E75] uppercase tracking-wider truncate">{product.brand?.name}</span>
                    </div>
 
-                   <h3 className="font-extrabold text-[#111827] text-[16px] leading-tight mb-1 line-clamp-2">{product.name}</h3>
-                   <p className="text-[15px] font-bold text-[#4B5563] mb-4">₹{product.base_price}</p>
+                   <div className="min-h-[36px]">
+                     <h3 className="font-bold text-[#111827] text-[13px] leading-tight line-clamp-2">{product.name}</h3>
+                     <p className="text-[11px] text-[#6B7280] font-medium truncate">{product.category?.name || "Product Category"}</p>
+                   </div>
+                   
+                   <p className="font-extrabold text-[#111827] text-[14px]">₹{product.base_price}</p>
 
-                   <div className="grid grid-cols-5 gap-2 mt-auto pt-2">
-                      <button
-                        onClick={() => {
-                          if (product.brand?.website_url) {
-                            window.open(product.brand.website_url.startsWith('http') ? product.brand.website_url : `https://${product.brand.website_url}`, '_blank');
-                          } else {
-                            toast.error("Brand website not available.");
-                          }
-                        }}
-                        className="col-span-2 h-[42px] bg-indigo-50 text-indigo-600 rounded-xl font-bold flex items-center justify-center gap-1.5 hover:bg-indigo-100 transition-colors shadow-sm text-[11px]"
-                      >
-                        <ExternalLink size={15} /> Enquire Brand
-                      </button>
-                     <button
-                       onClick={() => toast.info("Opening product details...")}
-                       className="col-span-1 h-[42px] bg-gray-50 border border-gray-200 text-gray-600 rounded-xl flex items-center justify-center hover:bg-gray-100 transition-colors shadow-sm"
-                     >
-                       <Eye size={18} />
-                     </button>
+                   <div className="flex flex-col gap-2 mt-1">
+                     {/* Row 1: Add to My Store (Full Width) */}
                      <button
                        onClick={() => !isAdded && addToStoreMutation.mutate(product.id)}
                        disabled={isAdded || addToStoreMutation.isPending || !storefrontId}
-                       className={`col-span-2 h-[42px] rounded-xl font-bold flex items-center justify-center gap-1.5 transition-all shadow-sm text-[13px] ${
+                       className={`w-full h-[32px] rounded-[7px] font-medium flex items-center justify-center gap-1.5 transition-all text-[11.5px] whitespace-nowrap px-3 ${
                          isAdded 
-                          ? 'bg-rose-50 text-rose-500 border border-rose-100 cursor-default' 
-                          : 'bg-[#111827] text-white hover:bg-[#111827]/90 active:scale-95'
+                          ? 'bg-[#E1F5EE] text-[#1D9E75] border border-[#5DCAA5] cursor-default' 
+                          : 'bg-[#1D9E75] text-white hover:bg-[#1D9E75]/90'
                        }`}
                      >
                        {isAdded ? (
-                         <><Heart size={15} fill="currentColor" /> In My Store</>
+                         <><CheckCircle2 size={13} /> In My Store</>
                        ) : addToStoreMutation.isPending ? (
-                         <Loader2 size={15} className="animate-spin" />
+                         <Loader2 size={13} className="animate-spin" />
                        ) : (
-                         <><Heart size={15} /> Add to My Store</>
+                         <><ShoppingCart size={13} /> Add to my store</>
                        )}
                      </button>
+
+                     {/* Row 2: Enquire Brand + Eye Icon */}
+                     <div className="flex items-center gap-2">
+                       <button
+                         onClick={() => {
+                           if (product.brand?.website_url) {
+                             window.open(product.brand.website_url.startsWith('http') ? product.brand.website_url : `https://${product.brand.website_url}`, '_blank');
+                           } else {
+                             toast.error("Brand website not available.");
+                           }
+                         }}
+                         className="flex-1 h-[32px] border-[1px] border-[#1D9E75] text-[#1D9E75] rounded-[7px] font-medium flex items-center justify-center gap-1.5 hover:bg-[#E1F5EE]/50 transition-colors text-[11.5px] whitespace-nowrap overflow-hidden px-2"
+                       >
+                         <MessageSquare size={13} />
+                         <span className="truncate">Enquire Brand</span>
+                       </button>
+
+                       <button
+                         onClick={() => toast.info("Opening product details...")}
+                         className="w-[30px] h-[30px] shrink-0 bg-[#E1F5EE] text-[#1D9E75] rounded-[7px] flex items-center justify-center hover:bg-[#5DCAA5]/20 transition-colors border border-[#5DCAA5]/30"
+                       >
+                         <Eye size={14} />
+                       </button>
+                     </div>
                    </div>
                  </div>
                </motion.div>
