@@ -67,7 +67,9 @@ export default function RoleSelect() {
     setLoading(true);
 
     try {
-      const { data: { user: u } } = await supabase.auth.getUser();
+      const { data } = await supabase.auth.getUser();
+      const u = data?.user;
+
       if (!u) {
         navigate("/auth?mode=login", { replace: true });
         return;
