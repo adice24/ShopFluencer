@@ -67,10 +67,14 @@ export default function RoleSelect() {
     setLoading(true);
 
     try {
-      const { data } = await supabase.auth.getUser();
+      if (!supabase) {
+        throw new Error("Supabase is not configured. Please check your environment variables.");
+      }
+
+      const { data, error: authError } = await (supabase as any).auth.getUser();
       const u = data?.user;
 
-      if (!u) {
+      if (authError || !u) {
         navigate("/auth?mode=login", { replace: true });
         return;
       }
