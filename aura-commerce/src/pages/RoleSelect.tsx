@@ -71,7 +71,7 @@ export default function RoleSelect() {
         throw new Error("Supabase is not configured. Please check your environment variables.");
       }
 
-      const { data, error: authError } = await (supabase as any).auth.getUser();
+      const { data, error: authError } = await supabase.auth.getUser();
       const u = data?.user;
 
       if (authError || !u) {
