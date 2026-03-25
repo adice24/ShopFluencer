@@ -241,7 +241,7 @@ export default function Marketplace() {
       </div>
 
       {/* Product Grid */}
-      <div className="flex flex-wrap justify-center gap-6">
+      <div className="flex flex-wrap justify-start gap-6">
         {isLoading ? (
            <div className="col-span-full py-20 flex justify-center"><Loader2 className="animate-spin text-indigo-500" size={32} /></div>
         ) : filteredProducts.length === 0 ? (
@@ -257,15 +257,15 @@ export default function Marketplace() {
                  initial={{ opacity: 0, scale: 0.95 }}
                  animate={{ opacity: 1, scale: 1 }}
                  whileHover={{ y: -5 }}
-                 transition={{ delay: idx * 0.05, type: "spring", stiffness: 300, damping: 20 }}
+                 transition={{ delay: idx * 0.02, type: "spring", stiffness: 400, damping: 30 }}
                  className="w-[210px] bg-white rounded-[20px] border border-[#F3F4F6] hover:border-[#1D9E75]/40 shadow-[0_8px_20px_-12px_rgba(0,0,0,0.1)] hover:shadow-[0_20px_30px_-10px_rgba(29,158,117,0.12)] transition-all group overflow-hidden flex flex-col"
                >
                  {/* Thumbnail area with Wishlist Icon */}
-                 <div className="relative aspect-square overflow-hidden bg-slate-50">
+                 <div className="relative aspect-square overflow-hidden bg-slate-50 p-3">
                    <img 
                      src={image} 
                      alt={product.name} 
-                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out" 
+                     className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500 ease-out" 
                    />
                    
                    {/* Wishlist Icon - Minimalist Glass */}
